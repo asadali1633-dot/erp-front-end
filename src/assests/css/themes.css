@@ -1,0 +1,196 @@
+:root {
+  --body-color: white;
+  --text-color: black;
+  --text-color-secondary: black;
+  --role-Box: white;
+  --role-box-border: #878787;
+  --table-bg: #f2f2f2;
+  --input-label: black;
+  --input-bg: white;
+  --icon-color: #00baff;
+  --tabs-color: black;
+  --drop-down-color: white;
+  --select-bg: white;
+
+}
+
+[data-theme="dark"] {
+  --body-color: #101010;
+  --text-color: #878787;
+  --text-color-secondary: white;
+  --role-Box: #0e2128;
+  --role-box-border: #0e2128;
+  --table-bg: #171717;
+  --input-label: white;
+  --input-bg: #2f2f2f;
+  --icon-color: #00baff;
+  --tabs-color: #878787;
+  --drop-down-color: #2f2f2f;
+  --select-bg: #2F2F2F;
+}
+
+/* @media (prefers-color-scheme: light) {
+  body {
+    background: white;
+    color: black;
+  }
+} */
+
+[data-theme="dark"] .white {
+  color: var(--text-color-secondary) !important;
+}
+
+/* TAGS THEME CSS =========================== */
+body {
+  background: var(--body-color) !important;
+}
+
+p {
+  color: var(--text-color) !important;
+}
+
+label {
+  color: var(--input-label) !important;
+}
+
+input,
+textarea {
+  background: var(--input-bg);
+  color: var(--text-color-secondary) !important;
+}
+
+input::placeholder {
+  color: gray !important;
+}
+
+svg {
+  color: var(--icon-color);
+}
+
+span {
+  color: var(--text-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-color-secondary) !important;
+}
+
+ul {
+  background-color: var(--drop-down-color);
+}
+li{
+  color: var(--text-color-secondary);
+}
+a{
+  color: var(--text-color-secondary);
+}
+
+/* OUTLINE BUTTON THEME CSS ========================== */
+.OutLineButton {
+  color: var(--text-color-secondary);
+}
+
+/* TABLE OUTER BOX THEME CSS ==================== */
+.divbg {
+   background: var(--body-color) !important;
+  /* background-color: red; */
+  /* background-color: var(--table-bg) !important; */
+}
+
+/* HEADER ROLE BOX THEME CSS =================== */
+.rolebgBox {
+  background: var(--role-Box);
+  display: block;
+  border: 1px solid var(--role-box-border) !important;
+}
+
+/* TABLE BOX AND OUTER BOX THEME CSS =============== */
+.customerinfo_tabsPanel .ant-tabs-tab-btn {
+  color: var(--tabs-color);
+  font-size: 12px !important;
+}
+
+.customerinfo_tabsPanel .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--text-color-secondary) !important;
+}
+
+.customerinfo_tabsPanel .ant-dropdown-trigger {
+  color: var(--tabs-color) !important;
+}
+.customerinfo_tabsPanel .ant-dropdown-trigger svg{
+  color: var(--tabs-color) !important;
+font-size: 11px;
+}
+
+.antdCustomeTable .ant-table-container {
+  background: var(--table-bg);
+  color: white;
+}
+
+.antdCustomeTable thead tr th {
+  background-color: var(--table-bg) !important;
+  color: var(--text-color-secondary) !important;
+}
+
+.antdCustomeTable .ant-table-tbody .ant-table-row td span {
+  color: var(--text-color-secondary) !important;
+}
+
+/* ANTD TABS DROPDOWN THEME CSS ==================================== */
+.ant-dropdown .ant-dropdown-menu {
+  background-color: var(--drop-down-color) !important;
+}
+
+.ant-dropdown .ant-dropdown-menu li span {
+  color: var(--text-color-secondary) !important;
+  font-size: 11px;
+}
+
+.ant-dropdown .ant-dropdown-menu li:nth-child(1) {
+  border-bottom: 1px solid #6060604f;
+  border-radius: 0;
+}
+
+
+/* ANTD MODAL THEME CSS ========================================= */
+.modalBgColor .ant-modal-content {
+  background: var(--table-bg) !important;
+}
+
+/* ANTD SELECT THEME CSS ======================================= */
+.selectBox .selectedTextColorOnInput .ant-select-selection-item{
+    color: white !important;
+    font-size: 12px !important;
+}
+
+
+/* ANTD DATE THEME CSS ========================================= */
+.CustomDate .datepicker-disabled-custom input{
+  color: gray !important;
+}
+
+
+/* ANTD FORM CHECKBOX THEME CSS ====================== */
+.form_checkBox .ant-radio-label {
+  color: var(--text-color-secondary);
+}
+
+
+/* ANTD MEGSSE THEME CSS  ========================= */
+.ant-message .ant-message-notice-content{
+  background-color: var(--input-bg) !important;
+}
+.ant-message .ant-message-notice-content span{
+  color: var(--text-color-secondary);
+}
+.ant-message .ant-message-error .anticon-close-circle svg{
+  color: #ff4d4f;
+}
+.ant-message .ant-message-success .anticon-check-circle svg{
+  color: #52c41a;
+}

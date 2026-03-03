@@ -1,0 +1,57 @@
+.customerHeader_headerBox {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 10px;
+}
+
+.customerHeader_customerName {
+    display: flex;
+    align-items: center;
+}
+
+.customerHeader_customerName div {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.customerHeader_customerName img {
+    margin-right: 10px;
+}
+
+.customerHeader_customerName span {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.customerHeader_customerName p {
+    color: #878787;
+    font-size: 13px;
+}
+
+.customerHeader_contactInfo {
+    display: flex;
+}
+
+.customerHeader_contactInfo div {
+    padding: 0px 10px;
+}
+
+.customerHeader_contactInfo div:nth-child(1),
+.customerHeader_contactInfo div:nth-child(2),
+.customerHeader_contactInfo div:nth-child(3) {
+    border-right: 1px solid #878787;
+}
+
+.customerHeader_contactInfo span {
+    color: #878787;
+    font-size: 15px;
+    font-weight: 600;
+    display: block;
+}
+
+.customerHeader_contactInfo p {
+    color: white;
+    font-size: 13px;
+}

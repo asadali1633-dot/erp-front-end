@@ -1,0 +1,12 @@
+.selectBox {
+    width: 100%;
+}
+
+
+.selectBox  input {
+  background: transparent !important;
+} 
+.selectBox .ant-select .ant-select-selector {
+    border-radius: 0;
+    border: none;
+}

@@ -1,0 +1,58 @@
+.company_profileSection {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.company_profileImageInnerBox {
+    display: flex;
+    margin-top: 2rem;
+}
+
+.company_profileImageInnerBox .company_profileImageInputBox {
+    position: relative;
+    width: 10rem;
+    height: 7rem;
+}
+
+.company_profileImageInnerBox input {
+    height: inherit;
+    cursor: pointer;
+    z-index: 999999;
+    position: absolute;
+    opacity: 0;
+    width: 130px;
+}
+
+.company_profileImageInnerBox img {
+    position: absolute;
+    height: -webkit-fill-available;
+    width: -webkit-fill-available;
+    border-radius: 15px;
+    object-fit: cover;
+}
+
+.company_profileImageInnerBox h5 {
+    color: white;
+    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+.company_profileImageInnerBox p {
+    color: #2f2f2f;
+    font-size: 15px;
+}
+
+.company_profileImageInnerBox a {
+    text-decoration: none;
+    color: white;
+    border: 1px solid white;
+    padding: 4px 24px;
+    font-size: 13px;
+    border-radius: 5px;
+}
+
+.company_profileInnerInputBox {
+    display: flex;
+}

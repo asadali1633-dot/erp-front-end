@@ -1,0 +1,45 @@
+.editable_image_box {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}
+
+.editable_image_box img {
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+    border-radius: 50%;
+}
+
+.overlay {
+    position: absolute;
+    top: 5px;
+    width: 90px;
+    height: 90px;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    border-radius: 50%;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease;
+}
+
+.editable_image_box:hover .overlay {
+    opacity: 1;
+}
+
+.pencil_icon {
+    color: #00baff;
+    font-size: 24px;
+}
+
+.file_input {
+    display: none;
+}

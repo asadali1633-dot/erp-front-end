@@ -1,0 +1,209 @@
+/* PERSONAL SCREEN CSS =========================== */
+.headerBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.headerBox div {
+    display: flex;
+    align-items: center;
+}
+
+.headerBox svg {
+    cursor: pointer;
+    font-size: 26px;
+    margin-right: 7px;
+    color: #00baff !important;
+}
+
+.headerBox h5 {
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+.emp_inputbox {
+    display: flex !important;
+    width: 100%;
+}
+
+.emp_buttonBox {
+    display: flex;
+    justify-content: end;
+}
+
+.emp_buttonBox2 {
+    display: flex;
+    justify-content: end;
+    flex-direction: column;
+}
+
+.emp_buttonBox button {
+    padding: 7px 24px;
+    margin: 0 10px;
+}
+
+
+
+/* JOB SCREEN CSS ================================ */
+
+.firstHeaderJob h5 {
+    font-size: 1.5rem !important;
+    width: fit-content;
+}
+
+.secondHeaderJob {
+    border-top: 1px solid #2e2e2e;
+}
+
+.thirdHeaderJob {
+    border-bottom: 1px solid #2e2e2e;
+}
+
+.secondHeaderJob h5 {
+    width: fit-content;
+}
+
+.thirdHeaderJob h5 {
+    width: fit-content;
+}
+
+/* TIME OFF SCREEN CSS ============================ */
+.leavesCricle {
+    background: #00baff;
+    width: fit-content;
+    padding: 10px 10px;
+    line-height: 0;
+    border-radius: 36px;
+    margin-bottom: 10px;
+}
+
+.leavesCricle h6 {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+.leavesBox {
+    background: #4c4c4c;
+    padding: 15px 10px;
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+}
+
+.leavesBox h4 {
+    font-size: 13px;
+}
+
+/* PAY SLIP SCREEN CSS ================================ */
+.download_button {
+    padding: 5px 0;
+    text-align: center;
+    margin: 5px 0;
+    border-radius: 10px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    border: 1px solid #00baff;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+.download_button svg {
+    color: #00baff;
+}
+
+.download_button:hover {
+    background: #00baff;
+    transition: all 0.5s;
+}
+
+.download_button:hover svg {
+    color: white;
+}
+
+
+
+/* ASSETS DASHBOARD SCREEN ============================ */
+.subHeading{
+    font-size: 14px !important;
+}
+
+.assestDashbord_box {
+    display: flex;
+    justify-content: center;
+    background-color: #363636;
+    align-items: center;
+    padding: 10px 0px;
+    border-radius: 8px;
+}
+
+.assestDashbord_box h6, .assestDashbord_boxDetails h6 {
+    font-size: 12px;
+    font-weight: 400;
+    margin: 0;
+}
+
+.assestDashbord_box p {
+    padding: 0;
+    margin: 0 0 0 9px;
+    color: white !important;
+}
+.assestDashbord_boxDetails{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    background-color: #363636;
+    align-items: center;
+    padding: 10px 0px;
+    border-radius: 8px;
+}
+.assestDashbord_boxDetails p{
+    padding: 0;
+    margin: 5px 0 0 0;
+    color: white !important;
+}
+.assestDashbord_boxDetails p svg{
+    font-size: 20px;
+}
+
+
+/* EDIT BUTTON ================================== */
+
+.personal_editBtn{
+    border: none;
+    background: transparent;
+}
+.personal_editBtn svg {
+    font-size: 25px;
+}
+
+
+/* TEXT MODAL CSS ============================= */
+.simpleTextModal{
+    height: 250px;
+    overflow-y: scroll;
+    padding-right: 10px;
+}
+.simpleTextModal p{
+    color: white !important;
+    margin: 20px 0;
+    font-size: 12px;
+}
+
+.simpleTextModal::-webkit-scrollbar-track {
+    background-color: #2f2f2f;
+}
+
+.simpleTextModal::-webkit-scrollbar {
+    width: 4px;
+}
+
+.simpleTextModal::-webkit-scrollbar-thumb {
+    background-color: #2f2f2f;
+}

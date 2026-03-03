@@ -1,0 +1,70 @@
+.header_mainBox {
+    position: fixed;
+    width: 100%;
+    right: 0;
+}
+
+.header_innerBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    border-bottom: 1px solid #2e2e2e;
+    padding: 0 23px;
+}
+.header_logoBox img{height: 23px;}
+.header_innerBox .roleBox{
+    display: flex;
+}
+
+.header_innerBox .roleBox span {
+    width: 40px;
+    text-align: center;
+    display: block;
+    line-height: 2.9;
+    border-radius: 7px;
+    font-size: 14px;
+    margin-right: 10px;
+    font-weight: 600;
+    height: 40px;
+}
+
+.header_innerBox .roleBox h6 {
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.header_innerBox .roleBox p {
+    padding: 0;
+    margin: 0;
+    font-size: 11px;
+    font-weight: 600;
+} 
+.header_contactInfo{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header_contactInfo div {
+    padding: 0px 10px;
+}
+.header_contactInfo div:nth-child(1),
+.header_contactInfo div:nth-child(2),
+.header_contactInfo div:nth-child(3) {
+    border-right: 1px solid #878787;
+}
+
+.header_contactInfo span {
+    /* color: #878787; */
+    font-size: 12px;
+    font-weight: 600;
+    display: block;
+}
+
+.header_contactInfo p {
+    /* color: white; */
+    font-size: 11px;
+}

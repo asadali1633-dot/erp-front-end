@@ -1,0 +1,60 @@
+.Packages_section {
+    margin-top: 1.5rem;
+}
+#root{
+     background: #101010;
+}
+.Packages_section h5{
+    color: white !important;
+    font-size: 25px !important;
+}
+
+.Packages_box {
+    background: #171717;
+    box-shadow: -1px 1px 5px 10px #4f4c4c08;
+    border-radius: 20px;
+    padding: 2rem 2rem;
+    color: white;
+}
+
+.Packages_box h5 {
+    font-size: 20px !important;
+}
+
+.Packages_box span {
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+}
+
+.Packages_box ul {
+    list-style: none;
+    padding: 1rem 0 0 0;
+    height: 300px;
+    overflow-y: scroll;
+    background: unset !important;
+}
+
+.Packages_box ul li {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #80808073;
+    padding: 1rem 0;
+    color: white;
+}
+
+.Packages_box ul li svg {
+    margin-right: 10px;
+    color: #12da65;
+}
+
+.Packages_box ul::-webkit-scrollbar {
+    width: 6px;
+    background: #00000071;
+    border-radius: 10px;
+}
+
+.Packages_box ul::-webkit-scrollbar-thumb {
+    background: #00BAFF;
+    border-radius: 10px;
+}

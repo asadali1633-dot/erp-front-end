@@ -1,0 +1,158 @@
+
+// SIGNUP TYPES ==============================
+export const SIGNUP_DATA_START = "SIGNUP_DATA_START"
+export const SIGNUP_DATA = "SIGNUP_DATA"
+export const SINGUP_DATA_END = "SINGUP_DATA_END"
+
+// SIGNIN TYPES ==============================
+export const SIGNIN_DATA_START = "SIGNIN_DATA_START"
+export const SIGNIN_DATA = "SIGNIN_DATA"
+export const SIGNIN_DATA_END = "SIGNIN_DATA_END"
+
+
+
+// COMPANY TYPES ==============================
+export const COMPANY_DATA_START = "COMPANY_DATA_START"
+export const COMPANY_DATA = "COMPANY_DATA"
+export const COMPANY_DATA_END = "COMPANY_DATA_END"
+
+
+// VERIFICATION TYPES ==============================
+export const VERIFICATION_DATA_START = "VERIFICATION_DATA_START"
+export const VERIFICATION_DATA = "VERIFICATION_DATA"
+export const VERIFICATION_DATA_END = "VERIFICATION_DATA_END"
+
+
+// AUTH TYPES ===================================
+export const SET_ACCESS_TOKEN = "SET_ACCESS_TOKEN";
+export const RIGISTER_STEPS = "RIGISTER_STEPS";
+export const LOGIN_STEP = "LOGIN_STEP";
+export const SET_LOADING = "SET_LOADING";
+export const SET_STEP = "SET_STEP";
+export const CLEAR_STEP = "CLEAR_STEP";
+export const CLEAR_AUTH = "CLEAR_AUTH";
+
+
+// CREATE USER TYPES ==============================
+export const USER_DATA_START = "USER_DATA_START"
+export const USER_DATA = "USER_DATA"
+export const USER_SINGLE_DATA = "USER_SINGLE_DATA"
+export const USER_DATA_END = "USER_DATA_END"
+export const USER_DEPARTMENTS_DATA = "USER_DEPARTMENTS_DATA"
+
+
+// CREATE DEPARTMENTS TYPES ==============================
+export const DEPART_DATA_START = "DEPART_DATA_START"
+export const DEPART_DATA = "DEPART_DATA"
+export const DEPART_SINGLE_DATA = "DEPART_SINGLE_DATA"
+export const DEPART_DATA_END = "DEPART_DATA_END"
+
+
+// CREATE ROLES TYPES ==============================
+export const ROLE_DATA_START = "ROLE_DATA_START"
+export const ROLE_DATA = "ROLE_DATA"
+export const ROLE_SINGLE_DATA = "ROLE_SINGLE_DATA"
+export const ROLE_DATA_END = "ROLE_DATA_END"
+
+
+// CREATE DESIGNATOINS TYPES ==============================
+export const DESIGNATOINS_DATA_START = "DESIGNATOINS_DATA_START"
+export const DESIGNATOINS_DATA = "DESIGNATOINS_DATA"
+export const DESIGNATOINS_SINGLE_DATA = "DESIGNATOINS_SINGLE_DATA"
+export const DESIGNATOINS_DATA_END = "DESIGNATOINS_DATA_END"
+
+// CREATE ASSETS TYPES ==============================
+export const ASSETS_DATA_START = "ASSETS_DATA_START"
+export const HARDWARE_ASSETS_DATA = "HARDWARE_ASSETS_DATA"
+export const HARDWARE_SINGLE_DATA = "HARDWARE_SINGLE_DATA"
+export const USERS_ASSETS_DATA = "USERS_ASSETS_DATA"
+export const ASSETS_DEPARTMENTS_DATA = "ASSETS_DEPARTMENTS_DATA"
+export const BRANDSMANUFACTURER_ASSETS_DATA = "BRANDSMANUFACTURER_ASSETS_DATA"
+export const ASSETS_DATA_END = "ASSETS_DATA_END"
+export const ASSETS_BAR_CODE = "ASSETS_BAR_CODE"
+
+
+
+// CREATE USER TYPES ==============================
+export const SOFTWARE_DATA_START = "SOFTWARE_DATA_START"
+export const SOFTWARE_DATA = "SOFTWARE_DATA"
+export const SOFTWARE_SINGLE_DATA = "SOFTWARE_SINGLE_DATA"
+export const SOFTWARE_DATA_END = "SOFTWARE_DATA_END"
+
+// CREATE TICKETS TYPES ==============================
+export const TICKETS_DATA_START = "TICKETS_DATA_START"
+export const TICKETS_DATA = "TICKETS_DATA"
+export const TICKETS_ALL_DATA = "TICKETS_ALL_DATA"
+export const TICKETS_SINGLE_DATA = "TICKETS_SINGLE_DATA"
+export const TICKETS_DATA_END = "TICKETS_DATA_END"
+
+
+// CREATE PERMISSION TYPES ==============================
+export const PERMISSION_DATA_START = "PERMISSION_DATA_START"
+export const PERMISSION_DATA = "PERMISSION_DATA"
+export const PERMISSION_ALL_DATA = "PERMISSION_ALL_DATA"
+export const PERMISSION_DATA_END = "PERMISSION_DATA_END"
+
+
+// CREATE FORGOT PASSWORD TYPES ==============================
+export const FORGOT_PASS_DATA_START = "FORGOT_PASS_DATA_START"
+export const FORGOT_PASS_DATA = "FORGOT_PASS_DATA"
+export const FORGOT_PASS_ALL_DATA = "FORGOT_PASS_ALL_DATA"
+export const FORGOT_PASS_DATA_END = "FORGOT_PASS_DATA_END"
+
+
+
+// THEME SETTING TYPES ==============================
+export const THEME_DATA_START = "THEME_DATA_START"
+export const THEME_DATA = "THEME_DATA"
+export const THEME_DATA_END = "THEME_DATA_END"
+
+
+
+// THEME SETTING TYPES ==============================
+export const EMP_DATA_START = "EMP_DATA_START"
+export const EMP_DATA = "EMP_DATA"
+export const EMP_DATA_END = "EMP_DATA_END"
+export const EMP_LOIGIN_TIME_USER = "EMP_LOIGIN_TIME_USER"
+export const EMP_EMP_GENRATED_ID = "EMP_EMP_GENRATED_ID"
+export const SUPER_ADMIN_GENRATED_ID = "SUPER_ADMIN_GENRATED_ID"
+export const EMP_SINGLE_DATA = "EMP_SINGLE_DATA"
+export const EMP_MY_INFO = "EMP_MY_INFO"
+export const EMP_SUPER_ADMIN_INFO = "EMP_SUPER_ADMIN_INFO"
+
+
+
+export const EDU_DATA_START = "EDU_DATA_START"
+export const EDU_SUPER_ADMIN = "EDU_SUPER_ADMIN"
+export const EDU_SINGLE_SUPER_ADMIN = "EDU_SINGLE_SUPER_ADMIN"
+export const EDU_MY_DATA = "EDU_MY_DATA"
+export const EDU_SINGLE_DATA = "EDU_SINGLE_DATA"
+export const EDU_EMP_DATA = "EDU_EMP_DATA"
+export const EDU_DATA_END = "EDU_DATA_END"
+
+
+
+
+export const QUA_DATA_START = "QUA_DATA_START"
+export const QUA_SINGLE_DATA = "QUA_SINGLE_DATA"
+export const QUA_MY_DATA = "QUA_MY_DATA"
+export const QUA_SUPER_ADMIN = "QUA_SUPER_ADMIN"
+export const QUA_SINGLE_SUPER_ADMIN = "QUA_SINGLE_SUPER_ADMIN"
+export const QUA_EMP_DATA = "QUA_EMP_DATA"
+export const QUA_DATA_END = "QUA_DATA_END"
+
+
+export const EXPER_DATA_START = "EXPER_DATA_START"
+export const EXPER_SINGLE_DATA = "EXPER_SINGLE_DATA"
+export const EXPER_MY_DATA = "EXPER_MY_DATA"
+export const EXPER_SUPER_ADMIN = "EXPER_SUPER_ADMIN"
+export const EXPER_SINGLE_SUPER_ADMIN = "EXPER_SINGLE_SUPER_ADMIN"
+export const EXPER_EMP_DATA = "EXPER_EMP_DATA"
+export const EXPER_DATA_END = "EXPER_DATA_END"
+
+
+
+
+
+
+

@@ -1,0 +1,67 @@
+.payments_section {
+    margin-bottom: 5rem;
+}
+
+.payments_checkoutArrowBox {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+}
+
+
+.payments_checkoutArrowBox img {
+    margin-right: 0.8rem;
+    height: 28px;
+    margin-top: 5px;
+    position: absolute;
+    left: -2.5rem;
+}
+
+.payments_checkoutArrowBox p {
+    color: #FFFFFF66;
+}
+
+.payments_checkoutArrowBox h5,
+.payments_checkoutRadioBox h5,
+.payments_checkoutInputs h5,
+.payments_summaryCheckoutBox h5 {
+    font-size: 1.5rem;
+}
+
+.payments_checkoutInputs div {
+    display: flex;
+}
+
+/* =============================== */
+.payments_summaryCheckoutBox {
+    background: #171717;
+    box-shadow: -1px 1px 5px 10px #4f4c4c08;
+    border-radius: 20px;
+    padding: 4rem 1.5rem;
+    height: -webkit-fill-available;
+}
+
+.payments_summaryInnerBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #8080806e;
+    padding-bottom: 20px;
+}
+.payments_summaryInnerBox:nth-child(4){
+    border-bottom: 2px solid white !important;
+}
+.payments_summaryInnerBox>div {
+    margin-top: 1rem;
+}
+
+.payments_summaryInnerBox h5 {
+    font-size: 1rem;
+    font-weight: 400;
+    color: white;
+}
+
+.payments_summaryInnerBox span {
+    color: #FFFFFF66;
+    font-size: 0.9rem;
+}

@@ -1,0 +1,88 @@
+.perm_modal_view {}
+
+.perm_modal_box {
+    width: 50% !important;
+}
+
+.perm_modal_header_box h6 {
+    font-size: 20px;
+    border-bottom: 1px solid gray;
+}
+
+.perm_modal_header_box h6 p {
+    font-size: 15px;
+    margin-top: 6px;
+}
+
+.perm_modal_view .ant-menu-root {
+    background: transparent !important;
+    height: 300px;
+    overflow-y: scroll;
+}
+
+.perm_modal_view .ant-menu-root::-webkit-scrollbar-track {
+    background-color: white;
+}
+
+.perm_modal_view .ant-menu-root::-webkit-scrollbar {
+    width: 4px;
+}
+
+.perm_modal_view .ant-menu-root::-webkit-scrollbar-thumb {
+    background-color: #2f2f2f;
+}
+
+
+.perm_modal_view button.ant-switch {
+    margin-left: 24px;
+    margin-right: 10px;
+}
+
+.perm_modal_view svg {
+    font-size: 20px !important;
+}
+
+.perm_modal_view .ant-menu-title-content span {
+    color: white !important;
+}
+
+.perm_modal_footer {
+    display: flex;
+    justify-content: end;
+}
+
+.perm_modal_footer button {
+    width: auto !important;
+    padding: 5px 25px;
+}
+
+.field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.field-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.field-switches {
+  display: flex;
+  gap: 12px;
+}
+
+.field-switch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fields-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #999;
+  padding-left: 8px;
+  cursor: default;
+}

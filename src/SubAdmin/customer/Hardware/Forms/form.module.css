@@ -1,0 +1,52 @@
+
+.form_modalMainBox h5 {
+    font-size: 20px;
+    font-weight: 600;
+}
+.form_inputBox {
+    display: flex;
+}
+
+.form_checkBoxHeading {
+    font-size: 15px !important;
+    font-weight: 600;
+    margin-top: 10px;
+    display: block;
+}
+
+.QR_box{
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.modalHardwareScroll{
+    margin-top: 10px;
+    height: 450px;
+    overflow-y: scroll;
+}
+
+.modalHardwareScroll::-webkit-scrollbar {
+    width: 6px;
+    background: #00000071;
+    border-radius: 10px;
+}
+
+.modalHardwareScroll::-webkit-scrollbar-thumb {
+    background: #00BAFF;
+    border-radius: 10px;
+}
+.hard_modalBtns{
+    display: flex;
+    justify-content: end;
+}
+
+
+.border_bottom{
+    border-bottom: 1px solid white;
+    padding-bottom: 10px;
+}
+
+.basicItems_rightButtonAddNew{
+    position: absolute;
+    right: 20px;
+}

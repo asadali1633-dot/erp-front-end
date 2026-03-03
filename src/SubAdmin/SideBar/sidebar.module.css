@@ -1,0 +1,141 @@
+
+.sidebar_section{
+    position: relative;
+}
+
+.sidebar_mainBox {
+    border: 1px solid #878787;
+    border-radius: 10px;
+    width: 270px;
+    position: fixed;
+    height: 100vh;
+    background: #101010;
+    z-index: 99;
+    left: -100rem;
+    transition: height 0.1s ease;
+}
+.sidebar_iconBox{
+    position: fixed;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    color: white;
+    top: 15px;
+    cursor: pointer;
+}
+.sidebar_iconBox svg{
+    margin-right: 9px;
+    font-size: 27px;
+}
+
+.sideBarActive{
+    left: 0;
+    z-index: 99999;
+}
+
+.sidebar_logoBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 12px;
+    border-bottom: 1px solid #878787;
+}
+
+.sidebar_logoBox .sidebar_logoInnerBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.sidebar_logoBox .sidebar_logoInnerBox span {
+    color: white;
+    font-weight: 600;
+    display: inline-table;
+    word-wrap: break-word;
+    width: 0;
+    margin-left: 10px;
+}
+
+.sidebar_logoBox .sidebar_logoInnerBox img {
+    object-fit: cover;
+    height: 80px;
+    width: 80px;
+    border: 3px solid #00baff;
+    border-radius: 13px;
+    padding: 4px;
+}
+
+
+/* ========================= */
+.sidebar_linkBox ul {
+    list-style: none;
+    line-height: 2.5;
+    padding: 0;
+}
+
+.sidebar_linkBox ul .sidebar_menuBox {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #878787;
+    padding: 5px 20px;
+}
+
+.sidebar_linkBox ul svg {
+    color: #878787;
+    margin-right: 10px;
+    font-size: 25px;
+}
+
+.sidebar_linkBox ul li a {
+    text-decoration: none;
+    color: #878787;
+    font-size: 17px;
+}
+
+.sidebar_powerdbyBox {
+    position: absolute;
+    bottom: 0;
+    list-style-type: none;
+    left: 0;
+    width: 100%;
+    padding-bottom: 20px;
+}
+
+.sidebar_powerdbyBox li {
+    padding-bottom: 10px;
+}
+
+.sidebar_powerdbyBox svg {
+    color: #878787;
+    margin-right: 10px;
+    font-size: 25px;
+    margin-left: 22px;
+}
+
+.sidebar_powerdbyBox a {
+    text-decoration: none;
+    color: #878787;
+    font-size: 17px;
+}
+
+.sidebar_powerdbyBox div {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid #878787;
+    align-items: baseline;
+    padding-left: 21px;
+    padding-top: 4px;
+}
+
+.sidebar_powerdbyBox div span {
+    color: #878787;
+}
+
+.sidebar_powerdbyBox img {
+    height: 25px;
+}
+
+
+

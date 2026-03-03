@@ -1,0 +1,38 @@
+.hardware_tableHeader{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+}
+.hardware_headFlex {
+    display: flex;
+    align-items: baseline;
+}
+.hardware_tableHeaderFlex{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+}
+
+.hardware_editBtn {
+    border: 0;
+    line-height: 0;
+    background: transparent;
+    padding: 6px 7px;
+    color: white;
+    border-radius: 20px;
+    font-size: 22px
+}
+.hardware_editBtn svg {
+    color: green !important;
+    font-size: 25px;
+}
+
+.hardware_deleteBtn {
+    border: 0;
+    line-height: 0;
+    background: transparent;
+    color: red;
+    border-radius: 20px;
+    font-size: 27px;
+}

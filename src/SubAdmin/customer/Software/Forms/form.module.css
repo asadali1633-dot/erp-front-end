@@ -1,0 +1,49 @@
+.form_modalMainBox {}
+
+.form_modalMainBox h5 {
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.form_inputBox {
+    display: flex;
+}
+
+.form_inputBox input {
+    width: 100%;
+}
+
+.form_checkBoxHeading {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 10px;
+    display: block;
+}
+
+.form_checkBox {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.form_checkBox label {
+    font-size: 13px;
+    font-weight: 400;
+    margin-left: 3px;
+    margin-bottom: 0;
+}
+
+.form_LocationcheckBox {
+    display: flex;
+}
+
+.form_LocationcheckBox div {
+    margin-right: 10px;
+}
+
+.form_LocationcheckBox label {
+    font-size: 13px;
+    font-weight: 400;
+    margin-left: 3px;
+    margin-bottom: 0;
+}

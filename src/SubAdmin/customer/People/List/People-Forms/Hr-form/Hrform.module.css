@@ -1,0 +1,18 @@
+.pers_section {
+    padding: 0 10px;
+}
+
+
+.perForm_sectioninputBox{
+    display: flex !important;
+    width: 100%;
+}
+
+:global(.personalFormModal){
+    /* width: 100% !important; */
+    top: 10%;
+}
+
+/* :global(.personalFormModal .ant-modal-content){
+    height: 100vh;
+} */

@@ -1,0 +1,30 @@
+.button {
+    border: none;
+    /* width: 100%; */
+        width: -webkit-fill-available;
+    border-radius: 5px;
+    padding: 12px 10px;
+    background: #00BAFF;
+    color: white;
+    height: fit-content;
+    text-decoration: none;
+}
+.button:hover{
+    color: white !important;
+}
+
+.OutLineButton {
+    outline: none;
+    background: transparent;
+    border: 1px solid #6060604f;
+    border-radius: 7px;
+    padding: 9px 6px;
+    margin: 0;
+    height: fit-content;
+    text-decoration: none;
+    font-size: 11px;
+}
+
+.OutLineButton:hover{
+    color: white !important;
+}

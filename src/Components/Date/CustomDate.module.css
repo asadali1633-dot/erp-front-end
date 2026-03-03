@@ -1,0 +1,14 @@
+
+
+.CustomDate{
+    width: 100%;
+}
+:global(.CustomDate .ant-picker){
+    width: 100%;
+    border-radius: 0;
+    border:0;
+}
+
+:global(.CustomDate .ant-picker input){
+    background: transparent !important;
+}

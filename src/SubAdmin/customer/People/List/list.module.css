@@ -1,0 +1,64 @@
+.pers_tableHeader {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.pers_headFlex {
+    display: flex;
+    align-items: baseline;
+}
+
+.pers_tableHeaderFlex {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+}
+
+.pers_tableHeader h5 {
+    font-size: 1.5rem;
+}
+
+
+.pers_editBtn {
+    border: 0;
+    line-height: 0;
+    background: transparent;
+    padding: 6px 7px;
+    border-radius: 20px;
+    font-size: 22px;
+}
+
+.pers_editBtn svg {
+    color: green !important;
+    font-size: 25px;
+}
+
+.pers_deleteBtn {
+    border: 0;
+    line-height: 0;
+    background: transparent;
+    border-radius: 20px;
+    font-size: 27px;
+}
+
+.pers_deleteBtn svg {
+    color: red !important;
+    font-size: 20px;
+}
+
+.pers_flexOfEmp{
+    display: flex;
+}
+.pers_EmpProfile{
+    width: 15%;
+}
+
+/* .pers_EmpForm{
+    width: 80%;
+} */
+ 
+.personalTabs{
+    margin-left: 10px;
+}

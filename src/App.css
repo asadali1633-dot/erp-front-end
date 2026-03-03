@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap'); */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a,
+div,
+select,
+button,
+section,
+header,
+footer {
+    font-family: 'Poppins', sans-serif;
+    /* font-family: 'Red Hat Display', sans-serif; */
+}
+.m-right{
+    margin: 0 0 0 auto;
+}
+section{
+    overflow-x: clip;
+}
+
+/* ANTD TABLE CSS FOR GLOBAL STYLE =========================*/
+.antdCustomeTable .ant-table-thead tr th::before {
+    background: #6060604f !important;
+}
+.antdCustomeTable .ant-table-thead tr th {
+    border-bottom: 1px solid #87878745 !important;
+    padding: 10px 5px;
+    font-size: 12px;
+}
+
+.antdCustomeTable .ant-table-tbody .ant-table-row td {
+    border-bottom: 1px solid #87878745 !important;
+    padding: 0px 5px;
+    font-size: 11px;
+}
+
+.antdCustomeTable .ant-table-row>.ant-table-cell-row-hover {
+    background: #87878752 !important;
+}
+
+.antdCustomeTable .ant-table-row.ant-table-row-selected>.ant-table-cell {
+    background: #87878752 !important;
+}
+.antdCustomeTable .ant-pagination{
+  background: transparent !important;
+}
+.antdCustomeTable .ant-select-selector .ant-select-selection-search-input{
+  background: transparent !important;
+}
+
+.antdCustomeTable .ant-checkbox .ant-checkbox-inner{
+    width: 14px;
+    height: 14px;
+    border: 1px solid #2e2e2e;
+    background: transparent;
+}
+
+
+/* ANTD MODAL CSS FOR GLOBAL ========================================= */
+.modalBgColor .ant-modal-close-x{
+    color: white;
+}
+/* .ant-modal-root .ant-modal-wrap{
+    z-index: 99999;
+} */
+
+/* ANTD PAGINATION CSS =============================================== */
+.ant-pagination .ant-pagination-item {
+    padding: 0 !important;
+}
+
+.ant-pagination-item-link {
+    display: flex !important;
+    align-items: center;
+}
+
+.ant-pagination-item-link .anticon svg {
+    color: white;
+}
+
+.ant-form-item{
+    margin-bottom: 0px !important;
+}
+
+.simpleButtonAction{
+    border: none;
+    background-color: #00BAFF;
+    color: white;
+    padding: 5px 20px;
+    border-radius: 20px;
+    margin-left: 10px;
+    margin: 5px 0;
+}
+
+
+
+/* ANTD SETTING BAR CSS ============================ */
+.settingBar .ant-menu{
+    background: #171717 !important;
+}
+.settingBar .ant-menu-submenu-title{
+    padding-left: 10px !important;
+}
+.settingBar .ant-menu-submenu-title svg{
+    font-size: 20px !important;
+    color: white !important;
+
+}
+.settingBar .ant-menu-submenu-title span{
+    color: white;
+}
+.settingBar .ant-menu-sub li{
+     padding-left: 10px !important;
+}
+.settingBar .ant-menu-sub li span{
+    color: white;
+}
+.settingBar .ant-menu-sub li svg{
+    font-size: 20px !important;
+    color: white !important;
+}
+.settingBar .ant-menu-sub li.ant-menu-item-selected{
+    background: #2f2f2f !important;
+}
+.settingBar .ant-menu-item{
+     padding-left: 10px !important;
+}
+.settingBar .ant-menu-item svg{
+    font-size: 20px !important;
+    color: white !important;
+}
+.settingBar .ant-menu-item span{
+    color: white !important;
+}
+/* ANTD SPIN LOADER ================= */
+.ant-spin-lg .ant-spin-dot{
+    font-size: 17px !important;
+    color: #00BAFF !important;
+}
+.ant-spin-lg .ant-spin-dot-holder i {
+    width: 35px !important;
+    height: 35px !important;
+}
+
+/* INPU ANTD CSS ======================== */
+.inputFlexBox .ant-row{
+    display: flex;
+    flex-direction: column;
+}
+
+.inputFlexBox .ant-form-item-label label{
+    display: flex;
+}
+/* .inputFlexBox input{
+    height: 30px !important;
+    font-size: 12px !important;
+}
+.inputFlexBox .ant-picker{
+    height: 30px;
+} */
+
+/* ANDT LABELS CSS ========================== */
+.ant-form-item .ant-form-item-label >label{
+    font-size: 12px;
+}
+.ant-form-item-vertical .ant-form-item-label{
+    padding: 0;
+}
+.bg{
+    background: transparent;
+}

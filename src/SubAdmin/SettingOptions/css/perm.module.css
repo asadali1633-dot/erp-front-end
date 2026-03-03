@@ -1,0 +1,68 @@
+.perm_PermissionModal {
+    width: 100% !important;
+    background-color: #171717;
+    z-index: 99999;
+    padding: 10px 0px;
+    margin: 0;
+    position: relative;
+}
+
+.perm_searchPanel {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 1px solid gray;
+}
+
+.perm_cencelBtn {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.perm_cencelBtn button {
+    border: none;
+    margin: 4px 9px;
+    border-radius: 7px;
+}
+.perm_cencelBtn svg{
+    font-size: 27px;
+}
+
+.perm_searchPanel h5 {
+    padding-left: 20px;
+}
+
+.perm_searchPanel .perm_searchPanelInput {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 20px;
+}
+
+.perm_searchPanel .perm_searchPanelInput>div {
+    width: inherit;
+}
+
+.perm_tableBox {
+    margin: 20px 20px;
+}
+
+.perm_image {
+    height: 25px;
+    object-fit: cover;
+    border-radius: 25px;
+    margin: 3px 0;
+}
+
+.perm_action_view {
+    border: none;
+    background: transparent;
+}
+
+.perm_action_view svg {
+    font-size: 25px;
+}

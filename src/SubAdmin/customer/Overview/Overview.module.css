@@ -1,0 +1,20 @@
+.overview_TabPanelBox {
+    display: flex;
+    transition: 0.1s ease;
+}
+
+.overview_body {
+    width: 50%;
+}
+
+.overview_inputBox {
+    display: flex;
+}
+
+.overview_textBox {
+    /* height: -webkit-fill-available; */
+}
+
+.overview_textBox input {
+    /* height: inherit; */
+}

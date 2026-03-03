@@ -1,0 +1,58 @@
+.customerinfo_mainSection {
+    position: relative;
+    display: flex;
+    padding: 5px 5px;
+}
+
+.customerinfo_innerBox {
+    position: relative;
+    width: 100%;
+}
+
+
+.customerinfo_tableBox {
+    margin-left: 10px;
+    margin-top: 5rem !important;
+}
+.customerinfo_tabsBox {
+    position: relative;
+}
+.customerinfo_tabsBox .customerinfo_settingIconBox{
+    position: absolute;
+    right: 28px;
+    z-index: 999;
+    cursor: pointer;
+}
+.customerinfo_settingIconBox svg{
+    color: white;
+    font-size: 30px;
+}
+
+/* .customerinfo_tabsBox ul {
+    border-bottom: unset !important;
+}
+
+.customerinfo_tabsBox ul li {
+    font-weight: 500;
+    padding: 6px 20px !important;
+    position: relative;
+} */
+
+
+
+
+.customerinfo_boderBottom {
+    border-bottom: 2px solid #2e2e2e;
+    display: block;
+}
+
+/*  ACTIVE CLASSES =========================*/
+.customerinfo_flex_direction_column {
+    flex-direction: column;
+}
+:global(.ant-tabs .ant-tabs-ink-bar){
+    background: #00baff !important;
+}
+:global(.ant-tabs-top .ant-tabs-nav)::before{
+    border-bottom: 2px solid #6060604f !important;
+}

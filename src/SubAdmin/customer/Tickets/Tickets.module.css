@@ -1,0 +1,58 @@
+.tickets_TabTableBox {}
+
+.tickets_tableHeader {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.tickets_tableHeaderFlex {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+}
+.tickets_tableHeader h5{
+    font-size: 1.5rem;
+}
+.tickets_Device_statusOn {
+    position: relative;
+    background: #163e27;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.tickets_Device_statusOn::after {
+    position: absolute;
+    content: "";
+    top: 9px;
+    left: 6px;
+    height: 5px;
+    width: 5px;
+    background: #12da65;
+    border-radius: 20px;
+}
+
+.tickets_Device_statusOf {
+    position: relative;
+    background: #451213;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.tickets_Device_statusOf::after {
+    position: absolute;
+    content: "";
+    top: 9px;
+    left: 6px;
+    height: 5px;
+    width: 5px;
+    background: #ff0004;
+    border-radius: 20px;
+}

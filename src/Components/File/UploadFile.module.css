@@ -1,0 +1,25 @@
+.mainBox{
+    width: 100%;
+}
+
+.button{
+    display: block;
+    width: 100%;
+}
+
+.button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.button span{
+  color: gray !important;
+}
+.button svg{
+  font-size: 15px !important;
+  color: #00baff !important;
+}
+
+.button:hover{
+  border-color: #2f2f2f !important;
+}

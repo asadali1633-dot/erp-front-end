@@ -1,0 +1,30 @@
+.SearchBarBox {
+    position: relative;
+    width: 20%;
+    display: flex;
+    align-items: center;
+}
+
+.SearchBarBox svg {
+    position: absolute;
+    right: 10px;
+    font-size: 17px;
+}
+
+.SearchBarBox input {
+    height: 37px;
+    width: 100%;
+    background: transparent;
+    border: 1px solid #6060604f;
+    padding: 0 15px;
+    border-radius: 10px;
+    font-weight: 300;
+}
+
+.SearchBarBox input:focus {
+    outline: none;
+}
+
+.SearchBarBox input::placeholder {
+    font-size: 15px;
+}
