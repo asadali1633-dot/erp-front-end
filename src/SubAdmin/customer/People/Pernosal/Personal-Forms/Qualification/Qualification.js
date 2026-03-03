@@ -66,10 +66,11 @@ function Qualification({
 
     const columns = [
         {
-            title: "ID",
-            dataIndex: "id",
-            render: (data) =>
-                data ? <span>{data}</span> : <span>-</span>
+            title: "SN",
+            key: "SN",
+            render: (_, __, index) => (  
+                <span>{index + 1}</span>
+            )
         },
         {
             title: "Institute Name",

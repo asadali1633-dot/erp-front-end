@@ -62,10 +62,11 @@ function Hardware({
 
     const columns = [
         {
-            title: "id",
-            dataIndex: "id",
-             render: (data) =>
-                data ? <span>{data+1}</span>:<span>-</span>
+            title: "SN",
+            key: "SN",
+            render: (_, __, index) => (  
+                <span>{index + 1}</span>
+            )
         },
         {
             title: "Name",
@@ -132,6 +133,7 @@ function Hardware({
         setLoading(true);
         HardwareGetByid(id, accessToken);
     };
+    console.log("Red_Assets?.hardwareData",Red_Assets?.hardwareData)
 
 
 

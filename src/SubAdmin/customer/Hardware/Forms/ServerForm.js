@@ -22,7 +22,10 @@ function ServerForm({
     getBarCode,
     CreateAssetsFun,
     GetAllBrandsManufacturer,
-    GetAllEmpList
+    GetAllEmpList,
+    EditAssetsData,
+    UpdateAssets,
+    GetAllHardware
 }) {
     const [form] = Form.useForm();
     const users = Red_Assets?.Users?.[0]?.data
@@ -60,7 +63,6 @@ function ServerForm({
     const handleForm = async (values) => {
         setloading(true);
         const field_values = {
-            // Core Identification & Registration
             asset_tag: values?.asset_tag,
             server_hostname: values?.server_hostname,
             server_role: values?.server_role,
@@ -68,8 +70,6 @@ function ServerForm({
             criticality_level: values?.criticality_level,
             date_commissioned: values?.date_commissioned,
             project_reference: values?.project_reference,
-
-            // Physical Hardware Specifications
             brand_manufacturer: values?.brand_manufacturer,
             model_chassis: values?.model_chassis,
             serial_number: values?.serial_number,
@@ -84,8 +84,6 @@ function ServerForm({
             graphics_card: values?.graphics_card,
             screen_size: values?.screen_size,
             peripherals_included: values?.peripherals_included,
-
-            // Compute Resources
             cpu_type_model: values?.cpu_type_model,
             cpu_sockets: values?.cpu_sockets,
             total_cores: values?.total_cores,
@@ -93,16 +91,12 @@ function ServerForm({
             ram_total: values?.ram_total,
             ram_configuration: values?.ram_configuration,
             gpu_cards: values?.gpu_cards,
-
-            // Storage Configuration
             storage_controller: values?.storage_controller,
             raid_level: values?.raid_level,
             raw_storage_capacity: values?.raw_storage_capacity,
             usable_storage_capacity: values?.usable_storage_capacity,
             drive_bays: values?.drive_bays,
             external_storage: values?.external_storage,
-
-            // Network Configuration
             management_ip: values?.management_ip,
             primary_ip: values?.primary_ip,
             secondary_ip: values?.secondary_ip,
@@ -110,8 +104,6 @@ function ServerForm({
             network_interfaces: values?.network_interfaces,
             switch_port_connections: values?.switch_port_connections,
             vlan_assignments: values?.vlan_assignments,
-
-            // Virtualization & Software Stack
             hypervisor: values?.hypervisor,
             hypervisor_version: values?.hypervisor_version,
             vm_name: values?.vm_name,
@@ -122,8 +114,6 @@ function ServerForm({
             assigned_vcpu: values?.assigned_vcpu,
             assigned_memory: values?.assigned_memory,
             assigned_virtual_disks: values?.assigned_virtual_disks,
-
-            // Application & Service Dependencies
             primary_application: values?.primary_application,
             application_owner: values?.application_owner,
             dependent_services: values?.dependent_services,
@@ -131,8 +121,6 @@ function ServerForm({
             backup_configuration: values?.backup_configuration,
             monitoring_system: values?.monitoring_system,
             monitoring_contact: values?.monitoring_contact,
-
-            // Financial & Procurement
             cost_center: values?.cost_center,
             business_justification: values?.business_justification,
             vendor_name: values?.vendor_name,
@@ -140,16 +128,12 @@ function ServerForm({
             warranty_start: values?.warranty_start,
             warranty_end: values?.warranty_end,
             expected_lifespan: values?.expected_lifespan,
-
-            // Assignment Status
             assigned_to: values?.assigned_to,
             managed_by: values?.managed_by,
             assigned_date: values?.assigned_date,
             server_mode_status: values?.server_mode_status,
             physical_location: values?.physical_location,
             status: values?.status,
-
-            // Software & Compliance
             operating_system_compliance: values?.operating_system_compliance,
             os_license_key_compliance: values?.os_license_key_compliance,
             virtualization_platform: values?.virtualization_platform,
@@ -158,8 +142,6 @@ function ServerForm({
             ip_addresses_compliance: values?.ip_addresses_compliance,
             subnet_vlan: values?.subnet_vlan,
             backup_schedule: values?.backup_schedule,
-
-            // Lifecycle & Management
             ownership_type: values?.ownership_type,
             lease_expiry: values?.lease_expiry,
             next_maintenance: values?.next_maintenance,
@@ -167,8 +149,6 @@ function ServerForm({
             disposal_method: values?.disposal_method,
             depreciation_value: values?.depreciation_value,
             parent_asset: values?.parent_asset,
-
-            // Cloud/Virtual Specific
             cloud_provider: values?.cloud_provider,
             region_zone: values?.region_zone,
             instance_type: values?.instance_type,
@@ -203,30 +183,154 @@ function ServerForm({
                 if (accessToken) {
                     getBarCode(accessToken);
                 }
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
+                    setloading(false);
             }
         } else {
-            messageApi.error({
-                type: 'error',
-                content: isCheck?.message,
-            });
-             setloading(false);
+            const isCheck = await UpdateAssets(payload, accessToken, code?.code)
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                GetAllHardware(pagBody, accessToken);
+                setloading(false);
+                setTimeout(() => {
+                    setAssetsType(false);
+                }, 1500);
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
+                setloading(false);
+            }
         }
 
     };
 
-    useEffect(() => {
-        if (accessToken) {
-            getBarCode(accessToken)
-        }
-    }, [accessToken]);
+        useEffect(() => {
+            if (EditAssetsData && code?.mode === "Edit") {
+                const Data = EditAssetsData;
+                const values = EditAssetsData?.field_values;
+                form.setFieldsValue({
+                    asset_tag: Data?.asset_tag,
+                    server_hostname: values?.server_hostname,
+                    server_role: values?.server_role,
+                    server_type: values?.server_type,
+                    criticality_level: values?.criticality_level,
+                    date_commissioned: values?.date_commissioned,
+                    project_reference: values?.project_reference,
+                    brand_manufacturer: values?.brand_manufacturer,
+                    model_chassis: values?.model_chassis,
+                    serial_number: values?.serial_number,
+                    rack_location: values?.rack_location,
+                    form_factor: values?.form_factor,
+                    chassis_slot: values?.chassis_slot,
+                    primary_power_supply: values?.primary_power_supply,
+                    secondary_power_supply: values?.secondary_power_supply,
+                    nic_ports: values?.nic_ports,
+                    ip_addresses_hardware: values?.ip_addresses_hardware,
+                    operating_system_hardware: values?.operating_system_hardware,
+                    graphics_card: values?.graphics_card,
+                    screen_size: values?.screen_size,
+                    peripherals_included: values?.peripherals_included,
+                    cpu_type_model: values?.cpu_type_model,
+                    cpu_sockets: values?.cpu_sockets,
+                    total_cores: values?.total_cores,
+                    total_threads: values?.total_threads,
+                    ram_total: values?.ram_total,
+                    ram_configuration: values?.ram_configuration,
+                    gpu_cards: values?.gpu_cards,
+                    storage_controller: values?.storage_controller,
+                    raid_level: values?.raid_level,
+                    raw_storage_capacity: values?.raw_storage_capacity,
+                    usable_storage_capacity: values?.usable_storage_capacity,
+                    drive_bays: values?.drive_bays,
+                    external_storage: values?.external_storage,
+                    management_ip: values?.management_ip,
+                    primary_ip: values?.primary_ip,
+                    secondary_ip: values?.secondary_ip,
+                    mac_addresses: values?.mac_addresses,
+                    network_interfaces: values?.network_interfaces,
+                    switch_port_connections: values?.switch_port_connections,
+                    vlan_assignments: values?.vlan_assignments,
+                    hypervisor: values?.hypervisor,
+                    hypervisor_version: values?.hypervisor_version,
+                    vm_name: values?.vm_name,
+                    virtual_host_cluster: values?.virtual_host_cluster,
+                    guest_os: values?.guest_os,
+                    os_version: values?.os_version,
+                    os_license_key_vm: values?.os_license_key_vm,
+                    assigned_vcpu: values?.assigned_vcpu,
+                    assigned_memory: values?.assigned_memory,
+                    assigned_virtual_disks: values?.assigned_virtual_disks,
+                    primary_application: values?.primary_application,
+                    application_owner: values?.application_owner,
+                    dependent_services: values?.dependent_services,
+                    dependencies: values?.dependencies,
+                    backup_configuration: values?.backup_configuration,
+                    monitoring_system: values?.monitoring_system,
+                    monitoring_contact: values?.monitoring_contact,
+                    cost_center: values?.cost_center,
+                    business_justification: values?.business_justification,
+                    vendor_name: values?.vendor_name,
+                    purchase_cost: values?.purchase_cost,
+                    warranty_start: values?.warranty_start,
+                    warranty_end: values?.warranty_end,
+                    expected_lifespan: values?.expected_lifespan,
+                    assigned_to: values?.assigned_to,
+                    managed_by: values?.managed_by,
+                    assigned_date: values?.assigned_date,
+                    server_mode_status: values?.server_mode_status,
+                    physical_location: values?.physical_location,
+                    status: values?.status,
+                    operating_system_compliance: values?.operating_system_compliance,
+                    os_license_key_compliance: values?.os_license_key_compliance,
+                    virtualization_platform: values?.virtualization_platform,
+                    hypervisor_details: values?.hypervisor_details,
+                    server_role_compliance: values?.server_role_compliance,
+                    ip_addresses_compliance: values?.ip_addresses_compliance,
+                    subnet_vlan: values?.subnet_vlan,
+                    backup_schedule: values?.backup_schedule,
+                    ownership_type: values?.ownership_type,
+                    lease_expiry: values?.lease_expiry,
+                    next_maintenance: values?.next_maintenance,
+                    disposal_date: values?.disposal_date,
+                    disposal_method: values?.disposal_method,
+                    depreciation_value: values?.depreciation_value,
+                    parent_asset: values?.parent_asset,
+                    cloud_provider: values?.cloud_provider,
+                    region_zone: values?.region_zone,
+                    instance_type: values?.instance_type,
+                    instance_id: values?.instance_id,
+                    resource_group: values?.resource_group,
+                    cloud_account: values?.cloud_account,
+                    monthly_cost: values?.monthly_cost,
+                    auto_scaling_group: values?.auto_scaling_group,
+                    snapshot_policy: values?.snapshot_policy
+                });
+            }
+        }, [EditAssetsData, code, form]);
+
 
     useEffect(() => {
-        if (barcode) {
+        if (code?.mode !== "Edit" && accessToken && !barcode) {
+            getBarCode(accessToken);
+        }
+    }, [code?.mode, accessToken, getBarCode]);
+
+    useEffect(() => {
+        if (code?.mode !== "Edit" && barcode) {
             form.setFieldsValue({
                 asset_tag: barcode
             });
         }
-    }, [barcode, form]);
+    }, [barcode, code?.mode, form]);
 
     useEffect(() => {
         if (assetsType) {
