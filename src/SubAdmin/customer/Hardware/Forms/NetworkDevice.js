@@ -23,7 +23,10 @@ function NetworkDevice({
     getBarCode,
     CreateAssetsFun,
     GetAllBrandsManufacturer,
-    GetAllEmpList
+    GetAllEmpList,
+    EditAssetsData,
+    UpdateAssets,
+    GetAllHardware
 }) {
     const [form] = Form.useForm();
     const users = Red_Assets?.Users?.[0]?.data
@@ -62,7 +65,6 @@ function NetworkDevice({
     const handleForm = async (values) => {
         setloading(true);
         const field_values = {
-            // Core Identification & Classification
             asset_tag: values?.asset_tag,
             device_hostname: values?.device_hostname,
             device_type: values?.device_type,
@@ -73,9 +75,6 @@ function NetworkDevice({
             date_deployed: values?.date_deployed,
             request_ticket: values?.request_ticket,
             assigned_to: values?.assigned_to,
-
-
-            // Physical Hardware Details
             form_factor: values?.form_factor,
             chassis_model: values?.chassis_model,
             slot_module_config: values?.slot_module_config,
@@ -85,8 +84,6 @@ function NetworkDevice({
             rack_position: values?.rack_position,
             physical_port_count: values?.physical_port_count,
             port_types: values?.port_types,
-
-            // Network Configuration & Addressing
             management_ip_primary: values?.management_ip_primary,
             oob_management_ip: values?.oob_management_ip,
             management_interface: values?.management_interface,
@@ -97,8 +94,6 @@ function NetworkDevice({
             domain_name: values?.domain_name,
             configured_hostname: values?.configured_hostname,
             network_role: values?.network_role,
-
-            // Software & Operating System
             network_os: values?.network_os,
             os_version: values?.os_version,
             config_register: values?.config_register,
@@ -108,8 +103,6 @@ function NetworkDevice({
             last_firmware_update: values?.last_firmware_update,
             next_scheduled_update: values?.next_scheduled_update,
             config_backup_location: values?.config_backup_location,
-
-            // Connectivity & Topology
             uplink_device: values?.uplink_device,
             uplink_port_remote: values?.uplink_port_remote,
             local_uplink_port: values?.local_uplink_port,
@@ -118,8 +111,6 @@ function NetworkDevice({
             vlan_config: values?.vlan_config,
             stp_role: values?.stp_role,
             routing_protocols: values?.routing_protocols,
-
-            // Security Configuration
             management_access_methods: values?.management_access_methods,
             tacacs_radius_server: values?.tacacs_radius_server,
             snmp_community_strings: values?.snmp_community_strings,
@@ -128,8 +119,6 @@ function NetworkDevice({
             access_lists: values?.access_lists,
             security_zone: values?.security_zone,
             compliance_standards: values?.compliance_standards,
-
-            // Financial & Procurement
             po_number: values?.po_number,
             vendor_reseller: values?.vendor_reseller,
             purchase_date: values?.purchase_date,
@@ -140,8 +129,6 @@ function NetworkDevice({
             support_level: values?.support_level,
             support_expiry: values?.support_expiry,
             lease_terms: values?.lease_terms,
-
-            // Monitoring & Management (Wireless)
             ap_name_ssid: values?.ap_name_ssid,
             radio_types: values?.radio_types,
             radio_channels: values?.radio_channels,
@@ -150,8 +137,6 @@ function NetworkDevice({
             wireless_controller: values?.wireless_controller,
             connected_clients: values?.connected_clients,
             ssids_supported: values?.ssids_supported,
-
-            // Firewall/Security Appliance Specific
             security_policy_count: values?.security_policy_count,
             vpn_tunnel_capacity: values?.vpn_tunnel_capacity,
             concurrent_sessions: values?.concurrent_sessions,
@@ -160,8 +145,6 @@ function NetworkDevice({
             ips_signature_version: values?.ips_signature_version,
             security_zone_config: values?.security_zone_config,
             ha_role: values?.ha_role,
-
-            // Lifecycle & Status
             device_status: values?.device_status,
             criticality_level: values?.criticality_level,
             planned_replacement_date: values?.planned_replacement_date,
@@ -170,8 +153,6 @@ function NetworkDevice({
             decommission_date: values?.decommission_date,
             replacement_asset_tag: values?.replacement_asset_tag,
             disposal_method: values?.disposal_method,
-
-            // Administrative
             primary_admin_team: values?.primary_admin_team,
             oncall_contact: values?.oncall_contact,
             vendor_support_contact: values?.vendor_support_contact,
@@ -185,57 +166,81 @@ function NetworkDevice({
         const payload = {
             asset_tag: values?.asset_tag,
             asset_type: assetsType,
+            assign_to: values?.assigned_to,
             field_values: field_values
         };
-        const isCheck = await CreateAssetsFun(payload, accessToken);
-        if (isCheck?.success) {
-            messageApi.success({
-                type: 'success',
-                content: isCheck?.message,
-            });
-            if (actionType === 'save') {
-                form.resetFields();
+        if(code?.mode !== "Edit"){
+            const isCheck = await CreateAssetsFun(payload, accessToken);
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                if (actionType === 'save') {
+                    form.resetFields();
+                    setTimeout(() => {
+                        setAssetsType(false);
+                        setloading(false);
+                        setActionType('');
+                    }, 1000);
+                } else if (actionType === 'createNew') {
+                    setloading(false);
+                    form.resetFields();
+                    if (accessToken) {
+                        getBarCode(accessToken);
+                    }
+                }
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
+                setloading(false);
+            }
+        }else {
+            const isCheck = await UpdateAssets(payload, accessToken, code?.code)
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                GetAllHardware(pagBody, accessToken);
+                setloading(false);
                 setTimeout(() => {
                     setAssetsType(false);
-                    setloading(false);
-                    setActionType('');
-                }, 1000);
-            } else if (actionType === 'createNew') {
+                }, 1500);
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
                 setloading(false);
-                form.resetFields();
-                if (accessToken) {
-                    getBarCode(accessToken);
-                }
             }
-        } else {
-            messageApi.error({
-                type: 'error',
-                content: isCheck?.message,
-            });
-            setloading(false);
         }
 
     };
 
     useEffect(() => {
-        if (accessToken) {
-            getBarCode(accessToken)
+        if (code?.mode !== "Edit" && accessToken && !barcode) {
+            getBarCode(accessToken);
         }
-    }, [accessToken]);
+    }, [code?.mode, accessToken, getBarCode]);
 
     useEffect(() => {
-        if (barcode) {
+        if (code?.mode !== "Edit" && barcode) {
             form.setFieldsValue({
                 asset_tag: barcode
             });
         }
-    }, [barcode, form]);
+    }, [barcode, code?.mode, form]);
 
     useEffect(() => {
         if (assetsType) {
             GetAllBrandsManufacturer(accessToken)
         }
     }, [accessToken])
+
+
 
     useEffect(() => {
         GetAllEmpList(accessToken)
@@ -262,7 +267,11 @@ function NetworkDevice({
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
                             <h5 className="mx-1">New Asset Form Networking Equipment</h5>
-                            <QRCODE value={barcode} />
+                            <QRCODE
+                                value={
+                                    code?.mode === "Edit" ? EditAssetsData?.asset_tag : barcode
+                                }
+                            />
                         </div>
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Core Identification & Classification</h5>
@@ -274,6 +283,7 @@ function NetworkDevice({
                                 type={"text"}
                                 placeholder="Assets Tag/ID Number"
                                 required={true}
+                                readOnly={true}
                                 message={"Please Enter a ID Number"}
                             />
 
