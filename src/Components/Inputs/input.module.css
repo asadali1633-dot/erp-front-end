@@ -56,10 +56,10 @@
     cursor: pointer;
     display: block;
 }
-
+/* 
 .passwordInput span:hover{
   border-color: #2f2f2f !important;
-}
+} */
 
 .bgEmailSuffixColor input:hover{
     border-color: #2f2f2f !important;

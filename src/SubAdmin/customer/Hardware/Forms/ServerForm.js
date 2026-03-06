@@ -45,9 +45,17 @@ function ServerForm({
 
     const handleOk = () => {
         setAssetsType(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
     const handleCancel = () => {
         setAssetsType(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
 
     const handleSaveClick = () => {
@@ -172,6 +180,7 @@ function ServerForm({
                     type: 'success',
                     content: isCheck?.message,
                 });
+                GetAllHardware(pagBody, accessToken);
                 if (actionType === 'save') {
                     form.resetFields();
                     setTimeout(() => {

@@ -510,7 +510,7 @@ function EmpPersonalFrom({
                                 className={"mx-1 inputFlexBox"}
                                 name="facebook_link"
                                 placeholder="Facebook Link"
-                                required={isRequiredField("facebook_link")}
+                                required={false}
                                 disabled={!canEditField("facebook_link")}
                                 readOnly={!canEditField("facebook_link")}
 
@@ -520,7 +520,7 @@ function EmpPersonalFrom({
                                 className={"mx-1 inputFlexBox"}
                                 name="x_link"
                                 placeholder="X LInk"
-                                required={isRequiredField("x_link")}
+                                required={false}
                                 disabled={!canEditField("x_link")}
                                 readOnly={!canEditField("x_link")}
                             />
@@ -529,7 +529,7 @@ function EmpPersonalFrom({
                                 className={"mx-1 inputFlexBox"}
                                 name="linkedin_link"
                                 placeholder="linkedin link"
-                                required={isRequiredField("linkedin_link")}
+                                required={false}
                                 disabled={!canEditField("linkedin_link")}
                                 readOnly={!canEditField("linkedin_link")}
                             />

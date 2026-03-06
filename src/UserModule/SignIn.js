@@ -120,27 +120,21 @@ function SignIn({ SignIn, setModule }) {
                   />
 
                   <span className={style.AccountLink}>
-                    Don't have an account?
-                    <Link
-                      to={""}
-                      className="mx-2"
-                      onClick={() => {
-                        setModule("Sign_up");
-                      }}
-                    >
-                      Sign up
-                    </Link>
+                    For Demo Please contact asad@itracks.co
+                    {/* <Link></Link> */}
                   </span>
                 </Form>
 
                 <div className={style.userSqureBoxImg}>
                   <img src={squreBox} alt="" className="img-fluid" />
                   <div className={style.userIconBox}>
-                    <AiOutlineYoutube />
-                    <FaFacebookF />
-                    <FaLinkedinIn />
-                    <FaInstagram />
-                    <FaXTwitter />
+                    {/* <AiOutlineYoutube /> */}
+                    <Link to="https://www.facebook.com/itRacksofficial" target="_blank">
+                      <FaFacebookF />
+                    </Link>
+                    <Link to="https://www.linkedin.com/company/i.t-racks/" target="_blank">
+                      <FaLinkedinIn />
+                    </Link>
                   </div>
                 </div>
               </div>

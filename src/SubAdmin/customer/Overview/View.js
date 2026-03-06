@@ -96,7 +96,7 @@ const toggleEdit = (field) => {
               type="text"
               name="phone"
               placeholder="Enter Your Phone Number"
-              required
+              required={false}
               message={"Phone Number is required"}
               readOnly={edit?.Phone}
               showEdit={true}

@@ -42,16 +42,21 @@ function Laptop_desktop({
         const cities = City.getCitiesOfCountry(code);
         selectedCities = [...selectedCities, ...cities];
     });
+    console.log("users",users)
 
     const handleOk = () => {
         setAssetsType(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
     const handleCancel = () => {
         setAssetsType(false);
         setCode({
             mode: null,
             code: null
-        });
+        })
     };
 
     const handleSaveClick = () => {
@@ -373,7 +378,7 @@ function Laptop_desktop({
                                 label={"CPU | Processor"}
                                 placeholder="CPU | Processor"
                                 name="cpu"
-                                required={true}
+                                required={false}
                                 message={"Please Select a CPU | Processor"}
                                 options={[
                                     // Intel Core Series
@@ -463,7 +468,7 @@ function Laptop_desktop({
                                 label={"Generation"}
                                 placeholder="Generation"
                                 name="generation"
-                                required={true}
+                                required={false}
                                 message={"Please Select a Generation"}
                                 options={[
                                     // Intel Core Series - Laptop Generations
@@ -612,7 +617,7 @@ function Laptop_desktop({
                                 label={"RAM | Memory"}
                                 placeholder="RAM | Memory"
                                 name="ram"
-                                required={true}
+                                required={false}
                                 message={"Please Select a RAM | Memory"}
                                 options={[
                                     // RAM Size
@@ -688,7 +693,7 @@ function Laptop_desktop({
                                 label={"Primary Storage (HDD | SSD)"}
                                 placeholder="Primary Storage (HDD | SSD)"
                                 name="primary_storage"
-                                required={true}
+                                required={false}
                                 message={"Primary Storage (HDD | SSD)"}
                                 options={[
                                     // HDD Sizes
@@ -856,7 +861,7 @@ function Laptop_desktop({
                                 label={"Operating System"}
                                 placeholder="Operating System"
                                 name="os"
-                                required={true}
+                                required={false}
                                 message={"Please Select a Operating System"}
                                 options={[
                                     // Windows
@@ -974,7 +979,7 @@ function Laptop_desktop({
                                 className="mx-1"
                                 name="os_license_key"
                                 placeholder="OS License Key (if stored)"
-                                required={true}
+                                required={false}
                                 message={"Please Enter a OS License Key"}
                             />
                              <FormInput
@@ -982,7 +987,7 @@ function Laptop_desktop({
                                 className="mx-1"
                                 name="mac_address"
                                 placeholder="Network (MAC Address(es)"
-                                required={true}
+                                required={false}
                                 message={"Network (MAC Address(es)"}
                             />
                             
@@ -1002,7 +1007,7 @@ function Laptop_desktop({
                                 label={"Screen Size"}
                                 placeholder="Screen Size"
                                 name="screen_size"
-                                required={true}
+                                required={false}
                                 message={"Please Select a Screen Size"}
                                 options={[
                                     // Laptop Screens
@@ -1098,7 +1103,7 @@ function Laptop_desktop({
                                 label={"Peripherals Included"}
                                 placeholder="Peripherals Included"
                                 name="peripherals"
-                                required={true}
+                                required={false}
                                 message={"Please Select a Peripherals Included"}
                                 options={[
                                     // Basic Configurations
@@ -1203,7 +1208,7 @@ function Laptop_desktop({
                                 className="mx-1"
                                 name="cost_center"
                                 placeholder="Cost Center/Department"
-                                required={true}
+                                required={false}
                                 message={"Cost Center/Department"}
                             />
                             <FormInput
@@ -1211,7 +1216,7 @@ function Laptop_desktop({
                                 className="mx-1"
                                 name="business_justification"
                                 placeholder="Business Justification/Purpose"
-                                required={true}
+                                required={false}
                                 message={"Please Enter a Business Justification/Purpose"}
                             />
                             <FormInput
@@ -1219,7 +1224,7 @@ function Laptop_desktop({
                                 className="mx-1"
                                 name="vendor"
                                 placeholder="Vendor/Supplier Name"
-                                required={true}
+                                required={false}
                                 message={"Please Enter a Vendor/Supplier Name"}
                             />
                             <FormInput
@@ -1227,7 +1232,7 @@ function Laptop_desktop({
                                 className="mx-1"
                                 name="purchase_cost"
                                 placeholder="Purchase Cost"
-                                required={true}
+                                required={false}
                                 message={"Please Enter a Purchase Cost"}
                             />
                         </div>
@@ -1238,7 +1243,7 @@ function Laptop_desktop({
                                 name={"warranty_start"}
                                 placeholder={"Warranty Start Date"}
                                 message={"Please Enter a Warranty Start Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
                             <CustomDate
@@ -1247,7 +1252,7 @@ function Laptop_desktop({
                                 name={"warranty_end"}
                                 placeholder={"Warranty End Date"}
                                 message={"Please Enter a Warranty End Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -1256,7 +1261,7 @@ function Laptop_desktop({
                                 label={"Expected Lifespan"}
                                 placeholder="Expected Lifespan"
                                 name="expected_lifespan"
-                                required={true}
+                                required={false}
                                 message={"Expected Lifespan"}
                                 options={[
                                     { value: "1-Year", label: "1-Year" },
@@ -1295,7 +1300,7 @@ function Laptop_desktop({
                                 label={"Assigned To (User's Name)"}
                                 placeholder="Assigned To (User's Name)"
                                 name="assigned_to_name"
-                                required={false}
+                                required={true}
                                 message={"Please Select a assigned to"}
                                 options={users?.map((item) => ({
                                     value: item.id,
@@ -1307,7 +1312,7 @@ function Laptop_desktop({
                                 className="mx-1"
                                 name="employee_id"
                                 placeholder="User's Employee ID/Username"
-                                required={true}
+                                required={false}
                                 message={"User's Employee ID/Username is required"}
                             /> */}
                             <CustomDate
@@ -1316,7 +1321,7 @@ function Laptop_desktop({
                                 name={"assigned_date"}
                                 placeholder={"Assigned Date"}
                                 message={"Please Enter a Assigned Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
                         </div>
@@ -1357,7 +1362,7 @@ function Laptop_desktop({
                                 className="mx-1"
                                 name="user_software_licenses"
                                 placeholder="Primary User Software Licenses"
-                                required={true}
+                                required={false}
                                 message={"Primary User Software Licenses is required"}
                             />
                             <FormInput
@@ -1365,7 +1370,7 @@ function Laptop_desktop({
                                 className="mx-1"
                                 name="security_software"
                                 placeholder="Security Software Installed"
-                                required={true}
+                                required={false}
                                 message={"Security Software Installed is required"}
                             />
                         </div>

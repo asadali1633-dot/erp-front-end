@@ -25,7 +25,9 @@ function Tablet_Phone({
     CreateAssetsFun,
     GetAllBrandsManufacturer,
     GetAllEmpList,
-    EditAssetsData
+    EditAssetsData,
+    UpdateAssets,
+    GetAllHardware
 }) {
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const [form] = Form.useForm();
@@ -45,9 +47,17 @@ function Tablet_Phone({
 
     const handleOk = () => {
         setAssetsType(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
     const handleCancel = () => {
         setAssetsType(false);
+        setCode({
+            mode: null,
+            code: null
+        });
     };
 
     const handleSaveClick = () => {
@@ -187,34 +197,57 @@ function Tablet_Phone({
         const payload = {
             asset_tag: values?.asset_tag,
             asset_type: assetsType,
+            assign_to: values?.assigned_to_name,
             field_values: field_values
         };
-        const isCheck = await CreateAssetsFun(payload, accessToken);
-        if (isCheck?.success) {
-            messageApi.success({
-                type: 'success',
-                content: isCheck?.message,
-            });
-            if (actionType === 'save') {
-                form.resetFields();
+        if (code?.mode !== "Edit") {
+            const isCheck = await CreateAssetsFun(payload, accessToken);
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                GetAllHardware(pagBody, accessToken);
+                if (actionType === 'save') {
+                    form.resetFields();
+                    setTimeout(() => {
+                        setAssetsType(false);
+                        setloading(false);
+                        setActionType('');
+                    }, 1000);
+                } else if (actionType === 'createNew') {
+                    setloading(false);
+                    form.resetFields();
+                    if (accessToken) {
+                        getBarCode(accessToken);
+                    }
+                }
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
+                setloading(false);
+            }
+        }else{
+            const isCheck = await UpdateAssets(payload, accessToken, code?.code)
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                GetAllHardware(pagBody, accessToken);
+                setloading(false);
                 setTimeout(() => {
                     setAssetsType(false);
-                    setloading(false);
-                    setActionType('');
-                }, 1000);
-            } else if (actionType === 'createNew') {
+                }, 1500);
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
                 setloading(false);
-                form.resetFields();
-                if (accessToken) {
-                    getBarCode(accessToken);
-                }
             }
-        } else {
-            messageApi.error({
-                type: 'error',
-                content: isCheck?.message,
-            });
-            setloading(false);
         }
 
     };
@@ -493,7 +526,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="imei_slot_2"
                                 placeholder="15-digit IMEI number for dual SIM"
-                                required={false}
+                                required={true}
                                 message={"IMEI Number (Slot 2) – Dual SIM devices"}
                             />
 
@@ -502,7 +535,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="meid_esn"
                                 placeholder="e.g., A1000012345678, 12345678901234"
-                                required={false}
+                                required={true}
                                 message={"MEID/ESN (If CDMA device)"}
                             />
 
@@ -545,11 +578,9 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="secondary_sim_iccid"
                                 placeholder="19-20 digit ICCID for second SIM/eSIM"
-                                required={false}
+                                required={true}
                                 message={"Secondary SIM ICCID (If dual physical or second eSIM)"}
                             />
-
-
                         </div>
                         <div className={`${style.form_inputBox} ${style.border_bottom}`}>
                             <FormInput
@@ -573,7 +604,7 @@ function Tablet_Phone({
                                 label={"Assigned To"}
                                 placeholder="Assigned To"
                                 name="assigned_to_name"
-                                required={false}
+                                required={true}
                                 message={"Please Select a assigned to"}
                                 options={users?.map((item) => ({
                                     value: item.id,
@@ -589,7 +620,7 @@ function Tablet_Phone({
                                 label={"Operating System"}
                                 placeholder="Select Operating System"
                                 name="operating_system"
-                                required={true}
+                                required={false}
                                 message={"Please Select Operating System"}
                                 options={[
                                     { value: "iOS", label: "iOS" },
@@ -607,7 +638,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="os_version"
                                 placeholder="e.g., iOS 17.2, Android 14, KaiOS 3.1"
-                                required={true}
+                                required={false}
                                 message={"OS Version (At deployment)"}
                             />
 
@@ -616,7 +647,7 @@ function Tablet_Phone({
                                 label={"Storage Capacity"}
                                 placeholder="Select Storage Capacity"
                                 name="storage_capacity"
-                                required={true}
+                                required={false}
                                 message={"Please Select Storage Capacity"}
                                 options={[
                                     { value: "16GB", label: "16GB" },
@@ -635,7 +666,7 @@ function Tablet_Phone({
                                 label={"RAM"}
                                 placeholder="Select RAM Size"
                                 name="ram"
-                                required={true}
+                                required={false}
                                 message={"Please Select RAM Size"}
                                 options={[
                                     { value: "2GB", label: "2GB" },
@@ -654,7 +685,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="processor"
                                 placeholder="e.g., A17 Pro, Snapdragon 8 Gen 3, Tensor G3"
-                                required={true}
+                                required={false}
                                 message={"Processor/Chipset"}
                             />
                         </div>
@@ -664,7 +695,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="screen_size"
                                 placeholder="e.g., 6.1 inches, 6.7 inches"
-                                required={true}
+                                required={false}
                                 message={"Screen Size"}
                             />
 
@@ -673,7 +704,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="battery_capacity"
                                 placeholder="e.g., 4000 mAh, 5000 mAh"
-                                required={true}
+                                required={false}
                                 message={"Battery Capacity (mAh)"}
                             />
 
@@ -682,7 +713,7 @@ function Tablet_Phone({
                                 label={"5G Capable"}
                                 placeholder="Select 5G Capability"
                                 name="is_5g_capable"
-                                required={true}
+                                required={false}
                                 message={"Please Select 5G Capable"}
                                 options={[
                                     { value: "Yes", label: "Yes - 5G Compatible" },
@@ -695,7 +726,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="fingerprint_sensor"
                                 placeholder="e.g., Yes - Side-mounted, Yes - Under display, No"
-                                required={true}
+                                required={false}
                                 message={"Fingerprint Sensor (Yes/No, Location)"}
                             />
 
@@ -704,7 +735,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="face_unlock"
                                 placeholder="e.g., Yes - 3D Face ID, Yes - 2D Camera, No"
-                                required={true}
+                                required={false}
                                 message={"Face Unlock (Yes/No, Type: 2D, 3D)"}
                             />
                         </div>
@@ -731,7 +762,7 @@ function Tablet_Phone({
                                 label={"NFC Support"}
                                 placeholder="Select NFC Support"
                                 name="nfc_support"
-                                required={true}
+                                required={false}
                                 message={"Please Select NFC Support"}
                                 options={[
                                     { value: "Yes", label: "Yes - NFC Enabled" },
@@ -744,7 +775,7 @@ function Tablet_Phone({
                                 label={"Wireless Charging"}
                                 placeholder="Select Wireless Charging"
                                 name="wireless_charging"
-                                required={true}
+                                required={false}
                                 message={"Please Select Wireless Charging"}
                                 options={[
                                     { value: "Yes", label: "Yes - Wireless Charging" },
@@ -757,7 +788,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="camera_specs"
                                 placeholder="e.g., Rear: 48MP + 12MP + 12MP, Front: 12MP"
-                                required={true}
+                                required={false}
                                 message={"Camera Specifications (Rear MP, Front MP)"}
                             />
                         </div>
@@ -769,7 +800,7 @@ function Tablet_Phone({
                                 label={"Network Lock Status"}
                                 placeholder="Select Lock Status"
                                 name="network_lock_status"  // ✅ CHANGED: "Network Lock Status" → "network_lock_status"
-                                required={true}
+                                required={false}
                                 message={"Please Select Network Lock Status"}
                                 options={[
                                     { value: "Unlocked", label: "Unlocked - Any carrier" },
@@ -784,7 +815,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="primary_carrier"  // ✅ CHANGED: "Primary Carrier/Service Provider" → "primary_carrier"
                                 placeholder="e.g., Verizon, AT&T, T-Mobile, Vodafone, Airtel"
-                                required={true}
+                                required={false}
                                 message={"Primary Carrier/Service Provider"}
                             />
 
@@ -793,7 +824,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="mobile_number"  // ✅ CHANGED: "Mobile Number (MSISDN)" → "mobile_number"
                                 placeholder="e.g., +1-555-123-4567"
-                                required={true}
+                                required={false}
                                 message={"Mobile Number (MSISDN)"}
                             />
 
@@ -810,7 +841,7 @@ function Tablet_Phone({
                                 label={"Plan Type"}
                                 placeholder="Select Plan Type"
                                 name="plan_type"  // ✅ CHANGED: "Plan Type" → "plan_type"
-                                required={true}
+                                required={false}
                                 message={"Please Select Plan Type"}
                                 options={[
                                     { value: "Business", label: "Business Plan" },
@@ -830,7 +861,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="plan_name"  // ✅ CHANGED: "Plan Name / Rate Plan" → "plan_name"
                                 placeholder="e.g., Unlimited Plus, Business Premium 50GB"
-                                required={true}
+                                required={false}
                                 message={"Plan Name / Rate Plan"}
                             />
 
@@ -839,7 +870,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="data_allowance"  // ✅ CHANGED: "Data Allowance" → "data_allowance"
                                 placeholder="e.g., 10GB, Unlimited, 50GB shared"
-                                required={true}
+                                required={false}
                                 message={"Data Allowance (GB per month)"}
                             />
 
@@ -848,7 +879,7 @@ function Tablet_Phone({
                                 label={"International Roaming Enabled"}
                                 placeholder="Select Roaming Status"
                                 name="roaming_enabled"  // ✅ CHANGED: "International Roaming Enabled" → "roaming_enabled"
-                                required={true}
+                                required={false}
                                 message={"Please Select International Roaming Status"}
                                 options={[
                                     { value: "Yes", label: "Yes - Roaming enabled" },
@@ -869,7 +900,7 @@ function Tablet_Phone({
                                 label={"VoLTE/VoWiFi Capable"}
                                 placeholder="Select VoLTE/VoWiFi Status"
                                 name="volte_vowifi"  // ✅ CHANGED: "VoLTE/VoWiFi Capable" → "volte_vowifi"
-                                required={true}
+                                required={false}
                                 message={"Please Select VoLTE/VoWiFi Capable"}
                                 options={[
                                     { value: "Both", label: "Both VoLTE and VoWiFi" },
@@ -893,7 +924,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="carrier_account"  // ✅ CHANGED: "Carrier Account Number" → "carrier_account"
                                 placeholder="e.g., ACC-12345678"
-                                required={true}
+                                required={false}
                                 message={"Carrier Account Number"}
                             />
                             <FormInput
@@ -901,14 +932,14 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="billing_account"  // ✅ CHANGED: "Billing Account ID / Cost Centre" → "billing_account"
                                 placeholder="e.g., BILL-987654, Sales-Dept-01"
-                                required={true}
+                                required={false}
                                 message={"Billing Account ID / Cost Centre"}
                             />
                             <CustomDate
                                 className="mx-1"
                                 label={"Contract Start Date"}
                                 name="contract_start_date"  // ✅ CHANGED: "Contract Start Date" → "contract_start_date"
-                                required={true}
+                                required={false}
                                 message={"Contract Start Date"}
                                 allowToday={true}
                             />
@@ -916,7 +947,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 label={"Contract End Date"}
                                 name="contract_end_date"  // ✅ CHANGED: "Contract End Date" → "contract_end_date"
-                                required={true}
+                                required={false}
                                 message={"Contract End Date"}
                                 allowToday={true}
                             />
@@ -943,7 +974,7 @@ function Tablet_Phone({
                                 label={"Device Payment Plan"}
                                 placeholder="Select Payment Plan"
                                 name="payment_plan"  // ✅ CHANGED: "Device Payment Plan" → "payment_plan"
-                                required={true}
+                                required={false}
                                 message={"Please Select Device Payment Plan"}
                                 options={[
                                     { value: "Upfront", label: "Upfront - Full payment" },
@@ -963,7 +994,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="po_number"  // ✅ No change needed
                                 placeholder="e.g., PO-MOB-2024-001, PUR-987654"
-                                required={true}
+                                required={false}
                                 message={"Purchase Order Number"}
                             />
 
@@ -972,7 +1003,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="vendor"  // ✅ CHANGED: "Vendor/Reseller" → "vendor"
                                 placeholder="e.g., Apple Business, Verizon, CDW, Amazon Business"
-                                required={true}
+                                required={false}
                                 message={"Vendor/Reseller"}
                             />
 
@@ -980,7 +1011,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 label={"Purchase Date"}
                                 name="purchase_date"  // ✅ CHANGED: "Purchase Date" → "purchase_date"
-                                required={true}
+                                required={false}
                                 message={"Purchase Date"}
                                 allowToday={true}
                             />
@@ -990,7 +1021,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="purchase_cost"  // ✅ CHANGED: "Purchase Cost (Device only)" → "purchase_cost"
                                 placeholder="e.g., $999.00, ₹79,900"
-                                required={true}
+                                required={false}
                                 message={"Purchase Cost (Device only)"}
                             />
                         </div>
@@ -998,7 +1029,7 @@ function Tablet_Phone({
                             <FormInput
                                 label={"Subsidized Cost"}
                                 className="mx-1"
-                                name="subsidized_cost"  // ✅ CHANGED: "Subsidized Cost" → "subsidized_cost"
+                                name="subsidized_cost"
                                 placeholder="e.g., $199.00 with 2-year contract"
                                 required={false}
                                 message={"Subsidized Cost (If carrier-subsidized)"}
@@ -1018,7 +1049,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="cost_center"  // ✅ CHANGED: "Cost Center / Department Budget" → "cost_center"
                                 placeholder="e.g., IT-Mobility-2024, Sales-Ops"
-                                required={true}
+                                required={false}
                                 message={"Cost Center / Department Budget"}
                             />
 
@@ -1027,7 +1058,7 @@ function Tablet_Phone({
                                 label={"Capital/Operational Expenditure"}
                                 placeholder="Select Expenditure Type"
                                 name="expenditure_type"  // ✅ CHANGED: "Capital/Operational Expenditure" → "expenditure_type"
-                                required={true}
+                                required={false}
                                 message={"Please Select Expenditure Type"}
                                 options={[
                                     { value: "CapEx", label: "CapEx - Capital Expenditure" },
@@ -1042,7 +1073,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 label={"Warranty Start Date"}
                                 name="warranty_start_date"  // ✅ CHANGED: "Warranty Start Date" → "warranty_start_date"
-                                required={true}
+                                required={false}
                                 message={"Warranty Start Date"}
                                 allowToday={true}
                             />
@@ -1051,7 +1082,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 label={"Warranty End Date"}
                                 name="warranty_end_date"  // ✅ CHANGED: "Warranty End Date" → "warranty_end_date"
-                                required={true}
+                                required={false}
                                 message={"Warranty End Date"}
                                 allowToday={true}
                             />
@@ -1061,7 +1092,7 @@ function Tablet_Phone({
                                 label={"Warranty Type"}
                                 placeholder="Select Warranty Type"
                                 name="warranty_type"  // ✅ CHANGED: "Warranty Type" → "warranty_type"
-                                required={true}
+                                required={false}
                                 message={"Please Select Warranty Type"}
                                 options={[
                                     { value: "Manufacturer", label: "Manufacturer Warranty" },
@@ -1130,7 +1161,7 @@ function Tablet_Phone({
                                 label={"Mobile Device Management (MDM) Enrolled"}
                                 placeholder="Select MDM Enrollment Status"
                                 name="mdm_enrolled"  // ✅ CHANGED: "MDM Enrolled" → "mdm_enrolled"
-                                required={true}
+                                required={false}
                                 message={"Please Select MDM Enrollment Status"}
                                 options={[
                                     { value: "Yes", label: "Yes - Enrolled in MDM" },
@@ -1163,7 +1194,7 @@ function Tablet_Phone({
                                 label={"Compliance Status"}
                                 placeholder="Select Compliance Status"
                                 name="compliance_status"  // ✅ CHANGED: "Compliance Status" → "compliance_status"
-                                required={true}
+                                required={false}
                                 message={"Please Select Compliance Status"}
                                 options={[
                                     { value: "Compliant", label: "Compliant" },
@@ -1180,7 +1211,7 @@ function Tablet_Phone({
                                 label={"Encryption Status"}
                                 placeholder="Select Encryption Status"
                                 name="encryption_status"  // ✅ CHANGED: "Encryption Status" → "encryption_status"
-                                required={true}
+                                required={false}
                                 message={"Please Select Encryption Status"}
                                 options={[
                                     { value: "Enabled", label: "Enabled - Device encrypted" },
@@ -1195,7 +1226,7 @@ function Tablet_Phone({
                                 label={"Screen Lock Method"}
                                 placeholder="Select Screen Lock Method"
                                 name="screen_lock_method"  // ✅ CHANGED: "Screen Lock Method" → "screen_lock_method"
-                                required={true}
+                                required={false}
                                 message={"Please Select Screen Lock Method"}
                                 options={[
                                     { value: "PIN", label: "PIN (numeric)" },
@@ -1212,7 +1243,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="min_pin_length"  // ✅ CHANGED: "Minimum PIN Length Policy" → "min_pin_length"
                                 placeholder="e.g., 4 digits, 6 digits"
-                                required={true}
+                                required={false}
                                 message={"Minimum PIN Length Policy"}
                             />
 
@@ -1221,7 +1252,7 @@ function Tablet_Phone({
                                 label={"Passcode Compliance"}
                                 placeholder="Select Passcode Compliance"
                                 name="passcode_compliance"  // ✅ CHANGED: "Passcode Compliance" → "passcode_compliance"
-                                required={true}
+                                required={false}
                                 message={"Please Select Passcode Compliance"}
                                 options={[
                                     { value: "Yes", label: "Yes - Meets policy" },
@@ -1236,7 +1267,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="security_patch_level"  // ✅ CHANGED: "Security Patch Level" → "security_patch_level"
                                 placeholder="e.g., 2026-01-01, January 2026"
-                                required={true}
+                                required={false}
                                 message={"Security Patch Level (Date)"}
                             />
 
@@ -1267,7 +1298,7 @@ function Tablet_Phone({
                                 label={"Jailbreak/Root Detection Status"}
                                 placeholder="Select Jailbreak Status"
                                 name="jailbreak_status"
-                                required={true}
+                                required={false}
                                 message={"Please Select Jailbreak/Root Detection Status"}
                                 options={[
                                     { value: "Clean", label: "Clean - No jailbreak/root" },
@@ -1284,7 +1315,7 @@ function Tablet_Phone({
                                 label={"Remote Wipe Capable"}
                                 placeholder="Select Remote Wipe Capability"
                                 name="remote_wipe_capable"
-                                required={true}
+                                required={false}
                                 message={"Please Select Remote Wipe Capable"}
                                 options={[
                                     { value: "Yes", label: "Yes - Remote wipe supported" },
@@ -1316,7 +1347,7 @@ function Tablet_Phone({
                                 label={"BYOD / Corporate-Owned"}
                                 placeholder="Select Device Ownership Model"
                                 name="ownership_model"
-                                required={true}
+                                required={false}
                                 message={"Please Select Device Ownership Model"}
                                 options={[
                                     { value: "COPE", label: "COPE - Corporate-Owned, Personally Enabled" },
@@ -1335,7 +1366,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="charger_included"
                                 placeholder="e.g., Yes - USB-C, Yes - Lightning, Yes - Wireless, No"
-                                required={true}
+                                required={false}
                                 message={"Charger Included (Yes/No, Type: USB-C, Lightning, Wireless)"}
                             />
 
@@ -1353,7 +1384,7 @@ function Tablet_Phone({
                                 label={"Cable Included"}
                                 placeholder="Select Cable Status"
                                 name="cable_included"
-                                required={true}
+                                required={false}
                                 message={"Please Select Cable Included"}
                                 options={[
                                     { value: "Yes", label: "Yes - Cable included" },
@@ -1369,7 +1400,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="case_included"
                                 placeholder="e.g., Yes - Clear silicone, Yes - Black leather, No"
-                                required={true}
+                                required={false}
                                 message={"Case Included (Yes/No, Type/Color)"}
                             />
 
@@ -1388,7 +1419,7 @@ function Tablet_Phone({
                                 label={"Screen Protector Installed"}
                                 placeholder="Select Screen Protector Status"
                                 name="screen_protector"
-                                required={true}
+                                required={false}
                                 message={"Please Select Screen Protector Installed"}
                                 options={[
                                     { value: "Yes", label: "Yes - Installed" },
@@ -1424,7 +1455,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="accessory_kit_complete"
                                 placeholder="e.g., Complete: All items present, Missing charging cable"
-                                required={true}
+                                required={false}
                                 message={"Accessory Kit Complete (Checklist)"}
                             />
 
@@ -1445,7 +1476,7 @@ function Tablet_Phone({
                                 label={"Device Condition at Assignment"}
                                 placeholder="Select Assignment Condition"
                                 name="condition_at_assignment"
-                                required={true}
+                                required={false}
                                 message={"Please Select Device Condition at Assignment"}
                                 options={[
                                     { value: "New", label: "New - Never used" },
@@ -1461,7 +1492,7 @@ function Tablet_Phone({
                                 label={"Current Condition"}
                                 placeholder="Select Current Condition"
                                 name="current_condition"
-                                required={true}
+                                required={false}
                                 message={"Please Select Current Condition"}
                                 options={[
                                     { value: "New", label: "New" },
@@ -1489,7 +1520,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 name="battery_health"
                                 placeholder="e.g., 92% maximum capacity, 85% health, 400 cycle count"
-                                required={true}
+                                required={false}
                                 message={"Battery Health (% capacity, iOS Battery Health, Android estimate)"}
                             />
 
@@ -1736,7 +1767,7 @@ function Tablet_Phone({
                                 className="mx-1"
                                 label={"Last Inventory Verification Date"}
                                 name="last_inventory_date"
-                                required={true}
+                                required={false}
                                 message={"Last Inventory Verification Date"}
                                 allowToday={true}
                             />
@@ -1787,7 +1818,7 @@ function Tablet_Phone({
                                 label={"Attachments"}
                                 name="attachments"
                                 title={"Attachments"}
-                                required={true}
+                                required={false}
                                 multiple={false}
                                 accept="image/jpeg,image/png"
                                 classNameColor={`${style.inputDefaultBg}`}

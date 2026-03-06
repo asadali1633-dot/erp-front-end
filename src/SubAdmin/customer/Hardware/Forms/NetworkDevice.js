@@ -46,9 +46,17 @@ function NetworkDevice({
 
     const handleOk = () => {
         setAssetsType(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
     const handleCancel = () => {
         setAssetsType(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
 
 
@@ -176,6 +184,7 @@ function NetworkDevice({
                     type: 'success',
                     content: isCheck?.message,
                 });
+                GetAllHardware(pagBody, accessToken);
                 if (actionType === 'save') {
                     form.resetFields();
                     setTimeout(() => {
@@ -219,6 +228,112 @@ function NetworkDevice({
         }
 
     };
+
+    useEffect(() => {
+        if (EditAssetsData && code?.mode === "Edit") {
+            const Data = EditAssetsData;
+            const values = EditAssetsData?.field_values;
+            form.setFieldsValue({
+                asset_tag: Data?.asset_tag,
+                device_hostname: values?.device_hostname,
+                device_type: values?.device_type,
+                sub_type: values?.sub_type,
+                brand_manufacturer: values?.brand_manufacturer,
+                model_number: values?.model_number,
+                serial_number: values?.serial_number,
+                date_deployed: values?.date_deployed,
+                request_ticket: values?.request_ticket,
+                assigned_to: values?.assigned_to,
+                form_factor: values?.form_factor,
+                chassis_model: values?.chassis_model,
+                slot_module_config: values?.slot_module_config,
+                power_supply_details: values?.power_supply_details,
+                cooling_details: values?.cooling_details,
+                rack_location: values?.rack_location,
+                rack_position: values?.rack_position,
+                physical_port_count: values?.physical_port_count,
+                port_types: values?.port_types,
+                management_ip_primary: values?.management_ip_primary,
+                oob_management_ip: values?.oob_management_ip,
+                management_interface: values?.management_interface,
+                management_vlan: values?.management_vlan,
+                mac_address: values?.mac_address,
+                default_gateway: values?.default_gateway,
+                dns_servers: values?.dns_servers,
+                domain_name: values?.domain_name,
+                configured_hostname: values?.configured_hostname,
+                network_role: values?.network_role,
+                network_os: values?.network_os,
+                os_version: values?.os_version,
+                config_register: values?.config_register,
+                licensed_features: values?.licensed_features,
+                license_keys: values?.license_keys,
+                license_expiry: values?.license_expiry,
+                last_firmware_update: values?.last_firmware_update,
+                next_scheduled_update: values?.next_scheduled_update,
+                config_backup_location: values?.config_backup_location,
+                uplink_device: values?.uplink_device,
+                uplink_port_remote: values?.uplink_port_remote,
+                local_uplink_port: values?.local_uplink_port,
+                uplink_speed_media: values?.uplink_speed_media,
+                circuit_wan: values?.circuit_wan,
+                vlan_config: values?.vlan_config,
+                stp_role: values?.stp_role,
+                routing_protocols: values?.routing_protocols,
+                management_access_methods: values?.management_access_methods,
+                tacacs_radius_server: values?.tacacs_radius_server,
+                snmp_community_strings: values?.snmp_community_strings,
+                syslog_server: values?.syslog_server,
+                netflow_collector: values?.netflow_collector,
+                access_lists: values?.access_lists,
+                security_zone: values?.security_zone,
+                compliance_standards: values?.compliance_standards,
+                po_number: values?.po_number,
+                vendor_reseller: values?.vendor_reseller,
+                purchase_date: values?.purchase_date,
+                purchase_cost: values?.purchase_cost,
+                cost_center: values?.cost_center,
+                warranty_dates: values?.warranty_dates,
+                support_contract_number: values?.support_contract_number,
+                support_level: values?.support_level,
+                support_expiry: values?.support_expiry,
+                lease_terms: values?.lease_terms,
+                ap_name_ssid: values?.ap_name_ssid,
+                radio_types: values?.radio_types,
+                radio_channels: values?.radio_channels,
+                transmit_power: values?.transmit_power,
+                controller_type: values?.controller_type,
+                wireless_controller: values?.wireless_controller,
+                connected_clients: values?.connected_clients,
+                ssids_supported: values?.ssids_supported,
+                security_policy_count: values?.security_policy_count,
+                vpn_tunnel_capacity: values?.vpn_tunnel_capacity,
+                concurrent_sessions: values?.concurrent_sessions,
+                threat_prevention_license: values?.threat_prevention_license,
+                url_filtering_license: values?.url_filtering_license,
+                ips_signature_version: values?.ips_signature_version,
+                security_zone_config: values?.security_zone_config,
+                ha_role: values?.ha_role,
+                device_status: values?.device_status,
+                criticality_level: values?.criticality_level,
+                planned_replacement_date: values?.planned_replacement_date,
+                eol_date: values?.eol_date,
+                eos_date: values?.eos_date,
+                decommission_date: values?.decommission_date,
+                replacement_asset_tag: values?.replacement_asset_tag,
+                disposal_method: values?.disposal_method,
+                primary_admin_team: values?.primary_admin_team,
+                oncall_contact: values?.oncall_contact,
+                vendor_support_contact: values?.vendor_support_contact,
+                notes: values?.notes,
+                rack_diagram_ref: values?.rack_diagram_ref,
+                network_diagram_ref: values?.network_diagram_ref,
+                attachments: values?.attachments,
+                record_created: values?.record_created,
+                last_updated: values?.last_updated
+            });
+        }
+    }, [EditAssetsData, code, form]);
 
     useEffect(() => {
         if (code?.mode !== "Edit" && accessToken && !barcode) {
@@ -282,7 +397,7 @@ function NetworkDevice({
                                 name="asset_tag"
                                 type={"text"}
                                 placeholder="Assets Tag/ID Number"
-                                required={true}
+                                required={false}
                                 readOnly={true}
                                 message={"Please Enter a ID Number"}
                             />
@@ -402,7 +517,7 @@ function NetworkDevice({
                                 label={"assigned To"}
                                 placeholder="assigned To"
                                 name="assigned_to"
-                                required={false}
+                                required={true}
                                 message={"Assigned To"}
                                 options={users?.map((item) => ({
                                     value: item.id,
@@ -418,7 +533,7 @@ function NetworkDevice({
                                 label={"Form Factor"}
                                 placeholder="Form Factor"
                                 name="form_factor"
-                                required={true}
+                                required={false}
                                 message={"Please Select Form Factor"}
                                 options={[
                                     { value: "1U", label: "1U" },
@@ -434,7 +549,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="chassis_model"
                                 placeholder="Chassis Model"
-                                required={true}
+                                required={false}
                                 message={"Chassis Model"}
                             />
 
@@ -453,7 +568,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="power_supply_details"
                                 placeholder="Quantity, type: AC/DC, PoE capacity if applicable"
-                                required={true}
+                                required={false}
                                 message={"Power Supply Details"}
                             />
 
@@ -462,7 +577,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="cooling_details"
                                 placeholder="Cooling/Fan Tray Details"
-                                required={true}
+                                required={false}
                                 message={"Cooling/Fan Tray Details"}
                             />
                         </div>
@@ -472,7 +587,7 @@ function NetworkDevice({
                                 label={"Rack Location"}
                                 placeholder="Rack Location"
                                 name="rack_location"
-                                required={true}
+                                required={false}
                                 message={"Please Select Rack Location"}
                                 options={[
                                     { value: "Data Center", label: "Data Center" },
@@ -487,7 +602,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="rack_position"
                                 placeholder="Rack Number & U Position"
-                                required={true}
+                                required={false}
                                 message={"Rack Number & U Position"}
                             />
 
@@ -496,7 +611,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="physical_port_count"
                                 placeholder="Total interfaces"
-                                required={true}
+                                required={false}
                                 message={"Physical Port Count"}
                             />
 
@@ -505,7 +620,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="port_types"
                                 placeholder="e.g., 48x 1GbE, 4x 10Gb SFP+, 2x 40Gb QSFP"
-                                required={true}
+                                required={false}
                                 message={"Port Types"}
                             />
                         </div>
@@ -517,7 +632,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="management_ip_primary"
                                 placeholder="e.g., 192.168.1.10"
-                                required={true}
+                                required={false}
                                 message={"Management IP Address (Primary)"}
                             />
 
@@ -526,7 +641,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="oob_management_ip"
                                 placeholder="e.g., 192.168.1.11"
-                                required={true}
+                                required={false}
                                 message={"Out-of-Band Management IP"}
                             />
 
@@ -535,7 +650,7 @@ function NetworkDevice({
                                 label={"Management Interface"}
                                 placeholder="Management Interface"
                                 name="management_interface"
-                                required={true}
+                                required={false}
                                 message={"Please Select Management Interface"}
                                 options={[
                                     { value: "vlan1", label: "vlan1" },
@@ -550,7 +665,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="management_vlan"
                                 placeholder="e.g., 10"
-                                required={true}
+                                required={false}
                                 message={"Management VLAN"}
                             />
 
@@ -559,7 +674,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="mac_address"
                                 placeholder="e.g., 00:1A:2B:3C:4D:5E"
-                                required={true}
+                                required={false}
                                 message={"MAC Address"}
                             />
                         </div>
@@ -569,7 +684,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="default_gateway"
                                 placeholder="e.g., 192.168.1.1"
-                                required={true}
+                                required={false}
                                 message={"Default Gateway"}
                             />
 
@@ -578,7 +693,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="dns_servers"
                                 placeholder="e.g., 8.8.8.8, 8.8.4.4"
-                                required={true}
+                                required={false}
                                 message={"DNS Servers"}
                             />
 
@@ -587,7 +702,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="domain_name"
                                 placeholder="e.g., example.com"
-                                required={true}
+                                required={false}
                                 message={"Domain Name"}
                             />
 
@@ -596,7 +711,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="configured_hostname"
                                 placeholder="e.g., router-nyc-01"
-                                required={true}
+                                required={false}
                                 message={"Configured Hostname"}
                             />
 
@@ -605,7 +720,7 @@ function NetworkDevice({
                                 label={"Network Role"}
                                 placeholder="Network Role"
                                 name="network_role"
-                                required={true}
+                                required={false}
                                 message={"Please Select Network Role"}
                                 options={[
                                     { value: "Core", label: "Core" },
@@ -625,7 +740,7 @@ function NetworkDevice({
                                 label={"Network OS"}
                                 placeholder="Network OS"
                                 name="network_os"
-                                required={true}
+                                required={false}
                                 message={"Please Select Network OS"}
                                 options={[
                                     { value: "IOS-XE", label: "IOS-XE" },
@@ -646,7 +761,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="os_version"
                                 placeholder="e.g., 16.12.4, 9.1.7"
-                                required={true}
+                                required={false}
                                 message={"OS Version"}
                             />
 
@@ -655,7 +770,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="config_register"
                                 placeholder="e.g., 0x2102, BOOTLDR: 1.0.0.0"
-                                required={true}
+                                required={false}
                                 message={"Configuration Register/BOOT Version"}
                             />
 
@@ -664,7 +779,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="licensed_features"
                                 placeholder="e.g., BGP, OSPF, MPLS, Security Plus"
-                                required={true}
+                                required={false}
                                 message={"Licensed Features"}
                             />
 
@@ -674,7 +789,7 @@ function NetworkDevice({
                                 name="license_keys"
                                 placeholder="Enter license keys (secure field)"
                                 type="password"
-                                required={true}
+                                required={false}
                                 message={"License Keys/Authorization Codes"}
                             />
                         </div>
@@ -684,7 +799,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="license_expiry"
                                 placeholder="e.g., 2024-12-31, 2025-06-15"
-                                required={true}
+                                required={false}
                                 message={"Feature License Expiration Dates"}
                             />
 
@@ -694,7 +809,7 @@ function NetworkDevice({
                                 name="last_firmware_update"
                                 placeholder={"Last Firmware Update Date"}
                                 message={"Last Firmware Update Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -704,7 +819,7 @@ function NetworkDevice({
                                 name="next_scheduled_update"
                                 placeholder={"Next Scheduled Update"}
                                 message={"Next Scheduled Update"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -713,7 +828,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="config_backup_location"
                                 placeholder="e.g., tftp://server/configs/, flash:/backup/"
-                                required={true}
+                                required={false}
                                 message={"Configuration File Location/Backup Path"}
                             />
                         </div>
@@ -725,7 +840,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="uplink_device"
                                 placeholder="e.g., Core-Switch-01, 10.0.0.1"
-                                required={true}
+                                required={false}
                                 message={"Uplink Device"}
                             />
 
@@ -734,7 +849,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="uplink_port_remote"
                                 placeholder="e.g., GigabitEthernet1/0/1, Te1/1"
-                                required={true}
+                                required={false}
                                 message={"Uplink Port (Remote)"}
                             />
 
@@ -743,7 +858,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="local_uplink_port"
                                 placeholder="e.g., GigabitEthernet0/1, Gi0/0/24"
-                                required={true}
+                                required={false}
                                 message={"Local Uplink Port"}
                             />
 
@@ -752,7 +867,7 @@ function NetworkDevice({
                                 label={"Uplink Speed & Media"}
                                 placeholder="Uplink Speed & Media"
                                 name="uplink_speed_media"
-                                required={true}
+                                required={false}
                                 message={"Please Select Uplink Speed & Media"}
                                 options={[
                                     { value: "10MbE-copper", label: "10MbE copper" },
@@ -773,7 +888,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="circuit_wan"
                                 placeholder="e.g., ISP: Verizon, Circuit-ID: VZ.12345.678"
-                                required={true}
+                                required={false}
                                 message={"Circuit/WAN Connection"}
                             />
 
@@ -782,7 +897,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="vlan_config"
                                 placeholder="e.g., VLANs: 10,20,30, Trunk allowed: 10-50"
-                                required={true}
+                                required={false}
                                 message={"VLAN Database/Trunk Configuration"}
                             />
 
@@ -821,7 +936,7 @@ function NetworkDevice({
                                 label={"Management Access Methods"}
                                 placeholder="Select Access Methods"
                                 name="management_access_methods"
-                                required={true}
+                                required={false}
                                 message={"Please Select Management Access Methods"}
                                 isMulti={true}
                                 options={[
@@ -841,7 +956,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="tacacs_radius_server"
                                 placeholder="e.g., Primary: 10.1.1.10, Backup: 10.1.1.11"
-                                required={true}
+                                required={false}
                                 message={"TACACS/RADIUS Server"}
                             />
 
@@ -851,7 +966,7 @@ function NetworkDevice({
                                 name="snmp_community_strings"
                                 placeholder="Enter SNMP community strings"
                                 type="text"
-                                required={true}
+                                required={false}
                                 message={"SNMP Community Strings"}
                             />
 
@@ -860,7 +975,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="syslog_server"
                                 placeholder="e.g., 10.2.2.10:514, syslog.company.com"
-                                required={true}
+                                required={false}
                                 message={"Syslog Server Destination"}
                             />
                         </div>
@@ -870,7 +985,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="netflow_collector"
                                 placeholder="e.g., 10.3.3.10:9995, netflow.company.com"
-                                required={true}
+                                required={false}
                                 message={"NetFlow/IPFIX Collector"}
                             />
 
@@ -879,7 +994,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="access_lists"
                                 placeholder="e.g., ACL-INBOUND, ACL-MGMT, ACL-DMZ"
-                                required={true}
+                                required={false}
                                 message={"Access Control Lists Applied"}
                             />
 
@@ -888,7 +1003,7 @@ function NetworkDevice({
                                 label={"Security Zone/Context"}
                                 placeholder="Security Zone/Context"
                                 name="security_zone"
-                                required={true}
+                                required={false}
                                 message={"Please Select Security Zone/Context"}
                                 options={[
                                     { value: "Inside", label: "Inside" },
@@ -931,7 +1046,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="po_number"
                                 placeholder="e.g., PO-2024-00123"
-                                required={true}
+                                required={false}
                                 message={"Purchase Order Number"}
                             />
 
@@ -940,7 +1055,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="vendor_reseller"
                                 placeholder="e.g., Cisco, CDW, Amazon Business"
-                                required={true}
+                                required={false}
                                 message={"Vendor/Reseller"}
                             />
 
@@ -950,7 +1065,7 @@ function NetworkDevice({
                                 name="purchase_date"
                                 placeholder={"Purchase Date"}
                                 message={"Purchase Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -959,7 +1074,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="purchase_cost"
                                 placeholder="e.g., $5,000.00"
-                                required={true}
+                                required={false}
                                 message={"Purchase Cost"}
                             />
 
@@ -968,7 +1083,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="cost_center"
                                 placeholder="e.g., IT-Network, Dept-1234"
-                                required={true}
+                                required={false}
                                 message={"Cost Center/Department"}
                             />
 
@@ -977,7 +1092,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="warranty_dates"
                                 placeholder="e.g., 2024-01-15 to 2027-01-14"
-                                required={true}
+                                required={false}
                                 message={"Warranty Start/End Dates"}
                             />
                         </div>
@@ -987,7 +1102,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="support_contract_number"
                                 placeholder="e.g., CON-12345678"
-                                required={true}
+                                required={false}
                                 message={"SmartNet/Support Contract Number"}
                             />
 
@@ -996,7 +1111,7 @@ function NetworkDevice({
                                 label={"Support Level"}
                                 placeholder="Support Level"
                                 name="support_level"
-                                required={true}
+                                required={false}
                                 message={"Please Select Support Level"}
                                 options={[
                                     { value: "8x5", label: "8x5 Business Hours" },
@@ -1015,7 +1130,7 @@ function NetworkDevice({
                                 name="support_expiry"
                                 placeholder={"Support Expiry Date"}
                                 message={"Support Expiry Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -1036,7 +1151,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="ap_name_ssid"
                                 placeholder="e.g., AP-Floor1-01, Corp-WiFi"
-                                required={true}
+                                required={false}
                                 message={"AP Name/SSID Broadcast Name"}
                             />
 
@@ -1045,7 +1160,7 @@ function NetworkDevice({
                                 label={"Radio Types"}
                                 placeholder="Radio Types"
                                 name="radio_types"
-                                required={true}
+                                required={false}
                                 message={"Please Select Radio Types"}
                                 isMulti={true}
                                 options={[
@@ -1064,7 +1179,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="radio_channels"
                                 placeholder="e.g., Ch 36 (5GHz), Ch 1,6,11 (2.4GHz)"
-                                required={true}
+                                required={false}
                                 message={"Radio Channels/Frequencies"}
                             />
 
@@ -1073,7 +1188,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="transmit_power"
                                 placeholder="e.g., 15 dBm (2.4GHz), 17 dBm (5GHz)"
-                                required={true}
+                                required={false}
                                 message={"Transmit Power Settings"}
                             />
                         </div>
@@ -1083,7 +1198,7 @@ function NetworkDevice({
                                 label={"Controller Managed/Standalone"}
                                 placeholder="Management Type"
                                 name="controller_type"
-                                required={true}
+                                required={false}
                                 message={"Please Select Management Type"}
                                 options={[
                                     { value: "Controller-Managed", label: "Controller Managed" },
@@ -1098,7 +1213,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="wireless_controller"
                                 placeholder="e.g., WLC-5508-01, Meraki-MX-Cloud"
-                                required={true}
+                                required={false}
                                 message={"Wireless Controller Name"}
                             />
 
@@ -1107,7 +1222,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="connected_clients"
                                 placeholder="e.g., Current: 45, Max: 128"
-                                required={true}
+                                required={false}
                                 message={"Number of Connected Clients"}
                             />
 
@@ -1116,7 +1231,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="ssids_supported"
                                 placeholder="e.g., Corp-Secure, Guest, IoT, Voice"
-                                required={true}
+                                required={false}
                                 message={"SSIDs Supported"}
                             />
                         </div>
@@ -1128,7 +1243,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="security_policy_count"
                                 placeholder="e.g., 150 policies, 25 NAT rules"
-                                required={true}
+                                required={false}
                                 message={"Security Policy Count"}
                             />
 
@@ -1137,7 +1252,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="vpn_tunnel_capacity"
                                 placeholder="e.g., 500 tunnels, 50 site-to-site"
-                                required={true}
+                                required={false}
                                 message={"VPN Tunnel Capacity"}
                             />
 
@@ -1146,7 +1261,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="concurrent_sessions"
                                 placeholder="e.g., 1,000,000 sessions"
-                                required={true}
+                                required={false}
                                 message={"Concurrent Sessions Capacity"}
                             />
 
@@ -1155,7 +1270,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="threat_prevention_license"
                                 placeholder="e.g., Licensed until 2025-12-31"
-                                required={true}
+                                required={false}
                                 message={"Threat Prevention License"}
                             />
                         </div>
@@ -1165,7 +1280,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="url_filtering_license"
                                 placeholder="e.g., Licensed, Category: Enterprise"
-                                required={true}
+                                required={false}
                                 message={"URL Filtering License"}
                             />
 
@@ -1174,7 +1289,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="ips_signature_version"
                                 placeholder="e.g., Version 8562-4567, Updated: 2024-03-15"
-                                required={true}
+                                required={false}
                                 message={"IPS/IDS Signature Version"}
                             />
 
@@ -1183,7 +1298,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="security_zone_config"
                                 placeholder="e.g., Trust, Untrust, DMZ, Guest"
-                                required={true}
+                                required={false}
                                 message={"Security Zone Configuration"}
                             />
 
@@ -1192,7 +1307,7 @@ function NetworkDevice({
                                 label={"High Availability Role"}
                                 placeholder="High Availability Role"
                                 name="ha_role"
-                                required={true}
+                                required={false}
                                 message={"Please Select HA Role"}
                                 options={[
                                     { value: "Active", label: "Active" },
@@ -1213,7 +1328,7 @@ function NetworkDevice({
                                 label={"Status"}
                                 placeholder="Device Status"
                                 name="device_status"
-                                required={true}
+                                required={false}
                                 message={"Please Select Device Status"}
                                 options={[
                                     { value: "Active", label: "Active" },
@@ -1231,7 +1346,7 @@ function NetworkDevice({
                                 label={"Criticality Level"}
                                 placeholder="Criticality Level"
                                 name="criticality_level"
-                                required={true}
+                                required={false}
                                 message={"Please Select Criticality Level"}
                                 options={[
                                     { value: "Tier-1", label: "Tier 1 - Critical" },
@@ -1318,7 +1433,7 @@ function NetworkDevice({
                                 label={"Primary Administrator/Team"}
                                 placeholder="Primary Administrator/Team"
                                 name="primary_admin_team"
-                                required={true}
+                                required={false}
                                 message={"Please Select Primary Administrator/Team"}
                                 options={[
                                     { value: "Network-Team", label: "Network Team" },
@@ -1337,7 +1452,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="oncall_contact"
                                 placeholder="e.g., John Doe, +1-555-0123, john@company.com"
-                                required={true}
+                                required={false}
                                 message={"On-Call Contact"}
                             />
 
@@ -1346,7 +1461,7 @@ function NetworkDevice({
                                 className="mx-1"
                                 name="vendor_support_contact"
                                 placeholder="e.g., Cisco TAC: 1-800-553-2447, Case: SR-1234567"
-                                required={true}
+                                required={false}
                                 message={"Vendor Support Contact"}
                             />
 
@@ -1385,7 +1500,7 @@ function NetworkDevice({
                                 label={"Attachments"}
                                 name="attachments"
                                 title={"Attachments"}
-                                required={true}
+                                required={false}
                                 multiple={false}
                                 accept="image/jpeg,image/png"
                                 classNameColor={`${style.inputDefaultBg}`}
@@ -1398,7 +1513,7 @@ function NetworkDevice({
                                 name="record_created"
                                 placeholder={"Record Created By & Date"}
                                 message={"Record Created By & Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -1408,7 +1523,7 @@ function NetworkDevice({
                                 name="last_updated"
                                 placeholder={"Last Updated By & Date"}
                                 message={"Last Updated By & Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
                         </div>

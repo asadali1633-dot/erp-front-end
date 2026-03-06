@@ -9,8 +9,9 @@ function UserModule() {
         <>
             {
                 module == "Login" ?
-                    <Login setModule={setModule} /> :
-                    <SignUp setModule={setModule} />
+                    <Login setModule={setModule} /> : 
+                    false
+                    // <SignUp setModule={setModule} />
             }
         </>
     )

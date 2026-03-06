@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import style from '../Inputs/input.module.css'
 import { ConfigProvider, Form, Input } from 'antd';
-import { CiEdit } from "react-icons/ci";
-import { IoMdEye } from "react-icons/io";
-import { IoMdEyeOff } from "react-icons/io";
-
-
+import { MdEdit } from "react-icons/md";
 
 
 
@@ -34,7 +30,7 @@ const FormInput = ({
         <>
             <div className={`${style.inputBox}`}>
                 {showEdit && (
-                    <CiEdit className={`${style.Edit}`} onClick={onEditClick ? onEditClick : null} />
+                    <MdEdit className={`${style.Edit}`} onClick={onEditClick ? onEditClick : null} />
                 )}
                 <Form.Item
                     className={`${style.form} ${className}`}
@@ -199,7 +195,7 @@ const FormInputTextArea = ({
         <>
             <div className={`${style.inputBox}`}>
                 {showEdit && (
-                    <CiEdit className={`${style.Edit}`} onClick={onEditClick ? onEditClick : null} />
+                    <MdEdit className={`${style.Edit}`} onClick={onEditClick ? onEditClick : null} />
                 )}
                 <Form.Item
                     className={`${style.form} ${className}`}

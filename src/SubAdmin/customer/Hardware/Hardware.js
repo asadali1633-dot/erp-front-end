@@ -126,14 +126,14 @@ function Hardware({
     }
 
     const UserAction = (id) => {
+        HardwareGetByid(id, accessToken);
+        setAssetsType(false);
         setCode({
             mode: "Edit",
             code: id
         });
         setLoading(true);
-        HardwareGetByid(id, accessToken);
     };
-    console.log("Red_Assets?.hardwareData",Red_Assets?.hardwareData)
 
 
 
@@ -161,11 +161,12 @@ function Hardware({
     
     useEffect(() => {
         const editData = Red_Assets?.HardwareSingleData?.[0]?.data;
-        if (editData && code?.mode === "Edit" && loading) {
+        if (code?.mode === "Edit") {
             setAssetsType(editData?.category_name);
             setLoading(false);
         }
-    }, [Red_Assets?.HardwareSingleData, code, loading]);
+    }, [Red_Assets?.HardwareSingleData, code]);
+
     useEffect(() => {
         GetAllHardware(pagBody, accessToken);
     }, [pagination.current, pagination.pageSize, search]);

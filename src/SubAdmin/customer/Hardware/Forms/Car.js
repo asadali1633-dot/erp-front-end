@@ -14,6 +14,7 @@ import QRCODE from '../../../../Components/QR/BARCODE'
 import { Country, State, City } from "country-state-city";
 import UploadFile from '../../../../Components/File/UploadFile';
 import Year from '../../../../Components/Date/Year';
+import dayjs from "dayjs";
 
 
 function Car({
@@ -24,7 +25,10 @@ function Car({
     getBarCode,
     CreateAssetsFun,
     GetAllBrandsManufacturer,
-    GetAllEmpList
+    GetAllEmpList,
+    UpdateAssets,
+    GetAllHardware,
+    EditAssetsData
 }) {
     const [form] = Form.useForm();
     const users = Red_Assets?.Users?.[0]?.data
@@ -44,9 +48,17 @@ function Car({
 
     const handleOk = () => {
         setAssetsType(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
     const handleCancel = () => {
         setAssetsType(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
 
     const handleSaveClick = () => {
@@ -62,7 +74,6 @@ function Car({
     const handleForm = async (values) => {
         setloading(true);
         const field_values = {
-            // Vehicle Identification
             asset_tag: values?.asset_tag,
             vehicle_type: values?.vehicle_type,
             make_manufacturer: values?.make_manufacturer,
@@ -74,8 +85,6 @@ function Car({
             registration_state: values?.registration_state,
             registration_certificate: values?.registration_certificate,
             engine_number: values?.engine_number,
-
-            // Vehicle Specifications
             engine_type: values?.engine_type,
             engine_size: values?.engine_size,
             transmission_type: values?.transmission_type,
@@ -87,8 +96,6 @@ function Car({
             cargo_capacity: values?.cargo_capacity,
             gvwr: values?.gvwr,
             vehicle_class: values?.vehicle_class,
-
-            // Assignment & Usage
             assigned_driver: values?.assigned_driver,
             employee_id_department: values?.employee_id_department,
             assignment_date: values?.assignment_date,
@@ -97,8 +104,6 @@ function Car({
             authorized_drivers: values?.authorized_drivers,
             usage_restrictions: values?.usage_restrictions,
             tracking_device_id: values?.tracking_device_id,
-
-            // Financial & Procurement
             po_number: values?.po_number,
             purchased_from: values?.purchased_from,
             purchase_date: values?.purchase_date,
@@ -113,8 +118,6 @@ function Car({
             depreciation_schedule: values?.depreciation_schedule,
             cost_center: values?.cost_center,
             residual_value: values?.residual_value,
-
-            // Registration & Insurance
             insurance_company: values?.insurance_company,
             policy_number: values?.policy_number,
             insurance_coverage: values?.insurance_coverage,
@@ -126,8 +129,6 @@ function Car({
             annual_registration_fee: values?.annual_registration_fee,
             emission_test: values?.emission_test,
             safety_inspection: values?.safety_inspection,
-
-            // Maintenance & Service
             service_center: values?.service_center,
             warranty_type: values?.warranty_type,
             warranty_expiry: values?.warranty_expiry,
@@ -140,8 +141,6 @@ function Car({
             tire_info: values?.tire_info,
             battery_info: values?.battery_info,
             brake_pads: values?.brake_pads,
-
-            // Fuel & Operational Costs
             fuel_card: values?.fuel_card,
             fuel_efficiency: values?.fuel_efficiency,
             fuel_budget: values?.fuel_budget,
@@ -151,22 +150,16 @@ function Car({
             m_gtag: values?.m_gtag,
             parking_permit: values?.parking_permit,
             parking_cost: values?.parking_cost,
-
-            // Safety & Equipment
             safety_equipment: values?.safety_equipment,
             spare_key_location: values?.spare_key_location,
             anti_theft_device: values?.anti_theft_device,
             dash_cam: values?.dash_cam,
             emergency_contact: values?.emergency_contact,
-
-            // Accidents & Incidents
             damage_history: values?.damage_history,
             traffic_violations: values?.traffic_violations,
             theft_reports: values?.theft_reports,
             accident_history: values?.accident_history,
             insurance_claim_history: values?.insurance_claim_history,
-
-            // Lifecycle Management
             vehicle_status: values?.vehicle_status,
             replacement_date: values?.replacement_date,
             replacement_mileage: values?.replacement_mileage,
@@ -175,8 +168,6 @@ function Car({
             sold_price: values?.sold_price,
             buyer_info: values?.buyer_info,
             disposal_method: values?.disposal_method,
-
-            // Documentation & Compliance
             owners_manual_location: values?.owners_manual_location,
             service_manual_location: values?.service_manual_location,
             maintenance_log_location: values?.maintenance_log_location,
@@ -184,8 +175,6 @@ function Car({
             compliance_stickers: values?.compliance_stickers,
             dot_requirements: values?.dot_requirements,
             cdl_requirements: values?.cdl_requirements,
-
-            // Administrative
             record_created_by: values?.record_created_by,
             record_created_date: values?.record_created_date,
             last_updated_by: values?.last_updated_by,
@@ -197,51 +186,195 @@ function Car({
         const payload = {
             asset_tag: values?.asset_tag,
             asset_type: assetsType,
+            assign_to: values?.assigned_to,
             field_values: field_values
         };
-        const isCheck = await CreateAssetsFun(payload, accessToken);
-        if (isCheck?.success) {
-            messageApi.success({
-                type: 'success',
-                content: isCheck?.message,
-            });
-            if (actionType === 'save') {
-                form.resetFields();
+        if(code?.mode !== "Edit"){
+            const isCheck = await CreateAssetsFun(payload, accessToken);
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                GetAllHardware(pagBody, accessToken);
+                if (actionType === 'save') {
+                    form.resetFields();
+                    setTimeout(() => {
+                        setAssetsType(false);
+                        setloading(false);
+                        setActionType('');
+                    }, 1000);
+                }
+                 else if (actionType === 'createNew') {
+                    setloading(false);
+                    form.resetFields();
+                    if (accessToken) {
+                        getBarCode(accessToken);
+                    }
+                }
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
+                setloading(false);
+            }
+        }else{
+            const isCheck = await UpdateAssets(payload, accessToken, code?.code)
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                GetAllHardware(pagBody, accessToken);
+                setloading(false);
                 setTimeout(() => {
                     setAssetsType(false);
-                    setloading(false);
-                    setActionType('');
-                }, 1000);
-            } else if (actionType === 'createNew') {
+                }, 1500);
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
                 setloading(false);
-                form.resetFields();
-                if (accessToken) {
-                    getBarCode(accessToken);
-                }
             }
-        } else {
-            messageApi.error({
-                type: 'error',
-                content: isCheck?.message,
-            });
-             setloading(false);
         }
+        
 
     };
 
     useEffect(() => {
-        if (accessToken) {
-            getBarCode(accessToken)
+        if (EditAssetsData && code?.mode === "Edit") {
+            const Data = EditAssetsData;
+            const values = EditAssetsData?.field_values;
+            const formValues = {
+            asset_tag: Data?.asset_tag,
+            vehicle_type: values?.vehicle_type,
+            make_manufacturer: values?.make_manufacturer,
+            model: values?.model,
+            year: values?.year ? dayjs(values.year) : null,
+            color: values?.color,
+            vin: values?.vin,
+            license_plate: values?.license_plate,
+            registration_state: values?.registration_state,
+            registration_certificate: values?.registration_certificate,
+            engine_number: values?.engine_number,
+            engine_type: values?.engine_type,
+            engine_size: values?.engine_size,
+            transmission_type: values?.transmission_type,
+            fuel_type: values?.fuel_type,
+            fuel_capacity: values?.fuel_capacity,
+            odometer_reading: values?.odometer_reading,
+            odometer_unit: values?.odometer_unit,
+            seating_capacity: values?.seating_capacity,
+            cargo_capacity: values?.cargo_capacity,
+            gvwr: values?.gvwr,
+            vehicle_class: values?.vehicle_class,
+            assigned_driver: values?.assigned_driver,
+            employee_id_department: values?.employee_id_department,
+            assignment_date: values?.assignment_date,
+            primary_use: values?.primary_use,
+            home_location: values?.home_location,
+            authorized_drivers: values?.authorized_drivers,
+            usage_restrictions: values?.usage_restrictions,
+            tracking_device_id: values?.tracking_device_id,
+            po_number: values?.po_number,
+            purchased_from: values?.purchased_from,
+            purchase_date: values?.purchase_date ? dayjs(values.purchase_date) : null,
+            purchase_price: values?.purchase_price,
+            current_market_value: values?.current_market_value,
+            lease_rental: values?.lease_rental,
+            lease_company: values?.lease_company,
+            lease_start_date: values?.lease_start_date ? dayjs(values.lease_start_date) : null,
+            lease_end_date: values?.lease_end_date ? dayjs(values.lease_end_date) : null,
+            monthly_lease_payment: values?.monthly_lease_payment,
+            mileage_allowance: values?.mileage_allowance,
+            depreciation_schedule: values?.depreciation_schedule,
+            cost_center: values?.cost_center,
+            residual_value: values?.residual_value,
+            insurance_company: values?.insurance_company,
+            policy_number: values?.policy_number,
+            insurance_coverage: values?.insurance_coverage,
+            insurance_expiry: values?.insurance_expiry ? dayjs(values.insurance_expiry) : null,
+            premium_amount: values?.premium_amount,
+            deductible_amount: values?.deductible_amount,
+            insurance_card_location: values?.insurance_card_location,
+            registration_expiry: values?.registration_expiry ? dayjs(values.registration_expiry) : null,
+            annual_registration_fee: values?.annual_registration_fee,
+            emission_test: values?.emission_test,
+            safety_inspection: values?.safety_inspection,
+            service_center: values?.service_center,
+            warranty_type: values?.warranty_type,
+            warranty_expiry: values?.warranty_expiry,
+            warranty_coverage: values?.warranty_coverage,
+            maintenance_interval: values?.maintenance_interval,
+            last_service_date: values?.last_service_date ? dayjs(values.last_service_date) : null,
+            last_service_type: values?.last_service_type,
+            last_service_odometer: values?.last_service_odometer,
+            next_service_due: values?.next_service_due,
+            tire_info: values?.tire_info,
+            battery_info: values?.battery_info,
+            brake_pads: values?.brake_pads,
+            fuel_card: values?.fuel_card,
+            fuel_efficiency: values?.fuel_efficiency,
+            fuel_budget: values?.fuel_budget,
+            last_fueling_date: values?.last_fueling_date ? dayjs(values.last_fueling_date) : null,
+            ev_charger_type: values?.ev_charger_type,
+            charger_card_id: values?.charger_card_id,
+            m_gtag: values?.m_gtag,
+            parking_permit: values?.parking_permit,
+            parking_cost: values?.parking_cost,
+            safety_equipment: values?.safety_equipment,
+            spare_key_location: values?.spare_key_location,
+            anti_theft_device: values?.anti_theft_device,
+            dash_cam: values?.dash_cam,
+            emergency_contact: values?.emergency_contact,
+            damage_history: values?.damage_history,
+            traffic_violations: values?.traffic_violations,
+            theft_reports: values?.theft_reports,
+            accident_history: values?.accident_history,
+            insurance_claim_history: values?.insurance_claim_history,
+            vehicle_status: values?.vehicle_status,
+            replacement_date: values?.replacement_date ? dayjs(values.replacement_date) : null,
+            replacement_mileage: values?.replacement_mileage,
+            retirement_reason: values?.retirement_reason,
+            sold_date: values?.sold_date ? dayjs(values.sold_date) : null,
+            sold_price: values?.sold_price,
+            buyer_info: values?.buyer_info,
+            disposal_method: values?.disposal_method,
+            owners_manual_location: values?.owners_manual_location,
+            service_manual_location: values?.service_manual_location,
+            maintenance_log_location: values?.maintenance_log_location,
+            vehicle_photos: values?.vehicle_photos,
+            compliance_stickers: values?.compliance_stickers,
+            dot_requirements: values?.dot_requirements,
+            cdl_requirements: values?.cdl_requirements,
+            record_created_by: values?.record_created_by,
+            record_created_date: values?.record_created_date ? dayjs(values.record_created_date) : null,
+            last_updated_by: values?.last_updated_by,
+            last_updated_date: values?.last_updated_date ? dayjs(values.last_updated_date) : null,
+            next_review_date: values?.next_review_date ? dayjs(values.next_review_date) : null,
+            notes: values?.notes,
+            attachments: values?.attachments
+        };
+        
+        form.setFieldsValue(formValues);
         }
-    }, [accessToken]);
+    }, [EditAssetsData, code, form]);
 
     useEffect(() => {
-        if (barcode) {
+        if (code?.mode !== "Edit" && accessToken && !barcode) {
+            getBarCode(accessToken);
+        }
+    }, [code?.mode, accessToken, getBarCode]);
+
+    useEffect(() => {
+        if (code?.mode !== "Edit" && barcode) {
             form.setFieldsValue({
                 asset_tag: barcode
             });
         }
-    }, [barcode, form]);
+    }, [barcode, code?.mode, form]);
 
     useEffect(() => {
         if (assetsType) {
@@ -275,7 +408,11 @@ function Car({
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
                             <h5 className="mx-1">Car Asset Form</h5>
-                            <QRCODE value={barcode} />
+                            <QRCODE
+                                value={
+                                    code?.mode === "Edit" ? EditAssetsData?.asset_tag : barcode
+                                }
+                            />
                         </div>
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Vehicle Identification</h5>
@@ -286,7 +423,8 @@ function Car({
                                 name="asset_tag"
                                 type={"text"}
                                 placeholder="Assets Tag/ID"
-                                required={true}
+                                required={false}
+                                readOnly={true}
                                 message={"Please Enter a ID"}
                             />
 
@@ -392,7 +530,7 @@ function Car({
                                 className="mx-1"
                                 name="engine_number"
                                 placeholder="e.g., ENG123456789, M1234567"
-                                required={false}
+                                required={true}
                                 message={"Engine Number (For motorcycles/older vehicles)"}
                             />
                         </div>
@@ -404,7 +542,7 @@ function Car({
                                 label={"Engine Type"}
                                 placeholder="Select Engine Type"
                                 name="engine_type"
-                                required={true}
+                                required={false}
                                 message={"Please Select Engine Type"}
                                 options={[
                                     { value: "Gasoline", label: "Gasoline" },
@@ -424,7 +562,7 @@ function Car({
                                 className="mx-1"
                                 name="engine_size"
                                 placeholder="e.g., 2.0L, 3000cc, 150kW"
-                                required={true}
+                                required={false}
                                 message={"Engine Size/Displacement"}
                             />
 
@@ -433,7 +571,7 @@ function Car({
                                 label={"Transmission Type"}
                                 placeholder="Select Transmission Type"
                                 name="transmission_type"
-                                required={true}
+                                required={false}
                                 message={"Please Select Transmission Type"}
                                 options={[
                                     { value: "Automatic", label: "Automatic" },
@@ -450,7 +588,7 @@ function Car({
                                 label={"Fuel Type"}
                                 placeholder="Select Fuel Type"
                                 name="fuel_type"
-                                required={true}
+                                required={false}
                                 message={"Please Select Fuel Type"}
                                 options={[
                                     { value: "Regular", label: "Regular Unleaded" },
@@ -469,7 +607,7 @@ function Car({
                                 className="mx-1"
                                 name="fuel_capacity"
                                 placeholder="e.g., 60L, 18 gallons, 75kWh battery"
-                                required={true}
+                                required={false}
                                 message={"Fuel Tank/Battery Capacity"}
                             />
                         </div>
@@ -481,7 +619,7 @@ function Car({
                                 placeholder="e.g., 45000"
                                 type="number"
                                 min="0"
-                                required={true}
+                                required={false}
                                 message={"Odometer Reading (Current)"}
                             />
 
@@ -490,7 +628,7 @@ function Car({
                                 label={"Odometer Unit"}
                                 placeholder="Select Odometer Unit"
                                 name="odometer_unit"
-                                required={true}
+                                required={false}
                                 message={"Please Select Odometer Unit"}
                                 options={[
                                     { value: "Miles", label: "Miles" },
@@ -506,7 +644,7 @@ function Car({
                                 placeholder="e.g., 5, 7, 15"
                                 type="number"
                                 min="1"
-                                required={true}
+                                required={false}
                                 message={"Seating Capacity"}
                             />
 
@@ -515,7 +653,7 @@ function Car({
                                 className="mx-1"
                                 name="cargo_capacity"
                                 placeholder="e.g., 500L, 15 cu ft, 1000 kg"
-                                required={true}
+                                required={false}
                                 message={"Cargo Capacity"}
                             />
 
@@ -524,7 +662,7 @@ function Car({
                                 className="mx-1"
                                 name="gvwr"
                                 placeholder="e.g., 2500 kg, 5500 lbs"
-                                required={true}
+                                required={false}
                                 message={"Gross Vehicle Weight Rating"}
                             />
 
@@ -533,7 +671,7 @@ function Car({
                                 label={"Vehicle Class"}
                                 placeholder="Select Vehicle Class"
                                 name="vehicle_class"
-                                required={true}
+                                required={false}
                                 message={"Please Select Vehicle Class"}
                                 options={[
                                     { value: "Compact", label: "Compact" },
@@ -571,7 +709,7 @@ function Car({
                                 className="mx-1"
                                 name="employee_id_department"
                                 placeholder="e.g., EMP12345, Sales Department"
-                                required={true}
+                                required={false}
                                 message={"Employee ID/Department"}
                             />
 
@@ -581,7 +719,7 @@ function Car({
                                 name="assignment_date"
                                 placeholder={"Assignment Date"}
                                 message={"Assignment Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -590,7 +728,7 @@ function Car({
                                 label={"Primary Use"}
                                 placeholder="Select Primary Use"
                                 name="primary_use"
-                                required={true}
+                                required={false}
                                 message={"Please Select Primary Use"}
                                 options={[
                                     { value: "Business-Travel", label: "Business Travel" },
@@ -615,7 +753,7 @@ function Car({
                                 className="mx-1"
                                 name="home_location"
                                 placeholder="e.g., HQ Parking Garage, Spot B-12, 123 Main St"
-                                required={true}
+                                required={false}
                                 message={"Home Location/Parking Spot"}
                             />
 
@@ -658,7 +796,7 @@ function Car({
                                 className="mx-1"
                                 name="po_number"
                                 placeholder="e.g., PO-VEH-2024-001, PUR-789123"
-                                required={true}
+                                required={false}
                                 message={"Purchase Order Number"}
                             />
 
@@ -667,7 +805,7 @@ function Car({
                                 label={"Purchased From"}
                                 placeholder="Select Purchase Source"
                                 name="purchased_from"
-                                required={true}
+                                required={false}
                                 message={"Please Select Purchase Source"}
                                 options={[
                                     { value: "Dealership", label: "Dealership" },
@@ -688,7 +826,7 @@ function Car({
                                 name="purchase_date"
                                 placeholder={"Purchase Date"}
                                 message={"Purchase Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -697,7 +835,7 @@ function Car({
                                 className="mx-1"
                                 name="purchase_price"
                                 placeholder="e.g., $25,000.00"
-                                required={true}
+                                required={false}
                                 message={"Purchase Price"}
                             />
 
@@ -706,7 +844,7 @@ function Car({
                                 className="mx-1"
                                 name="current_market_value"
                                 placeholder="e.g., $18,500.00"
-                                required={true}
+                                required={false}
                                 message={"Current Market Value"}
                             />
                         </div>
@@ -716,7 +854,7 @@ function Car({
                                 label={"Lease/Rental"}
                                 placeholder="Select Lease Status"
                                 name="lease_rental"
-                                required={true}
+                                required={false}
                                 message={"Please Select Lease Status"}
                                 options={[
                                     { value: "Yes", label: "Yes" },
@@ -741,7 +879,7 @@ function Car({
                                 name="lease_start_date"
                                 placeholder="e.g., 2024-01-15 to 2027-01-14"
                                 message={"Lease Start Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -751,7 +889,7 @@ function Car({
                                 name="lease_end_date"
                                 placeholder="e.g., 2024-01-15 to 2027-01-14"
                                 message={"Lease End Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -779,7 +917,7 @@ function Car({
                                 className="mx-1"
                                 name="depreciation_schedule"
                                 placeholder="e.g., 20% per year, 5-year straight line"
-                                required={true}
+                                required={false}
                                 message={"Depreciation Schedule"}
                             />
 
@@ -788,7 +926,7 @@ function Car({
                                 className="mx-1"
                                 name="cost_center"
                                 placeholder="e.g., Sales-Fleet-Budget, OPS-Vehicle-001"
-                                required={true}
+                                required={false}
                                 message={"Cost Center/Department Budget"}
                             />
 
@@ -809,7 +947,7 @@ function Car({
                                 className="mx-1"
                                 name="insurance_company"
                                 placeholder="e.g., State Farm, Allstate, Geico, Progressive"
-                                required={true}
+                                required={false}
                                 message={"Insurance Company"}
                             />
 
@@ -818,7 +956,7 @@ function Car({
                                 className="mx-1"
                                 name="policy_number"
                                 placeholder="e.g., POL123456789, SF-7890-1234"
-                                required={true}
+                                required={false}
                                 message={"Policy Number"}
                             />
 
@@ -827,7 +965,7 @@ function Car({
                                 label={"Insurance Type/Coverage"}
                                 placeholder="Select Insurance Coverage"
                                 name="insurance_coverage"
-                                required={true}
+                                required={false}
                                 message={"Please Select Insurance Coverage"}
                                 options={[
                                     { value: "Comprehensive", label: "Comprehensive" },
@@ -850,7 +988,7 @@ function Car({
                                 name="insurance_expiry"
                                 placeholder={"Insurance Expiry Date"}
                                 message={"Insurance Expiry Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -859,7 +997,7 @@ function Car({
                                 className="mx-1"
                                 name="premium_amount"
                                 placeholder="e.g., $1,200.00 annually, $100/month"
-                                required={true}
+                                required={false}
                                 message={"Premium Amount"}
                             />
 
@@ -868,7 +1006,7 @@ function Car({
                                 className="mx-1"
                                 name="deductible_amount"
                                 placeholder="e.g., $500, $1,000"
-                                required={true}
+                                required={false}
                                 message={"Deductible Amount"}
                             />
                         </div>
@@ -878,7 +1016,7 @@ function Car({
                                 className="mx-1"
                                 name="insurance_card_location"
                                 placeholder="e.g., Glove compartment, Digital copy, Office file"
-                                required={true}
+                                required={false}
                                 message={"Insurance Card Location"}
                             />
 
@@ -888,7 +1026,7 @@ function Car({
                                 name="registration_expiry"
                                 placeholder={"Registration Expiry Date"}
                                 message={"Registration Expiry Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -897,7 +1035,7 @@ function Car({
                                 className="mx-1"
                                 name="annual_registration_fee"
                                 placeholder="e.g., $150.00, $75/year"
-                                required={true}
+                                required={false}
                                 message={"Annual Registration Fee"}
                             />
 
@@ -906,7 +1044,7 @@ function Car({
                                 className="mx-1"
                                 name="emission_test"
                                 placeholder="Expiry: YYYY-MM-DD, Certificate: SMG-12345"
-                                required={true}
+                                required={false}
                                 message={"Emission Test/Certificate (Expiry date)"}
                             />
 
@@ -915,7 +1053,7 @@ function Car({
                                 className="mx-1"
                                 name="safety_inspection"
                                 placeholder="Expiry: YYYY-MM-DD, Certificate: SIC-67890"
-                                required={true}
+                                required={false}
                                 message={"Safety Inspection Certificate (Expiry date)"}
                             />
                         </div>
@@ -927,7 +1065,7 @@ function Car({
                                 className="mx-1"
                                 name="service_center"
                                 placeholder="e.g., Toyota Service Center, Jiffy Lube #123"
-                                required={true}
+                                required={false}
                                 message={"Preferred Service Center/Dealer"}
                             />
 
@@ -936,7 +1074,7 @@ function Car({
                                 label={"Warranty Type"}
                                 placeholder="Select Warranty Type"
                                 name="warranty_type"
-                                required={true}
+                                required={false}
                                 message={"Please Select Warranty Type"}
                                 options={[
                                     { value: "Manufacturer", label: "Manufacturer Warranty" },
@@ -953,7 +1091,7 @@ function Car({
                                 className="mx-1"
                                 name="warranty_expiry"
                                 placeholder="e.g., 2026-12-31 or 60,000 miles"
-                                required={true}
+                                required={false}
                                 message={"Warranty Expiry Date/Mileage"}
                             />
 
@@ -964,7 +1102,7 @@ function Car({
                                 placeholder="e.g., Covers engine, transmission, electronics"
                                 multiline={true}
                                 rows={3}
-                                required={true}
+                                required={false}
                                 message={"Warranty Coverage Details"}
                             />
 
@@ -973,7 +1111,7 @@ function Car({
                                 className="mx-1"
                                 name="maintenance_interval"
                                 placeholder="e.g., Every 5,000 miles or 6 months"
-                                required={true}
+                                required={false}
                                 message={"Maintenance Schedule Interval"}
                             />
 
@@ -983,7 +1121,7 @@ function Car({
                                 name="last_service_date"
                                 placeholder={"Last Service Date"}
                                 message={"Last Service Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
                         </div>
@@ -993,7 +1131,7 @@ function Car({
                                 label={"Last Service Type"}
                                 placeholder="Select Service Type"
                                 name="last_service_type"
-                                required={true}
+                                required={false}
                                 message={"Please Select Last Service Type"}
                                 options={[
                                     { value: "Oil-Change", label: "Oil Change" },
@@ -1016,7 +1154,7 @@ function Car({
                                 className="mx-1"
                                 name="last_service_odometer"
                                 placeholder="e.g., 45,250 miles"
-                                required={true}
+                                required={false}
                                 message={"Last Service Odometer"}
                             />
 
@@ -1025,7 +1163,7 @@ function Car({
                                 className="mx-1"
                                 name="next_service_due"
                                 placeholder="e.g., 2024-06-15 or 50,000 miles"
-                                required={true}
+                                required={false}
                                 message={"Next Service Due Date/Mileage"}
                             />
 
@@ -1036,7 +1174,7 @@ function Car({
                                 placeholder="e.g., Size: 225/65R17, Brand: Michelin, Tread: 6mm, Changed: 2023-08-10"
                                 multiline={true}
                                 rows={3}
-                                required={true}
+                                required={false}
                                 message={"Tire Information"}
                             />
 
@@ -1045,7 +1183,7 @@ function Car({
                                 className="mx-1"
                                 name="battery_info"
                                 placeholder="e.g., Type: AGM 12V, Installed: 2023-05-15, Warranty: 3 years"
-                                required={true}
+                                required={false}
                                 message={"Battery Information"}
                             />
 
@@ -1054,7 +1192,7 @@ function Car({
                                 className="mx-1"
                                 name="brake_pads"
                                 placeholder="e.g., Front: 2023-10-20 at 40,000 miles, Rear: 2024-01-15"
-                                required={true}
+                                required={false}
                                 message={"Brake Pad Last Changed"}
                             />
                         </div>
@@ -1066,7 +1204,7 @@ function Car({
                                 className="mx-1"
                                 name="fuel_card"
                                 placeholder="e.g., FC-123456, Account: XYZ789"
-                                required={true}
+                                required={false}
                                 message={"Fuel Card/Account Number"}
                             />
 
@@ -1075,7 +1213,7 @@ function Car({
                                 className="mx-1"
                                 name="fuel_efficiency"
                                 placeholder="e.g., 25 MPG, 9.4 L/100km"
-                                required={true}
+                                required={false}
                                 message={"Average Fuel Efficiency (MPG or L/100km)"}
                             />
 
@@ -1084,7 +1222,7 @@ function Car({
                                 className="mx-1"
                                 name="fuel_budget"
                                 placeholder="e.g., $300/month, Budget: $2,500/year"
-                                required={true}
+                                required={false}
                                 message={"Monthly Fuel Budget/Cost"}
                             />
 
@@ -1094,7 +1232,7 @@ function Car({
                                 name="last_fueling_date"
                                 placeholder={"Last Fueling Date"}
                                 message={"Last Fueling Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -1130,7 +1268,7 @@ function Car({
                                 className="mx-1"
                                 name="m_gtag"
                                 placeholder="e.g., E-ZPass: 123456789, TollTag: TT-7890"
-                                required={true}
+                                required={false}
                                 message={"M-GTag"}
                             />
 
@@ -1139,7 +1277,7 @@ function Car({
                                 className="mx-1"
                                 name="parking_permit"
                                 placeholder="e.g., PARK-2024-001, Permit: A-123"
-                                required={true}
+                                required={false}
                                 message={"Parking Permit Number"}
                             />
 
@@ -1148,7 +1286,7 @@ function Car({
                                 className="mx-1"
                                 name="parking_cost"
                                 placeholder="e.g., $150/month, $1,800/year"
-                                required={true}
+                                required={false}
                                 message={"Monthly Parking Cost"}
                             />
                         </div>
@@ -1162,7 +1300,7 @@ function Car({
                                 placeholder="e.g., First aid kit: Yes, Fire extinguisher: Yes, Warning triangles: Yes"
                                 multiline={true}
                                 rows={3}
-                                required={true}
+                                required={false}
                                 message={"Safety Equipment Check"}
                             />
 
@@ -1171,7 +1309,7 @@ function Car({
                                 className="mx-1"
                                 name="spare_key_location"
                                 placeholder="e.g., Office safe, Manager's drawer, Home key box"
-                                required={true}
+                                required={false}
                                 message={"Spare Key Location"}
                             />
 
@@ -1182,7 +1320,7 @@ function Car({
                                 placeholder="e.g., GPS tracker, Steering wheel lock, Alarm system"
                                 multiline={true}
                                 rows={2}
-                                required={true}
+                                required={false}
                                 message={"Anti-Theft Device (Details)"}
                             />
                         </div>
@@ -1193,7 +1331,7 @@ function Car({
                                 label={"Dash Cam Installed"}
                                 placeholder="Select Dash Cam Status"
                                 name="dash_cam"
-                                required={true}
+                                required={false}
                                 message={"Please Select Dash Cam Status"}
                                 options={[
                                     { value: "Yes", label: "Yes" },
@@ -1212,7 +1350,7 @@ function Car({
                                 placeholder="e.g., Company: 555-0123, Fleet Manager: John Doe - 555-0456"
                                 multiline={true}
                                 rows={3}
-                                required={true}
+                                required={false}
                                 message={"Emergency Contact Information (In vehicle)"}
                             />
                         </div>
@@ -1226,7 +1364,7 @@ function Car({
                                 placeholder="e.g., Scratch on right rear bumper, Dent on driver door, Photo: damage_001.jpg"
                                 multiline={true}
                                 rows={4}
-                                required={true}
+                                required={false}
                                 message={"Current Damage/Scratches (Documentation)"}
                             />
 
@@ -1237,7 +1375,7 @@ function Car({
                                 placeholder="e.g., Speeding ticket: 01/15/2024 - $150, Parking fine: 03/10/2024 - $75"
                                 multiline={true}
                                 rows={3}
-                                required={true}
+                                required={false}
                                 message={"Traffic Violations/Fines (Record)"}
                             />
 
@@ -1260,7 +1398,7 @@ function Car({
                                 placeholder="e.g., Minor collision: 12/05/2023, Rear-ended at stoplight, Repair: $2,500"
                                 multiline={true}
                                 rows={4}
-                                required={true}
+                                required={false}
                                 message={"Accident History (Date, description, repair cost)"}
                             />
 
@@ -1271,7 +1409,7 @@ function Car({
                                 placeholder="e.g., Claim #CL-2023-456: $3,200 for accident repair, Deductible: $500"
                                 multiline={true}
                                 rows={4}
-                                required={true}
+                                required={false}
                                 message={"Insurance Claim History"}
                             />
                         </div>
@@ -1283,7 +1421,7 @@ function Car({
                                 label={"Status"}
                                 placeholder="Select Vehicle Status"
                                 name="vehicle_status"
-                                required={true}
+                                required={false}
                                 message={"Please Select Vehicle Status"}
                                 options={[
                                     { value: "Active", label: "Active" },
@@ -1304,7 +1442,7 @@ function Car({
                                 name="replacement_date"
                                 placeholder={"Expected Replacement Date"}
                                 message={"Expected Replacement Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -1345,7 +1483,7 @@ function Car({
                                 name="sold_date"
                                 placeholder={"Sold Date"}
                                 message={"Sold Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -1397,7 +1535,7 @@ function Car({
                                 className="mx-1"
                                 name="owners_manual_location"
                                 placeholder="e.g., Glove compartment, Digital PDF in shared drive"
-                                required={true}
+                                required={false}
                                 message={"Owner's Manual Location"}
                             />
 
@@ -1406,7 +1544,7 @@ function Car({
                                 className="mx-1"
                                 name="service_manual_location"
                                 placeholder="e.g., Service department, Online portal access"
-                                required={true}
+                                required={false}
                                 message={"Service Manual Location"}
                             />
 
@@ -1415,7 +1553,7 @@ function Car({
                                 className="mx-1"
                                 name="maintenance_log_location"
                                 placeholder="e.g., Physical binder in office, Digital spreadsheet, Fleet software"
-                                required={true}
+                                required={false}
                                 message={"Maintenance Log Location (Physical or digital)"}
                             />
 
@@ -1426,7 +1564,7 @@ function Car({
                                 placeholder="e.g., Photos: VIN_plate.jpg, front_view.jpg, interior_dash.jpg"
                                 multiline={true}
                                 rows={3}
-                                required={true}
+                                required={false}
                                 message={"Vehicle Photos (Front, back, sides, interior, VIN plate)"}
                             />
                         </div>
@@ -1438,7 +1576,7 @@ function Car({
                                 placeholder="e.g., Safety inspection: Exp 2024-12-31, Emission: Exp 2025-06-30"
                                 multiline={true}
                                 rows={3}
-                                required={true}
+                                required={false}
                                 message={"Compliance Stickers (Safety, emission)"}
                             />
 
@@ -1480,7 +1618,6 @@ function Car({
                                 className="mx-1"
                                 name="record_created_by"
                                 placeholder="e.g., John Smith, System Auto"
-                                readOnly={true}
                                 required={false}
                                 message={"Record Created By"}
                             />
@@ -1491,7 +1628,7 @@ function Car({
                                 name="record_created_date"
                                 placeholder={"Record Created Date"}
                                 message={"Record Created Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -1511,7 +1648,7 @@ function Car({
                                 name="last_updated_date"
                                 placeholder={"Last Updated Date"}
                                 message={"Last Updated Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
                         </div>
@@ -1522,7 +1659,7 @@ function Car({
                                 name="next_review_date"
                                 placeholder={"Next Review Date"}
                                 message={"Next Review Date"}
-                                required={true}
+                                required={false}
                                 allowToday={true}
                             />
 
@@ -1542,7 +1679,7 @@ function Car({
                                 label={"Attachments"}
                                 name="attachments"
                                 title={"Attachments"}
-                                required={true}
+                                required={false}
                                 multiple={false}
                                 accept="image/jpeg,image/png"
                                 classNameColor={`${style.inputDefaultBg}`}
