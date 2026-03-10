@@ -1,7 +1,9 @@
 .header_mainBox {
-    position: fixed;
+    /* position: fixed; */
     width: 100%;
     right: 0;
+    top: 0;
+    background-color: #454544;
 }
 
 .header_innerBox {
@@ -9,7 +11,7 @@
     justify-content: space-between;
     align-items: center;
     height: 70px;
-    border-bottom: 1px solid #2e2e2e;
+    border-bottom: 1px solid #dadada;
     padding: 0 23px;
 }
 .header_logoBox img{height: 23px;}

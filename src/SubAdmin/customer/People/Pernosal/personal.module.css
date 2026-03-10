@@ -52,6 +52,7 @@
 
 .pers_flexOfEmp{
     display: flex;
+    padding: 10px 15px;
 }
 .pers_EmpProfile{
     width: 15%;
@@ -60,7 +61,3 @@
 /* .pers_EmpForm{
     width: 80%;
 } */
- 
-.personalTabs{
-    margin-left: 10px;
-}

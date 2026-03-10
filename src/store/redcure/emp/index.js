@@ -7,12 +7,10 @@ import {
     EMP_EMP_GENRATED_ID,
     EMP_DATA_END,
     EMP_MY_INFO,
-    SUPER_ADMIN_GENRATED_ID
 } from '../../action/types'
 
 const initState = {
     GenratedEmpId: [],
-    SuperAdminGenratedId: [],
     EmpData: [],
     myInfo: [],
     EmpSingleData: [],
@@ -53,13 +51,6 @@ const Red_Emp = (state = initState, action) => {
                 myInfo: action.payload,
                 loading : action.loading,
             }
-        case SUPER_ADMIN_GENRATED_ID:{
-            return {
-                ...state,
-                SuperAdminGenratedId: action.payload,
-                loading : action.loading,
-            }
-        }
         case EMP_SUPER_ADMIN_INFO: 
             return {
                 ...state,
@@ -76,7 +67,6 @@ const Red_Emp = (state = initState, action) => {
             return {
                 ...state,
                 GenratedEmpId: action.payload,
-                SuperAdminGenratedId: action.payload,
                 EmpData: action.payload,
                 EmpSingleData: action.payload,
                 EmpSuperAdminMyInfo: action.payload,

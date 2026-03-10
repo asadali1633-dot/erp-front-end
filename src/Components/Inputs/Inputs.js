@@ -38,7 +38,6 @@ const FormInput = ({
                     label={label}
                     rules={[{ required: required, message: message }]}
                 >
-
                     <input
                         className={`
                         ${style.input}  

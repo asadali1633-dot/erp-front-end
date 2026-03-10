@@ -1,4 +1,6 @@
-.PurchaseOrder_TabTableBox {}
+.PurchaseOrder_TabTableBox {
+    padding: 0 15px;
+}
 
 .PurchaseOrder_tableHeader {
     display: flex;

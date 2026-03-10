@@ -1,4 +1,6 @@
-.tickets_TabTableBox {}
+.tickets_TabTableBox {
+    padding: 0 10px;
+}
 
 .tickets_tableHeader {
     display: flex;

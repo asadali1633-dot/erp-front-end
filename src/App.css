@@ -34,12 +34,14 @@ section{
     border-bottom: 1px solid #87878745 !important;
     padding: 10px 5px;
     font-size: 12px;
+    color: black !important;
 }
 
 .antdCustomeTable .ant-table-tbody .ant-table-row td {
     border-bottom: 1px solid #87878745 !important;
     padding: 0px 5px;
     font-size: 11px;
+    color: black;
 }
 
 .antdCustomeTable .ant-table-row>.ant-table-cell-row-hover {
@@ -51,6 +53,9 @@ section{
 }
 .antdCustomeTable .ant-pagination{
   background: transparent !important;
+}
+.antdCustomeTable .ant-pagination  span{
+  color: black !important;
 }
 .antdCustomeTable .ant-select-selector .ant-select-selection-search-input{
   background: transparent !important;
@@ -170,6 +175,7 @@ section{
 /* ANDT LABELS CSS ========================== */
 .ant-form-item .ant-form-item-label >label{
     font-size: 12px;
+    color: black !important;
 }
 .ant-form-item-vertical .ant-form-item-label{
     padding: 0;

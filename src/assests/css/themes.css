@@ -16,16 +16,16 @@
 
 [data-theme="dark"] {
   --body-color: #101010;
-  --text-color: #878787;
-  --text-color-secondary: white;
+  --text-color: #dadada;
+  --text-color-secondary: #dadada;
   --role-Box: #0e2128;
   --role-box-border: #0e2128;
-  --table-bg: #171717;
+  --table-bg: #fff;
   --input-label: white;
   --input-bg: #2f2f2f;
   --icon-color: #00baff;
-  --tabs-color: #878787;
-  --drop-down-color: #2f2f2f;
+  --tabs-color: #dadada;
+  --drop-down-color: #454544;
   --select-bg: #2F2F2F;
 }
 
@@ -42,7 +42,7 @@
 
 /* TAGS THEME CSS =========================== */
 body {
-  background: var(--body-color) !important;
+  /* background: var(--body-color) !important; */
 }
 
 p {
@@ -79,12 +79,14 @@ h5,
 h6 {
   color: var(--text-color-secondary) !important;
 }
-
+.headingColorBlack{
+  color: black !important; 
+}
 ul {
   background-color: var(--drop-down-color);
 }
 li{
-  color: var(--text-color-secondary);
+  color: black;
 }
 a{
   color: var(--text-color-secondary);
@@ -97,9 +99,7 @@ a{
 
 /* TABLE OUTER BOX THEME CSS ==================== */
 .divbg {
-   background: var(--body-color) !important;
-  /* background-color: red; */
-  /* background-color: var(--table-bg) !important; */
+   background: #ffff !important;
 }
 
 /* HEADER ROLE BOX THEME CSS =================== */
@@ -110,6 +110,14 @@ a{
 }
 
 /* TABLE BOX AND OUTER BOX THEME CSS =============== */
+.customerinfo_tabsPanel .ant-tabs-nav-wrap{
+  background:  #454544;
+  padding: 0 20px;
+  border-top: 1px solid #dadada26;
+}
+.customerinfo_tabsPanel .ant-tabs-nav{
+  margin: 0 !important;
+}
 .customerinfo_tabsPanel .ant-tabs-tab-btn {
   color: var(--tabs-color);
   font-size: 12px !important;
@@ -137,8 +145,9 @@ font-size: 11px;
   color: var(--text-color-secondary) !important;
 }
 
-.antdCustomeTable .ant-table-tbody .ant-table-row td span {
-  color: var(--text-color-secondary) !important;
+.antdCustomeTable .ant-table-tbody .ant-table-row td span,
+.antdCustomeTable .ant-table-tbody .ant-table-row td a {
+  color: black !important;
 }
 
 /* ANTD TABS DROPDOWN THEME CSS ==================================== */
@@ -164,7 +173,7 @@ font-size: 11px;
 
 /* ANTD SELECT THEME CSS ======================================= */
 .selectBox .selectedTextColorOnInput .ant-select-selection-item{
-    color: white !important;
+    color: black !important;
     font-size: 12px !important;
 }
 

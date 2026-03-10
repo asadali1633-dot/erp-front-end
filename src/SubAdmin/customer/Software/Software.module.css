@@ -1,4 +1,6 @@
-.software_TabTableBox {}
+.software_TabTableBox {
+    padding: 0 15px;
+}
 
 .software_tableHeader {
     display: flex;

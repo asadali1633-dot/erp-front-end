@@ -7,6 +7,6 @@
   background: transparent !important;
 } 
 .selectBox .ant-select .ant-select-selector {
-    border-radius: 0;
+    border-radius: 5px;
     border: none;
 }

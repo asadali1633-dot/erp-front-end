@@ -129,8 +129,37 @@ function CustomerInfo({
         },
         assetsTab,
         { key: "5", label: "Tickets", slug: "", children: <Tickets /> },
-        vendorTab
-
+        vendorTab,
+        {
+            key: "6",
+            label: "Purchase Order",
+            slug: "",
+        },
+        {
+            key: "7",
+            label: "Client",
+            slug: "",
+        },
+        {
+            key: "8",
+            label: "Quotation",
+            slug: "",
+        },
+        {
+            key: "9",
+            label: "Invoice",
+            slug: "",
+        },
+        {
+            key: "10",
+            label: "Payment",
+            slug: "",
+        },
+        {
+            key: "11",
+            label: "Expenses",
+            slug: "",
+        },
     ];
 
     const filteredItems = items.filter(item => item && hasPermission(item.slug));
@@ -190,9 +219,9 @@ function CustomerInfo({
             <SettingBar show={show} hide={hide} />
             <div className={style.customerinfo_innerBox}>
                 <Header />
-                <div className={`${style.customerinfo_tableBox} divbg mt-4`}>
-                    <div className={`${style.customerinfo_tableInnerBox} divbg`}>
-                        <div className={`${style.customerinfo_tabsBox} divbg`} >
+                <div className={`${style.customerinfo_tableBox} divbg`}>
+                    <div className={`${style.customerinfo_tableInnerBox}`}>
+                        <div className={`${style.customerinfo_tabsBox}`} >
                             <div className={style.customerinfo_settingIconBox}>
                                 {
                                     empData?.user_type == "Super_admin" ? <Setting title='settings' onClick={openBar} /> : null

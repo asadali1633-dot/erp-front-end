@@ -1,7 +1,6 @@
 .customerinfo_mainSection {
     position: relative;
     display: flex;
-    padding: 5px 5px;
 }
 
 .customerinfo_innerBox {
@@ -11,8 +10,7 @@
 
 
 .customerinfo_tableBox {
-    margin-left: 10px;
-    margin-top: 5rem !important;
+    /* margin-top: 5rem !important; */
 }
 .customerinfo_tabsBox {
     position: relative;
@@ -21,25 +19,13 @@
     position: absolute;
     right: 28px;
     z-index: 999;
+    top: 8px;
     cursor: pointer;
 }
 .customerinfo_settingIconBox svg{
     color: white;
-    font-size: 30px;
+    font-size: 25px;
 }
-
-/* .customerinfo_tabsBox ul {
-    border-bottom: unset !important;
-}
-
-.customerinfo_tabsBox ul li {
-    font-weight: 500;
-    padding: 6px 20px !important;
-    position: relative;
-} */
-
-
-
 
 .customerinfo_boderBottom {
     border-bottom: 2px solid #2e2e2e;

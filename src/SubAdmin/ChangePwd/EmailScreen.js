@@ -34,6 +34,7 @@ function EmailScreen({
             Cookies.set("forgot_email", values?.email, { expires: 1 })
             Cookies.set("forgot_indentify", "forgot_indentify", { expires: 1 })
             messageApi.success(isCheck?.message);
+             Cookies.set("domain", values?.domain, { expires: 1 })
             dispatch(setStep(STEPS.OTP));
              setTimeout(() => {
                 navigate("/user-verification");

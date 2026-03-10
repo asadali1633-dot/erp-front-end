@@ -27,11 +27,11 @@ const SelectInput = ({
                 theme={{
                     components: {
                         Select: {
-                            selectorBg: "#2f2f2f",
+                            selectorBg: "#00000036",
                             controlHeight: 30,
-                            colorTextPlaceholder: "gray",
+                            colorTextPlaceholder: "black",
                             // fontSize: "20px",
-                            optionSelectedBg: "#2f2f2f34", 
+                            optionSelectedBg: "#00000036", 
                         },
                     },
                 }}

@@ -55,6 +55,9 @@
     color: #00baff;
 }
 
+.persemp_profileView li{
+    color: #dadada !important;
+}
 
 @media screen and (max-width:1366px){
     .persemp_profileView{

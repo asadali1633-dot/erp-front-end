@@ -33,7 +33,6 @@ function PersonalForm({
     Red_Design,
     CreatePeopleFun,
     CreateSuperAdmin,
-    GetGenratedSuperAdminId,
     handleUpdateEmp,
     EmpGetByid
 }) {
@@ -50,7 +49,6 @@ function PersonalForm({
     const countries = Country.getAllCountries();
     const codes = ["PK", "IN", "US", "AS"];
     const provinces = codes.flatMap((code) => State.getStatesOfCountry(code));
-    const [type,setType] = useState(null)
     let selectedCities = [];
 
     codes.forEach((code) => {
@@ -97,31 +95,21 @@ function PersonalForm({
     };
 
     const setEmpId = () => {
-        const Data = 
-        type === "Super_admin" ?
-        Red_Emp?.SuperAdminGenratedId : Red_Emp?.GenratedEmpId
+        const Data = Red_Emp?.GenratedEmpId
         if (Data) {
             form.setFieldsValue({
-                emp_id: Data?.[0]?.next_employee_id || Data?.[0]?.next_super_admin_id,
+                emp_id: Data?.[0]?.next_employee_id
             });
         }
     }
 
-    const typeRecognize = async () => {
-        if (type === "Super_admin") {
-            await GetGenratedSuperAdminId(accessToken);
-        } else {
-            await GetGenratedEmpId(accessToken)
-        }
-    }
-
     useEffect(() => {
-       typeRecognize()
-    }, [accessToken,type])
+        GetGenratedEmpId(accessToken)
+    }, [accessToken])
     
     useEffect(() => {
         setEmpId();
-    }, [Red_Emp?.GenratedEmpId,Red_Emp?.SuperAdminGenratedId]);
+    }, [Red_Emp?.GenratedEmpId]);
 
 
     return (
@@ -261,7 +249,6 @@ function PersonalForm({
                                     message="Please Select User Type"
                                     required={true}
                                     showSearch={false}
-                                    onChange={(value) => {setType(value)}}
                                     options={[
                                         { value: "ADMIN", label: "Admin" },
                                         { value: "HR", label: "Hr" },

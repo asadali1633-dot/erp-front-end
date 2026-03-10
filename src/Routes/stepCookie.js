@@ -27,5 +27,5 @@ export const getStepCookie = () => {
 
 export const clearStepCookie = () => {
   Cookies.remove(STEP_KEY);
-   Cookies.remove("refresh_token");
+  Cookies.remove("refresh_token");
 };

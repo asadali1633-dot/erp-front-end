@@ -7,7 +7,7 @@ function Heading({
   classNameColor
 }) {
   return (
-    <h5 className={` ${classNameColor} ${style.Heading} ${className}`}>{title}</h5>
+    <h5 className={` ${classNameColor} ${style.Heading} ${className} headingColorBlack`}>{title}</h5>
   )
 }
 

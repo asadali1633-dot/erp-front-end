@@ -5,6 +5,7 @@
     margin: 0;
     border-radius: 10px;
     border: 2px solid #00baff33;
+    height: 630px;
 }
 
 .persemp_profileImage {
@@ -53,4 +54,13 @@
     margin-right: 5px;
     font-size: 15px;
     color: #00baff;
+}
+.persemp_profileView li{
+    color: #dadada !important;
+}
+
+@media screen and (max-width:1366px){
+    .persemp_profileView{
+        height: 550px !important;
+    }
 }

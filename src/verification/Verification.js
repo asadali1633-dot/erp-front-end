@@ -13,12 +13,15 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { STEPS } from '../Routes/stepCookie';
 import { setStep } from '../store/action/auth';
+import { TbXboxXFilled } from "react-icons/tb";
+
 
 function Verification({
     Red_Verification,
     Verification,
     Verification_check
 }) {
+    // Cookies.remove("auth_step");
     const dispatch = useDispatch();
     let isCheck;
     let decideEmail;
@@ -95,6 +98,13 @@ function Verification({
         }
     };
 
+    const backToLogin = () => {
+        Cookies.remove("auth_step","otp");
+        navigate("/");
+        // setTimeout(() => {
+        // }, 3000);
+    }
+
     return (
         <>
             <StaterHeader />
@@ -102,6 +112,7 @@ function Verification({
             {contextHolderloading}
 
             <section className={style.verification_Section}>
+                {forgot_indentify ? <TbXboxXFilled onClick={backToLogin}/> : false}
                 <div className="container">
                     <div className="row justify-content-center">
                         <form className={style.verification_mainBox} onSubmit={handleSubmit}>

@@ -1,6 +1,6 @@
 {
     
-    "baseUrl": "https://backend.itrackspace.com",
-    "baseUrl1": "http://localhost:5000"
+    "baseUrl1": "https://backend.itrackspace.com",
+    "baseUrl": "http://localhost:5000"
 }
 

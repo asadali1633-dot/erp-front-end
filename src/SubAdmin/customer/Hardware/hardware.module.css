@@ -1,7 +1,11 @@
+
+.hardware_TabTableBox{
+     padding: 0 15px;
+}
 .hardware_tableHeader{
     display: flex;
     justify-content: space-between;
-    margin-bottom: 7px;
+    margin: 10px 0;
 }
 .hardware_headFlex {
     display: flex;

@@ -6,9 +6,17 @@
     background: #101010;
 }
 
-body{
-     background: #101010;
+.verification_Section svg {
+    position: absolute;
+    right: 20px;
+    top: 7rem;
+    font-size: 30px;
+    color: white;
 }
+
+/* body {
+    background: #101010;
+} */
 
 .verification_mainBox {
     width: 60%;
@@ -23,7 +31,7 @@ body{
     box-shadow: -1px 1px 5px 10px #4f4c4c08;
 }
 
-.verification_Section h5{
+.verification_Section h5 {
     color: white !important;
     font-size: 25px !important;
 }
@@ -36,7 +44,8 @@ body{
     color: #FFFFFF99 !important;
     font-size: 12px;
 }
-.verification_mainBox a{
+
+.verification_mainBox a {
     color: white !important;
     font-weight: 500;
 }

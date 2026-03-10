@@ -9,7 +9,6 @@ import {
     EMP_LOIGIN_TIME_USER,
     EMP_EMP_GENRATED_ID,
     EMP_DATA_END,
-    SUPER_ADMIN_GENRATED_ID
 } from '../types'
 import baseUrl from '../../../config.json'
 
@@ -198,46 +197,6 @@ export const GetMyInfo = (id,accessToken) => async (dispatch, getState) => {
             const res = await response.json();
             dispatch({
                 type: EMP_MY_INFO,
-                payload: [res],
-                loading: false,
-            });
-        } else {
-            const res = await response.json();
-            dispatch({
-                type: EMP_DATA_END,
-                payload: [res],
-                loading: false,
-            });
-        }
-
-    } catch (error) {
-        dispatch({
-            type: EMP_DATA_END,
-            payload: false,
-            loading: false,
-        });
-    }
-};
-
-
-export const GetGenratedSuperAdminId = (accessToken) => async (dispatch, getState) => {
-    try {
-        dispatch({
-            type: EMP_DATA_START,
-            payload: true,
-            loading: true,
-        });
-        const response = await fetch(`${baseUrl.baseUrl}/api/super-admin-next-id`, {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + accessToken,
-                "Content-Type": "application/json",
-            },
-        });
-        if (response.status === 200) {
-            const res = await response.json();
-            dispatch({
-                type: SUPER_ADMIN_GENRATED_ID,
                 payload: [res],
                 loading: false,
             });

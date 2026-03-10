@@ -19,6 +19,7 @@
     padding: 0 15px;
     border-radius: 10px;
     font-weight: 300;
+    color: black !important;
 }
 
 .SearchBarBox input:focus {

@@ -42,7 +42,7 @@ function CustomDate({
                             value: value ? dayjs(value) : null,
                         })}
                         normalize={(value) =>
-                            value ? value.format("MM-DD-YYYY") : null
+                            value ? value.format("YYYY-MM-DD") : null
                         }
                     >
                         <DatePicker

@@ -23,6 +23,7 @@
     height: fit-content;
     text-decoration: none;
     font-size: 11px;
+    color: black !important;
 }
 
 .OutLineButton:hover{
