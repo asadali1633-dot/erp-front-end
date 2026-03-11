@@ -89,9 +89,7 @@ function EmpPersonalFrom({
         return canEditField(field);
     };
 
-    const handleEdit = () => {
-        setfomtEdit(prev => !prev);
-    };
+
 
     let selectedCities = [];
     codes.forEach((code) => {
@@ -143,7 +141,6 @@ function EmpPersonalFrom({
             if (isCheck?.success) {
                 messageApi.success(isCheck?.message);
                 GetSuperAdminInfo(selectId, accessToken);
-                setfomtEdit(false)
                 setloading(false);
             } else {
                 messageApi.error(isCheck?.message);
@@ -155,7 +152,6 @@ function EmpPersonalFrom({
                 messageApi.success(isCheck?.message);
                 form.resetFields();
                 GetMyInfo(selectId, accessToken)
-                setfomtEdit(false)
                 setloading(false);
             } else {
                 messageApi.error(isCheck?.message);
@@ -175,7 +171,6 @@ function EmpPersonalFrom({
                         <PiUserList />
                         <Heading title={"Personal Information"} />
                     </div>
-                    <CiEdit onClick={handleEdit} />
                 </div>
 
                 <Form
@@ -326,7 +321,6 @@ function EmpPersonalFrom({
                                 label={"Date of birth"}
                                 className={`mx-1 inputFlexBox`}
                                 name={"date_of_birth"}
-                                placeholder={"Date of birth"}
                                 message={"Please Enter Date of Birth"}
                                 required={isRequiredField("date_of_birth")}
                                 disabled={!canEditField("date_of_birth")}
@@ -534,7 +528,12 @@ function EmpPersonalFrom({
                                 readOnly={!canEditField("linkedin_link")}
                             />
                         </div>
-                        {formEdit && (
+                        <div className={`${style.emp_buttonBox} mt-2`}>
+                            <Button title={"Save"} className={"w-auto"} type={"submit"}
+                                loading={loading}
+                            />
+                        </div>
+                        {/* {formEdit && (
                             <div className={`${style.emp_buttonBox} mt-2`}>
                                 <OutLineButton form={true} title={"Cancel"}
                                     onClick={() => setfomtEdit(false)}
@@ -543,7 +542,7 @@ function EmpPersonalFrom({
                                     loading={loading}
                                 />
                             </div>
-                        )}
+                        )} */}
                     </div>
                 </Form>
 

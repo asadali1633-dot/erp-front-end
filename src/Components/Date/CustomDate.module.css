@@ -1,16 +1,15 @@
-
-
-.CustomDate{
+.CustomDate {
     width: 100%;
 }
-:global(.CustomDate .ant-picker){
+
+:global(.CustomDate .ant-picker) {
     width: 100%;
     border-radius: 5px;
-    background: #00000036;
-    border:0;
+    background: transparent;
+    border: 1px solid #dadada;
 }
 
-:global(.CustomDate .ant-picker input){
+:global(.CustomDate .ant-picker input) {
     background: transparent !important;
     color: black !important;
 }

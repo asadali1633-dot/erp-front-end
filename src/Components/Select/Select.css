@@ -8,5 +8,5 @@
 } 
 .selectBox .ant-select .ant-select-selector {
     border-radius: 5px;
-    border: none;
+    border: 1p solid #dadada;
 }

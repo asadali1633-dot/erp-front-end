@@ -69,7 +69,7 @@ function ChosenType({
                         onFinish={handleType}
                     >
                         <div>
-                            <h5 className="mx-1">Please Select Assets Type</h5>
+                            <h5 className={`${style.heading} mx-1`}> Please Select Assets Type</h5>
                             <div className={style.form_inputBox}>
                                 <SelectInput
                                     className="mx-1"
@@ -109,7 +109,7 @@ function ChosenType({
             </div>
 
 
-            {loading && <Loader />}
+            {/* {loading && <Loader />}
             {!loading && lap_desk.includes(assetsType) && (
                 <Laptop_desktop {...{setCode, code, pagBody,assetsType,setAssetsType}}/>
             )}
@@ -133,7 +133,7 @@ function ChosenType({
             )}
             {!loading && otherItems.includes(assetsType) && (
                 <BasicItems {...{setCode, code, pagBody,assetsType,setAssetsType}}/>
-            )}
+            )} */}
         </>
     )
 }

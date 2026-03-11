@@ -2,61 +2,33 @@ import React, { useState } from "react";
 import style from '../Inputs/input.module.css'
 import { ConfigProvider, Form, Input } from 'antd';
 import { MdEdit } from "react-icons/md";
+import FloatingLabel from "../FloatingLabel/FloatingLabel";
+const { TextArea } = Input;
 
 
 
 const FormInput = ({
-    type,
     name,
-    placeholder,
     required,
     className,
-    onFocus,
-    onMouseLeave,
-    onMouseEnter,
     message,
-    readOnly,
     label,
-    showEdit,
-    disabled,
-    title,
-    eye,
-    className2,
     classNameColor,
-    onEditClick,
-    onChange
+    readOnly,
+    type
 }) => {
+
     return (
         <>
-            <div className={`${style.inputBox}`}>
-                {showEdit && (
-                    <MdEdit className={`${style.Edit}`} onClick={onEditClick ? onEditClick : null} />
-                )}
+            <div className={style.inputBox}>
                 <Form.Item
                     className={`${style.form} ${className}`}
                     name={name}
-                    label={label}
-                    rules={[{ required: required, message: message }]}
+                    rules={[{ required, message }]}
                 >
-                    <input
-                        className={`
-                        ${style.input}  
-                        ${readOnly == true ? style.gray : ""}
-                        ${disabled == true ? style.trans : classNameColor}
-                        `}
-
-                        onChange={onChange}
-                        type={type}
-                        style={type === "file" ? { padding: "5px 10px" } : undefined}
-                        name={name}
-                        placeholder={placeholder}
-                        onFocus={onFocus}
-                        onMouseLeave={onMouseLeave}
-                        onMouseEnter={onMouseEnter}
-                        readOnly={readOnly}
-                        disabled={disabled}
-                        title={disabled ? title : ""}
-                    />
+                    <FloatingLabel label={label} name={name}>
+                        <Input className={`${style.input} ${classNameColor}`} type={type}/>
+                    </FloatingLabel>
                 </Form.Item>
             </div>
 
@@ -75,6 +47,7 @@ const FormPasswordInput = ({
     title,
     eye,
 }) => {
+
     return (
         <>
 
@@ -83,12 +56,12 @@ const FormPasswordInput = ({
                 theme={{
                     components: {
                         Input: {
-                            colorBgContainer: "#2f2f2f",
+                            colorBgContainer: "white",
                             controlHeight: 30,
-                            colorBorder: "#2f2f2f",
+                            colorBorder: "#dadada",
                             colorIcon: "white",
-                            borderRadius: "0",
-                            borderColor: "#2f2f2f",
+                            borderRadius: "5px",
+                            borderColor: "#dadada",
                         },
                     },
                 }}
@@ -97,11 +70,13 @@ const FormPasswordInput = ({
                     <Form.Item
                         className={`${style.form} ${className} ${style.passwordInput}`}
                         name={name}
-                        label={label}
                         rules={[{ required: required, message: message }]}
                     >
-                        <Input.Password placeholder={placeholder} />
+                       
 
+                        <FloatingLabel label={label} name={name}>
+                            <Input.Password placeholder={placeholder} />
+                        </FloatingLabel>
                     </Form.Item>
                 </div>
             </ConfigProvider>
@@ -128,12 +103,12 @@ const SuffixEmail = ({
         }
     };
 
-        const handleInput = (e) => {
+    const handleInput = (e) => {
         let value = e.target.value;
         if (value.includes('@')) {
             value = value.replace(/@/g, '');
             e.target.value = value;
-            
+
             // React synthetic event trigger
             const event = new Event('input', { bubbles: true });
             e.target.dispatchEvent(event);
@@ -179,7 +154,7 @@ const FormInputTextArea = ({
     type,
     name,
     placeholder,
-    required = false,
+    required,
     className,
     Datetype,
     onFocus,
@@ -193,26 +168,14 @@ const FormInputTextArea = ({
     return (
         <>
             <div className={`${style.inputBox}`}>
-                {showEdit && (
-                    <MdEdit className={`${style.Edit}`} onClick={onEditClick ? onEditClick : null} />
-                )}
                 <Form.Item
                     className={`${style.form} ${className}`}
                     name={name}
-                    label={label}
                     rules={[{ required: required, message: message }]}
                 >
-                    <textarea
-                        className={`${style.inputTextArea} ${className}
-                            ${readOnly == true ? style.gray : ""}
-                            ${viewScreen == true ? style.textAreaHeightViewScreen : ""}
-                        `}
-                        name={name}
-                        readOnly={readOnly}
-                        placeholder={placeholder}
-                        onFocus={onFocus}
-                    >
-                    </textarea>
+                    <FloatingLabel label={label} name={name}>
+                         <TextArea  autoSize={{ minRows: 8, maxRows: 6 }} style={{marginBottom: "10px"}}/>
+                    </FloatingLabel>
                 </Form.Item>
             </div>
         </>

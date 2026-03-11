@@ -7,6 +7,7 @@ import { Form, Modal } from 'antd';
 import { FormInput } from '../../../../../../Components/Inputs/Inputs';
 import { SelectInput } from '../../../../../../Components/Select/Select';
 import CustomDate from '../../../../../../Components/Date/CustomDate';
+import UploadFile from '../../../../../../Components/File/UploadFile';
 
 
 function Timeoff() {
@@ -268,13 +269,15 @@ function Timeoff() {
                             placeholder="Reporting To"
                             required={true}
                         />
-                        <FormInput
-                            label="Attachments"
+                        <UploadFile
                             className="mx-1 inputFlexBox"
-                            className2="w-25"
-                            name="Attachments"
-                            type={"file"}
-                            placeholder="Attachments"
+                            label={"Attachments"}
+                            name="file"
+                            title={"Attachments"}
+                            required={true}
+                            multiple={false}
+                            accept=".pdf"
+                            message={"Please Select a Documents"}
                         />
                     </div>
                     <div className={style.emp_inputbox}>

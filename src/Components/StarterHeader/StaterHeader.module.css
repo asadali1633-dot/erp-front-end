@@ -1,13 +1,9 @@
 .header {
     border-bottom: 1px solid #837b7b;
     padding-bottom: 1.5rem;
-    width: 97%;
     margin: 0 auto;
     background: #101010;
 }
-/* body{
-    background: #101010 !important;
-} */
 
 .header img {
     margin-top: 2rem;

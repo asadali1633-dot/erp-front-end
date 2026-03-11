@@ -50,7 +50,7 @@ p {
 }
 
 label {
-  color: var(--input-label) !important;
+  color:  black !important;
 }
 
 input,

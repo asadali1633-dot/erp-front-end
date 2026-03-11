@@ -2,6 +2,7 @@
 .form_modalMainBox h5 {
     font-size: 20px;
     font-weight: 600;
+    color: black !important;
 }
 .form_inputBox {
     display: flex;
@@ -49,4 +50,7 @@
 .basicItems_rightButtonAddNew{
     position: absolute;
     right: 20px;
+}
+.heading{
+    color: black !important;
 }

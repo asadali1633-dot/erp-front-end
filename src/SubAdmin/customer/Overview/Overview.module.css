@@ -1,6 +1,7 @@
 .overview_TabPanelBox {
     display: flex;
     transition: 0.1s ease;
+    margin-top: 20px;
 }
 
 .overview_body {

@@ -27,15 +27,6 @@ function Personal({
     const [activeTab, setActiveTab] = useState("1");
 
 
-    // const hitTabApi = (tabKey) => {
-    //     if (tabKey === "1") {
-    //         console.log("tabKey",tabKey)
-    //     }
-    // };
-    // useEffect(() => {
-    //     hitTabApi(activeTab);
-    // }, [activeTab]);
-
 
     const items = [
         {

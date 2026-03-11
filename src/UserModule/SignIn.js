@@ -85,7 +85,7 @@ function SignIn({ SignIn, setModule }) {
                       className="mt-2"
                       type="text"
                       name="domain"
-                      placeholder="Enter Your Domain"
+                      label="Domain"
                       required={true}
                       message={"Domain is required for login"}
                     />
@@ -93,8 +93,8 @@ function SignIn({ SignIn, setModule }) {
                     className="mt-2"
                     type="email"
                     name="email"
-                     classNameColor={`${style.inputDefaultBg}`}
-                    placeholder="Email"
+                    classNameColor={`${style.inputDefaultBg}`}
+                    label="Email"
                     required={true}
                     message={"Email is required"}
                   />
@@ -102,11 +102,10 @@ function SignIn({ SignIn, setModule }) {
                     className="mt-2"
                     type="password"
                     name="password"
-                     classNameColor={`${style.inputDefaultBg}`}
-                    placeholder="Password"
+                    label={"Password"}
+                    classNameColor={`${style.inputDefaultBg}`}
                     required={true}
                     message={"Password is required"}
-                    eye={true}
                   />
                   <Link to={"/EmailScreenPassword"} className="mt-2 d-block">
                     Forget Password?

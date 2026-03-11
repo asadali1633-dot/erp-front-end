@@ -1,14 +1,13 @@
 .input {
     border: none;
     outline: none;
-    height: 30px;
+    height: 33px;
     width: 100%;
     padding: 0 13px;
     position: relative;
     border-radius: 5px;
-    font-size: 12px;
-    background: #00000036;
     color: black !important;
+    border: 1px solid #dadada;
 }
 .input::placeholder{
     font-size: 12px;

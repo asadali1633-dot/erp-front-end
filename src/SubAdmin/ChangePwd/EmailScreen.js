@@ -69,7 +69,7 @@ function EmailScreen({
                                 className="mx-1"
                                 type="text"
                                 name="domain"
-                                placeholder="Enter Your Domain"
+                                label="Domain"
                                 required={true}
                                 message={"Domain is required for login"}
                             />
@@ -77,7 +77,7 @@ function EmailScreen({
                                 className="mt-2 mx-1"
                                 name="email"
                                 classNameColor={`${style.inputDefaultBg}`}
-                                placeholder="Enter Your Email"
+                                label="Email"
                                 required={true}
                                 type={"email"}
                                 message={"Please Enter Your Email"}

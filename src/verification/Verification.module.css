@@ -3,7 +3,7 @@
     width: 100%;
     display: flex;
     align-items: center;
-    background: #101010;
+    background: white;
 }
 
 .verification_Section svg {
@@ -11,7 +11,7 @@
     right: 20px;
     top: 7rem;
     font-size: 30px;
-    color: white;
+    color: black;
 }
 
 /* body {
@@ -20,7 +20,7 @@
 
 .verification_mainBox {
     width: 60%;
-    background: #171717;
+    background: white;
     padding: 3rem 3rem;
     display: flex;
     flex-direction: column;
@@ -28,11 +28,11 @@
     justify-content: center;
     text-align: center;
     border-radius: 20px;
-    box-shadow: -1px 1px 5px 10px #4f4c4c08;
+    box-shadow: -1px 1px 35px 0 #808080a8;
 }
 
 .verification_Section h5 {
-    color: white !important;
+    color: black !important;
     font-size: 25px !important;
 }
 
@@ -41,12 +41,12 @@
 }
 
 .verification_mainBox p {
-    color: #FFFFFF99 !important;
+    color: black !important;
     font-size: 12px;
 }
 
 .verification_mainBox a {
-    color: white !important;
+    color: black !important;
     font-weight: 500;
 }
 
@@ -58,11 +58,13 @@
 }
 
 .verification_mainBox div>input {
-    width: 15% !important;
+    width: 20% !important;
     background: transparent;
-    border: none;
-    color: white !important;
-    background: #2f2f2f !important;
+    border: 1px solid #dadada;
+    color: black !important;
+    background: white !important;
+    height: 45px;
+    border-radius: 5px;
 }
 
 .verification_mainBox div>input:focus {

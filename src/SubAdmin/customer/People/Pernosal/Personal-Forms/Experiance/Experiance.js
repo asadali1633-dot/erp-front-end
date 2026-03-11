@@ -382,7 +382,6 @@ function Experiance({
                                 label="Start Date"
                                 className="mx-1 inputFlexBox"
                                 name="start_date"
-                                placeholder="Start Date"
                                 message="Please Select a Start Date"
                                 allowToday
                                 required

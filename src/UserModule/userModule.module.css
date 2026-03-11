@@ -13,7 +13,7 @@
 .userBox {
     height: 100vh;
     padding-top: 50px;
-    background: #101010;
+    background: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -32,7 +32,7 @@
 
 .inputBox a {
     text-decoration: none;
-    color: #FFFFFF99;
+    color: black;
 }
 
 .userSqureBoxImg {
@@ -55,7 +55,7 @@
 
 .AccountLink {
     margin-top: 10px;
-    color: #FFFFFF66;
+    color: black;
     display: block;
     text-align: center;
     z-index: 9999;
@@ -89,8 +89,8 @@
 }
 
 .inputDefaultBg{
-    background: #2f2f2f !important;
-    color: white !important;
+    background: transparent !important;
+    color: black !important;
 }
 .headingColorDefault{
      color: white !important;

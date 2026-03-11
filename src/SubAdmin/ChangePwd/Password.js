@@ -100,20 +100,18 @@ function Password({
                         <FormPasswordInput
                             className="mx-1"
                             name="new_password"
-                            placeholder="New Password"
+                            label="New Password"
                             required={true}
                             type={"password"}
                             message={"Please Enter a New Password"}
-                            eye={true}
                         />
                         <FormPasswordInput
                             className="mx-1"
                             name="confirm_password"
-                            placeholder="Confirm Password"
+                            label="Confirm Password"
                             required={true}
                             type={"password"}
                             message={"Please Enter a Confirm Password"}
-                            eye={true}
                         />
                         {password.length > 0 && (
                             <p className={getStrengthClass()}>{getStrength()}</p>

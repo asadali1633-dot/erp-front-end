@@ -4,6 +4,7 @@ import { Button, ConfigProvider, Form, Upload } from 'antd';
 import { FaFileCirclePlus } from "react-icons/fa6";
 
 import style from './UploadFile.module.css'
+import FloatingLabel from '../FloatingLabel/FloatingLabel';
 
 
 const UploadFile = ({
@@ -49,12 +50,11 @@ const UploadFile = ({
         theme={{
           components: {
             Button: {
-              colorBgContainer: "#2f2f2f",
+              colorBgContainer: "transparent",
               display: "block",
               fontSize: 11,
-              borderRadius: "0",
-              colorText: "red",
-              colorBorder: "#2f2f2f",
+              borderRadius: "5px",
+              colorBorder: "#dadada",
             },
           },
         }}
@@ -62,20 +62,22 @@ const UploadFile = ({
         <div className={`${style.mainBox} ${className}`}>
           <Form.Item
             name={name}
-            label={label}
             rules={[{ required: required, message: message }]}
             getValueFromEvent={(e) => e?.fileList?.[0]}
           >
-            <Upload style={{width:"100%"}}
-              {...props}
-              showUploadList={false}
-              accept={accept}
-              className={style.uploadRoot}
-            >
-              <Button className={style.button}
-                icon={<FaFileCirclePlus />}
-              >{title}</Button>
-            </Upload>
+            <FloatingLabel label={false} name={name}>
+              <Upload style={{ width: "100%" }}
+                {...props}
+                showUploadList={false}
+                accept={accept}
+                className={style.uploadRoot}
+              >
+                <Button className={style.button}
+                  icon={<FaFileCirclePlus />}
+                >{label}</Button>
+              </Upload>
+            </FloatingLabel>
+
           </Form.Item>
 
         </div>

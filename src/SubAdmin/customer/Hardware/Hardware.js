@@ -236,7 +236,7 @@ function Hardware({
                 ) 
             }
             {loading && <Loader />}
-            {!loading && lap_desk.includes(assetsType) && (
+            {/* {!loading && lap_desk.includes(assetsType) && (
                 <Laptop_desktop {...{setCode, code, pagBody,assetsType,setAssetsType,EditAssetsData}}/>
             )}
             {!loading && tablet_phone.includes(assetsType) && (
@@ -256,7 +256,7 @@ function Hardware({
             )}
             {!loading && Network.includes(assetsType) && (
                 <NetworkDevice {...{setCode, code, pagBody,assetsType,setAssetsType,EditAssetsData}}/>
-            )}
+            )} */}
             
         </>
     )

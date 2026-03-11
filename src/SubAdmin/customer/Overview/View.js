@@ -23,21 +23,7 @@ function View({
     createdDate: "text",
     modifiedDate: "text"
   });
-  const [edit, setEdit] = useState({
-    Phone: true,
-    whatsapp: true,
-    Website_Url: true,
-    domain: true,
-    Address: true,
-    Brief_note: true,
-  })
 
-const toggleEdit = (field) => {
-  setEdit(prev => ({
-    ...prev,
-    [field]: !prev[field],
-  }));
-};
 
   useEffect(() => {
     if (accessToken) {
@@ -93,26 +79,16 @@ const toggleEdit = (field) => {
             <FormInput
               label={"Phone"}
               className="mx-1"
-              type="text"
+              type="number"
               name="phone"
-              placeholder="Enter Your Phone Number"
-              required={false}
-              message={"Phone Number is required"}
-              readOnly={edit?.Phone}
-              showEdit={true}
-              onEditClick={() => toggleEdit("Phone")}
+              message={"phone Number is required"}
             />
             <FormInput
               label={"Whatsapp Number"}
               className="mx-1"
               type="text"
               name="whatsapp_no"
-              placeholder="Whatsapp Number"
-              required
               message={"Whatsapp Number is required"}
-              readOnly={edit?.whatsapp}
-              showEdit={true}
-              onEditClick={() => toggleEdit("whatsapp")}
             />
           </div>
           <div className={style.overview_inputBox}>
@@ -121,26 +97,9 @@ const toggleEdit = (field) => {
               className="mx-1"
               type="text"
               name="website_url"
-              placeholder="Website URL"
               required
               message={"Website URL is required"}
-              readOnly={edit?.Website_Url}
-              showEdit={true}
-               onEditClick={() => toggleEdit("Website_Url")}
             />
-            {/* <FormInput
-              label={"Your Domain"}
-              className="mx-1"
-              type="text"
-              name="domain"
-              placeholder="Enter Your Domain (Domain.com)"
-              required
-              message={"Domain is required"}
-              readOnly={edit?.domain}
-              showEdit={true}
-               onEditClick={() => toggleEdit("domain")}
-
-            /> */}
           </div>
           <div className={style.overview_inputBox}>
             <FormInput
@@ -149,11 +108,8 @@ const toggleEdit = (field) => {
               type="text"
               name="address"
               placeholder="Enter Your Address"
-              required
+              required={false}
               message={"Address is required"}
-              readOnly={edit?.Address}
-              showEdit={true}
-              onEditClick={() => toggleEdit("Address")}
             />
           </div>
           <div className={style.overview_inputBox}>
@@ -163,7 +119,7 @@ const toggleEdit = (field) => {
               type={Datetype.createdDate}
               name="created_at"
               placeholder="Date Created"
-              required
+              required={false}
               readOnly={true}
               message={"Date Created is required"}
             />
@@ -173,7 +129,7 @@ const toggleEdit = (field) => {
               type={Datetype.modifiedDate}
               name="modified_date"
               placeholder="Date Modified"
-              required
+              required={false}
               readOnly={true}
               message={"Date Modified is required"}
             />
@@ -186,13 +142,8 @@ const toggleEdit = (field) => {
               className=""
               type="text"
               name="brief_note"
-              placeholder="Enter brief note"
               required={false}
               message={"Enter brief note is required"}
-              readOnly={edit?.Brief_note}
-              showEdit={true}
-              onEditClick={() => toggleEdit("Brief_note")}
-              viewScreen={true}
             />
           </div>
 
