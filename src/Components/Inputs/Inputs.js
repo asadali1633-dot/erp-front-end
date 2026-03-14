@@ -15,6 +15,7 @@ const FormInput = ({
     label,
     classNameColor,
     readOnly,
+    disabled,
     type
 }) => {
 
@@ -27,7 +28,12 @@ const FormInput = ({
                     rules={[{ required, message }]}
                 >
                     <FloatingLabel label={label} name={name}>
-                        <Input className={`${style.input} ${classNameColor}`} type={type}/>
+                        <Input 
+                            className={`${style.input} ${classNameColor}`} 
+                            readOnly={readOnly} 
+                            disabled={disabled} 
+                            type={type}
+                        />
                     </FloatingLabel>
                 </Form.Item>
             </div>

@@ -37,7 +37,6 @@ function EditPeople({
     const [loading, setloading] = useState(false);
     const countries = Country.getAllCountries();
     const codes = ["PK", "IN", "US", "AS"];
-    const [formEdit, setfomtEdit] = useState(false);
     const provinces = codes.flatMap((code) => State.getStatesOfCountry(code));
     const empData = Red_Emp?.GetUserLoginTime?.[0]?.data
     const selectId = emptId
@@ -83,18 +82,13 @@ function EditPeople({
 
     const isFullAccess = EDITABLE_FIELDS_BY_ROLE[userRole] === "ALL";
     const canEditField = (fieldName) => {
-        if (!formEdit) return false;
         if (isFullAccess) return true;
         return EDITABLE_FIELDS_BY_ROLE[userRole]?.includes(fieldName);
     };
 
     const isRequiredField = (field) => {
         if (isFullAccess) return true;
-        return canEditField(field);
-    };
-
-    const handleEdit = () => {
-        setfomtEdit(prev => !prev);
+        return EDITABLE_FIELDS_BY_ROLE[userRole]?.includes(field);
     };
 
     const handleCountryChange = (value) => {
@@ -106,9 +100,6 @@ function EditPeople({
     useEffect(() => {
         EmpGetByid(selectId, accessToken)
     }, [accessToken])
-
-
-
 
 
     const setValues = () => {
@@ -129,7 +120,6 @@ function EditPeople({
             messageApi.success(isCheck?.message);
             form.resetFields();
             EmpGetByid(emptId, accessToken)
-            setfomtEdit(false)
             setloading(false);
         } else {
             messageApi.error(isCheck?.message);
@@ -158,7 +148,6 @@ function EditPeople({
                         <PiUserList />
                         <Heading title={"Personal Information"} />
                     </div>
-                    <CiEdit onClick={handleEdit} />
                 </div>
 
                 <Form
@@ -471,7 +460,7 @@ function EditPeople({
                                 name="city"
                                 placeholder="City"
                                 message={"City is required"}
-                                required={isRequiredField("city")}
+                                required={false}
                                 disabled={!canEditField("city")}
                                 options={filteredCities?.map((item) => ({
                                     value: `${item.stateCode}-${item.name}`,
@@ -495,7 +484,7 @@ function EditPeople({
                                 className={"mx-1 inputFlexBox"}
                                 name="facebook_link"
                                 placeholder="Facebook Link"
-                                required={isRequiredField("facebook_link")}
+                                required={false}
                                 disabled={!canEditField("facebook_link")}
                                 readOnly={!canEditField("facebook_link")}
 
@@ -505,7 +494,7 @@ function EditPeople({
                                 className={"mx-1 inputFlexBox"}
                                 name="x_link"
                                 placeholder="X LInk"
-                                required={isRequiredField("x_link")}
+                                required={false}
                                 disabled={!canEditField("x_link")}
                                 readOnly={!canEditField("x_link")}
                             />
@@ -514,21 +503,17 @@ function EditPeople({
                                 className={"mx-1 inputFlexBox"}
                                 name="linkedin_link"
                                 placeholder="linkedin link"
-                                required={isRequiredField("linkedin_link")}
+                                required={false}
                                 disabled={!canEditField("linkedin_link")}
                                 readOnly={!canEditField("linkedin_link")}
                             />
                         </div>
-                        {formEdit && (
-                            <div className={`${style.emp_buttonBox} mt-2`}>
-                                <OutLineButton form={true} title={"Cancel"}
-                                    onClick={() => setfomtEdit(false)}
-                                />
-                                <Button title={"Save"} className={"w-auto"} type={"submit"}
-                                    loading={loading}
-                                />
-                            </div>
-                        )}
+                        <div className={`${style.emp_buttonBox} mt-2`}>
+                            <Button title={"Save"} className={"w-auto"} type={"submit"}
+                                loading={loading}
+                            />
+                        </div>
+                        
                     </div>
                 </Form>
 

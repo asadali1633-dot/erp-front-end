@@ -17,6 +17,10 @@
     margin-top: 10px;
     display: block;
 }
+.form_checkBoxHeading svg{
+    font-size: 25px;
+    cursor: pointer;
+}
 
 .QR_box{
     display: flex;

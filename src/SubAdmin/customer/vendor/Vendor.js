@@ -8,6 +8,7 @@ import VendorForm from './Forms/VendorForm';
 
 function Vendor() {
     const [VendorsForm, setVendorsForm] = useState(false)
+    const [loading, setloading] = useState(false);
 
     const columns = [
         {
@@ -34,21 +35,21 @@ function Vendor() {
             title: "Contact Email",
             dataIndex: "Contact_Email",
         },
-        {
-            title: "Status",
-            dataIndex: "Status",
-            render: (Priority) =>
-                Priority == "Blacklist" ?
-                    <span
-                        className='customer_payment_status'
-                        style={{ background: "#ff0004" }}
-                    >{Priority}</span> :
-                    Priority == "Approved" ?
-                        <span
-                            className='customer_payment_status'
-                            style={{ background: "#12da65" }}
-                        >{Priority}</span> : false
-        },
+        // {
+        //     title: "Status",
+        //     dataIndex: "Status",
+        //     render: (Priority) =>
+        //         Priority == "Blacklist" ?
+        //             <span
+        //                 className='customer_payment_status'
+        //                 style={{ background: "#ff0004" }}
+        //             >{Priority}</span> :
+        //             Priority == "Approved" ?
+        //                 <span
+        //                     className='customer_payment_status'
+        //                     style={{ background: "#12da65" }}
+        //                 >{Priority}</span> : false
+        // },
     ];
 
     const data = [
@@ -60,7 +61,7 @@ function Vendor() {
             Phone: "0300*******",
             State: "Sindh",
             Contact_Email: "info@microtech.net",
-            Status: "Approved",
+            // Status: "Approved",
         },
         {
             key: "2",
@@ -70,7 +71,7 @@ function Vendor() {
             Phone: "0300*******",
             State: "Sindh",
             Contact_Email: "info@microtech.net",
-            Status: "Blacklist",
+            // Status: "Blacklist",
         },
     ];
 

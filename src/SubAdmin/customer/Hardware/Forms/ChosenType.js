@@ -109,7 +109,7 @@ function ChosenType({
             </div>
 
 
-            {/* {loading && <Loader />}
+            {loading && <Loader />}
             {!loading && lap_desk.includes(assetsType) && (
                 <Laptop_desktop {...{setCode, code, pagBody,assetsType,setAssetsType}}/>
             )}
@@ -133,7 +133,7 @@ function ChosenType({
             )}
             {!loading && otherItems.includes(assetsType) && (
                 <BasicItems {...{setCode, code, pagBody,assetsType,setAssetsType}}/>
-            )} */}
+            )}
         </>
     )
 }

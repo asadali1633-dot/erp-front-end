@@ -33,11 +33,9 @@ function EmpPersonalFrom({
     const [loading, setloading] = useState(false);
     const countries = Country.getAllCountries();
     const codes = ["PK", "IN", "US", "AS"];
-    const [formEdit, setfomtEdit] = useState(false);
     const provinces = codes.flatMap((code) => State.getStatesOfCountry(code));
     const empData = Red_Emp?.GetUserLoginTime?.[0]?.data
     const selectId = empData?.id
-    // console.log("empData",empData)
     const [messageApi, contextHolder] = message.useMessage();
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const [depart, setDepart] = useState(false)
@@ -79,17 +77,14 @@ function EmpPersonalFrom({
 
     const isFullAccess = EDITABLE_FIELDS_BY_ROLE[userRole] === "ALL";
     const canEditField = (fieldName) => {
-        if (!formEdit) return false;
         if (isFullAccess) return true;
         return EDITABLE_FIELDS_BY_ROLE[userRole]?.includes(fieldName);
     };
 
     const isRequiredField = (field) => {
         if (isFullAccess) return true;
-        return canEditField(field);
+        return EDITABLE_FIELDS_BY_ROLE[userRole]?.includes(field);
     };
-
-
 
     let selectedCities = [];
     codes.forEach((code) => {
@@ -187,7 +182,6 @@ function EmpPersonalFrom({
                                 name="emp_id"
                                 placeholder="Employe Id"
                                 required={false}
-                                disabled={!canEditField("emp_id")}
                                 readOnly={!canEditField("emp_id")}
                             />
                             <FormInput
@@ -197,7 +191,6 @@ function EmpPersonalFrom({
                                 placeholder="First Name"
                                 message="Please Enter a First Name"
                                 required={isRequiredField("first_name")}
-                                disabled={!canEditField("first_name")}
                                 readOnly={!canEditField("first_name")}
 
 
@@ -209,7 +202,6 @@ function EmpPersonalFrom({
                                 placeholder="Last Name"
                                 message="Please Enter a Last Name"
                                 required={isRequiredField("last_name")}
-                                disabled={!canEditField("last_name")}
                                 readOnly={!canEditField("last_name")}
                             />
                             <FormInput
@@ -219,7 +211,6 @@ function EmpPersonalFrom({
                                 placeholder="Email"
                                 message="Please Enter a Email"
                                 required={isRequiredField("email")}
-                                disabled={!canEditField("email")}
                                 readOnly={!canEditField("email")}
                             />
 
@@ -321,6 +312,7 @@ function EmpPersonalFrom({
                                 label={"Date of birth"}
                                 className={`mx-1 inputFlexBox`}
                                 name={"date_of_birth"}
+                                placeholder={"Date of birth"}
                                 message={"Please Enter Date of Birth"}
                                 required={isRequiredField("date_of_birth")}
                                 disabled={!canEditField("date_of_birth")}
@@ -382,7 +374,7 @@ function EmpPersonalFrom({
                                 className={"mx-1 inputFlexBox"}
                                 name="identity_number"
                                 required={isRequiredField("identity_number")}
-                                disabled={!canEditField("identity_number")}
+                                disabled={!canEditField("identity_type")}
                                 readOnly={!canEditField("identity_number")}
                                 placeholder="Identity Number"
                             />
@@ -412,8 +404,6 @@ function EmpPersonalFrom({
                                 className={"mx-1 inputFlexBox"}
                                 name="phone_extension"
                                 placeholder="Extension Number"
-                                // required={isRequiredField("")}
-                                disabled={!canEditField("phone_extension")}
                                 readOnly={!canEditField("phone_extension")}
                             />
                             <FormInput
@@ -504,7 +494,7 @@ function EmpPersonalFrom({
                                 className={"mx-1 inputFlexBox"}
                                 name="facebook_link"
                                 placeholder="Facebook Link"
-                                required={false}
+                                required={isRequiredField("facebook_link")}
                                 disabled={!canEditField("facebook_link")}
                                 readOnly={!canEditField("facebook_link")}
 
@@ -514,7 +504,7 @@ function EmpPersonalFrom({
                                 className={"mx-1 inputFlexBox"}
                                 name="x_link"
                                 placeholder="X LInk"
-                                required={false}
+                                required={isRequiredField("x_link")}
                                 disabled={!canEditField("x_link")}
                                 readOnly={!canEditField("x_link")}
                             />
@@ -523,7 +513,7 @@ function EmpPersonalFrom({
                                 className={"mx-1 inputFlexBox"}
                                 name="linkedin_link"
                                 placeholder="linkedin link"
-                                required={false}
+                                required={isRequiredField("linkedin_link")}
                                 disabled={!canEditField("linkedin_link")}
                                 readOnly={!canEditField("linkedin_link")}
                             />
@@ -533,16 +523,6 @@ function EmpPersonalFrom({
                                 loading={loading}
                             />
                         </div>
-                        {/* {formEdit && (
-                            <div className={`${style.emp_buttonBox} mt-2`}>
-                                <OutLineButton form={true} title={"Cancel"}
-                                    onClick={() => setfomtEdit(false)}
-                                />
-                                <Button title={"Save"} className={"w-auto"} type={"submit"}
-                                    loading={loading}
-                                />
-                            </div>
-                        )} */}
                     </div>
                 </Form>
 

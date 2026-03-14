@@ -19,6 +19,7 @@ import SettingBar from '../../setting/SettingBar';
 import PeopleList from './People/List/PeopleList';
 import Cookies from "js-cookie";
 import Loader from '../../Components/Loader/Loader';
+import Client from './Client/Client';
 
 
 
@@ -56,7 +57,6 @@ function CustomerInfo({
         { type: "purchase_order", slug: "purchase_order_view", component: <PurchaseOrder /> },
     ];
     const filteredAssetItems = assetItems.filter(item => hasPermission(item.slug));
-    const filteredVendorItems = vendorItems.filter(item => hasPermission(item.slug));
 
     const assetsTab = filteredAssetItems.length > 0 && {
         key: "assets",
@@ -80,27 +80,7 @@ function CustomerInfo({
         )
     };
 
-    const vendorTab = filteredVendorItems.length > 0 && {
-        key: "vendor",
-        label: (
-            <Dropdown
-                menu={{
-                    items: filteredVendorItems.map(item => ({
-                        key: item.type,
-                        label: item.type === "vendor" ? "Vendor" : "Purchase Order",
-                        onClick: () => setVendorType(item.type)
-                    })),
-                    onClick: (e) => setVendorType(e.key),
-                }}
-                trigger={["click"]}
-            >
-                <span style={{ cursor: "pointer" }}>Vendor <DownOutlined /></span>
-            </Dropdown>
-        ),
-        children: filteredVendorItems.map(item =>
-            vendorType === item.type ? item.component : null
-        )
-    };
+   
 
     const items = [
         {
@@ -128,35 +108,47 @@ function CustomerInfo({
             children: <h1>Devices Content</h1>
         },
         assetsTab,
-        { key: "5", label: "Tickets", slug: "", children: <Tickets /> },
-        vendorTab,
-        {
-            key: "6",
-            label: "Purchase Order",
-            slug: "",
+        { 
+            key: "5", 
+            label: "Tickets", 
+            slug: "", 
+            children: <Tickets /> 
+        },
+        { 
+            key: "6", 
+            label: "Vendors", 
+            slug: "vendor_view", 
+            children: <Vendors /> 
         },
         {
             key: "7",
-            label: "Client",
-            slug: "",
+            label: "Purchase Order",
+            slug: "purchase_order_view",
+            children: <PurchaseOrder/>
         },
         {
             key: "8",
-            label: "Quotation",
+            label: "Client",
+            children: <Client />,
             slug: "",
         },
         {
             key: "9",
-            label: "Invoice",
+            label: "Quotation",
             slug: "",
         },
         {
             key: "10",
-            label: "Payment",
+            label: "Invoice",
             slug: "",
         },
         {
             key: "11",
+            label: "Payment",
+            slug: "",
+        },
+        {
+            key: "12",
             label: "Expenses",
             slug: "",
         },

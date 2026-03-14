@@ -1,7 +1,7 @@
 .form_modalMainBox {}
 
 .form_modalMainBox h5 {
-    color: white;
+    color: black !important;
     font-size: 25px;
     font-weight: 600;
 }
@@ -12,31 +12,41 @@
 }
 
 .form_checkBoxHeading {
-    color: white;
-    font-size: 20px;
+    font-size: 15px !important;
     font-weight: 600;
     margin-top: 10px;
     display: block;
 }
-
-.form_LocationcheckBox {
+.QR_box{
     display: flex;
+    align-items: center;
+    position: relative;
+}
+.modalHardwareScroll{
+    margin-top: 10px;
+    height: 450px;
+    overflow-y: scroll;
 }
 
-.form_LocationcheckBox div {
-    margin-right: 10px;
+.modalHardwareScroll::-webkit-scrollbar {
+    width: 6px;
+    background: whitesmoke;
+    border-radius: 10px;
 }
 
-.form_LocationcheckBox label {
-    color: white;
-    font-size: 13px;
-    font-weight: 400;
-    margin-left: 3px;
-    margin-bottom: 0;
+.modalHardwareScroll::-webkit-scrollbar-thumb {
+    background: #00BAFF;
+    border-radius: 10px;
 }
 
-.form_modalWidth {
-    width: 60% !important;
+.vendor_modalBtns{
+     display: flex;
+    justify-content: end;
+}
+
+.border_bottom{
+    border-bottom: 1px solid black;
+    padding-bottom: 10px;
 }
 
 .form_footerFlexBox {

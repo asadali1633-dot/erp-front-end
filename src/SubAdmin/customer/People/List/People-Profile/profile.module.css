@@ -1,66 +1,89 @@
-
-.persemp_profileView {
-    list-style: none;
-    padding: 5px 0;
-    margin: 0;
-    border-radius: 10px;
-    border: 2px solid #00baff33;
-    height: 630px;
+.main_profile_box {
+    width: 100%;
+    position: relative;
+    box-shadow: -1px 1px 35px 0 #808080a8;
+    border-radius: 15px 15px 0 0;
+    overflow: hidden;
+    height: 100vh;
 }
 
-.persemp_profileImage {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.cover_box {
+    position: relative;
 }
 
-.persemp_profileImage img {
+.cover_img {
+    width: 100%;
+    object-fit: cover;
     height: 100px;
-    border-radius: 50%;
-    border: 2px solid #00baff;
-    padding: 3px;
-}
-
-.persemp_personalInfoBox {
-    text-align: center;
-}
-
-.persemp_personalInfoBox h5 {
-    margin: 0;
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.persemp_personalInfoBox span {
-    font-size: 13px !important;
-    font-weight: 600;
-    
 }
 
 
-.persEmp_dataList {
-    padding: 0 17px;
+.profileNamingBox {
+    padding: 0 11px;
+    margin-top: 4rem;
 }
 
-.persEmp_dataList li {
+.profileNamingBox>div {
     display: flex;
+    justify-content: space-between;
     align-items: center;
+}
+
+.profileNamingBox h5 {
+    color: black !important;
+    font-size: 13px;
+}
+
+.profileNamingBox p {
+    padding: 0;
+    margin: 0;
+    color: black !important;
     font-size: 11px;
-    font-style: italic;
-    padding: 2px 0;
 }
 
-.persEmp_dataList li svg {
-    margin-right: 5px;
-    font-size: 15px;
+.profileNamingBox span {
     color: #00baff;
-}
-.persemp_profileView li{
-    color: #dadada !important;
+    font-size: 12px;
+    background: #dadada;
+    padding: 4px 10px;
+    border-radius: 5px;
+    text-transform: capitalize;
 }
 
-@media screen and (max-width:1366px){
-    .persemp_profileView{
-        height: 550px !important;
-    }
+.infoBox{
+    overflow-y: scroll;
+    height: 300px;
+}
+
+.profileFlex {
+    display: flex;
+    padding: 0 11px;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.profileFlex svg {
+    font-size: 21px;
+    background: #80808024;
+    height: 30px;
+    width: 30px;
+    padding: 0 8px;
+    border-radius: 25px;
+}
+
+.contentFlex {
+    margin-left: 20px;
+}
+
+.contentFlex span {
+    color: gray !important;
+    font-size: 11px;
+}
+
+.contentFlex p {
+    color: black !important;
+    font-size: 12px;
+    margin: 0;
+    word-wrap: break-word;
+    width: 180px;
 }

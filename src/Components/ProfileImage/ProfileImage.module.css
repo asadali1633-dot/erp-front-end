@@ -1,10 +1,14 @@
 .editable_image_box {
-    position: relative;
+    position: absolute;
     overflow: hidden;
-    border-radius: 8px;
     cursor: pointer;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    top: 3rem;
+    padding: 0 11px;
+    padding-bottom: 11px;
+    width: 100%;
 }
 
 .editable_image_box img {
@@ -14,30 +18,20 @@
     display: block;
     transition: transform 0.3s ease;
     border-radius: 50%;
-}
-
-.overlay {
-    position: absolute;
-    top: 5px;
-    width: 90px;
-    height: 90px;
-    background: rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    border-radius: 50%;
-    display: flex;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.3s ease;
-}
-
-.editable_image_box:hover .overlay {
-    opacity: 1;
+    border: 5px solid white;
+    box-shadow: 2px -2px 20px 0 gray;
 }
 
 .pencil_icon {
-    color: #00baff;
-    font-size: 24px;
+    color: gray;
+    font-size: 11px;
+    border: 1px solid #dadada;
+    height: 35px;
+    width: 35px;
+    padding: 0px 7px;
+    border-radius: 19px;
+    top: 27px;
+    position: relative;
 }
 
 .file_input {

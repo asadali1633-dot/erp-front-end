@@ -10,7 +10,7 @@ function ProfileImage({
 
             <div className={style.editable_image_box}>
                 <img src={preview} alt="editable" />
-                <div className={style.overlay} onClick={handleEditClick}>
+                <div onClick={handleEditClick}>
                     <FaPencilAlt className={style.pencil_icon} />
                 </div>
                 <input

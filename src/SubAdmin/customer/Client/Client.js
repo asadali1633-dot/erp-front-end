@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { Table } from 'antd';
-import style from './PurchaseOrder.module.css'
+import style from './Client.module.css'
 import Heading from '../../../Components/Heading/Heading';
 import { SearchBar } from '../../../Components/SearchBar/SearchBar';
 import { OutLineButton } from '../../../Components/Button/Button';
-import PurchaseOrderForm from './Forms/PurchaseOrderForm';
+import ClientForm from './Forms/ClientForm';
 
-function PurchaseOrder() {
-    const [PurchaseOrdersForm, setPurchaseOrdersForm] = useState(false)
+function Client() {
+    const [ClientModalForm, setClientForm] = useState(false)
 
     const columns = [
         {
@@ -90,7 +90,7 @@ function PurchaseOrder() {
         }),
     };
     const handle = () => {
-        setPurchaseOrdersForm(!PurchaseOrdersForm)
+        setClientForm(!ClientModalForm)
     }
 
 
@@ -98,13 +98,13 @@ function PurchaseOrder() {
         <>
             <div className={`${style.PurchaseOrder_TabTableBox}`}>
                 <div className={`${style.PurchaseOrder_tableHeader}`}>
-                    <Heading title={"Purchase Order"} />
+                    <Heading title={"Client"} />
                     <div className={`${style.PurchaseOrder_tableHeaderFlex}`}>
                         <SearchBar
                             className={"mx-2"}
                             placeholder={"Search"}
                         />
-                        <OutLineButton title={"Create Purchase Order"} onClick={handle} />
+                        <OutLineButton title={"Create Client"} onClick={handle} />
                     </div>
                 </div>
                 <Table
@@ -116,11 +116,11 @@ function PurchaseOrder() {
                 />
             </div>
 
-            {PurchaseOrdersForm && (
-                <PurchaseOrderForm {...{ PurchaseOrdersForm, setPurchaseOrdersForm }} />
+            {setClientForm && (
+                <ClientForm {...{ ClientModalForm, setClientForm }} />
             )}
         </>
     )
 }
 
-export default PurchaseOrder
+export default Client

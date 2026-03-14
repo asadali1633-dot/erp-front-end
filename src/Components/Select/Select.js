@@ -8,7 +8,6 @@ import FloatingLabel from '../FloatingLabel/FloatingLabel';
 
 const SelectInput = ({
     showSearch,
-    placeholder,
     options,
     className,
     onChange,
@@ -17,7 +16,6 @@ const SelectInput = ({
     name,
     dropdownRender,
     defaultValue,
-    classNameColor,
     label,
     disabled,
 }) => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import style from '../People-Profile/profile.module.css'
 import UserDefault from '../../../../../assests/images/personal/user.png'
+import bgProfile from '../../../../../assests/images/gradient-background.jpg'
 import { FaRegCalendarCheck as Calender } from "react-icons/fa6";
 import { FaIdCard as IdCard } from "react-icons/fa6";
 import { MdOutlineEmail as Email } from "react-icons/md";
@@ -16,6 +17,7 @@ import { connect, useSelector } from "react-redux";
 import { Form, message } from 'antd';
 import ProfileImage from '../../../../../Components/ProfileImage/ProfileImage';
 import baseUrl from '../../../../../config.json'
+import { IoCopyOutline } from "react-icons/io5";
 
 function Profile({
     Red_Emp,
@@ -35,12 +37,12 @@ function Profile({
         EmpGetByid(emptId, accessToken)
     }, [accessToken])
 
-  
+
 
     const handleEditClick = () => {
         fileInputRef.current.click();
     };
-    
+
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -106,30 +108,117 @@ function Profile({
         setUserAge(age)
     }, [dateOfBirth]);
 
+    const handleCopyId = async () => {
+        if (!profileInfo?.emp_id) {
+            message.warning("No Emp ID to copy");
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(profileInfo.emp_id);
+            message.success("Emp ID copied!");
+        } catch (err) {
+            message.error("Copy failed");
+        }
+    };
+
+    const handleCopyEmail = async () => {
+        if (!profileInfo?.email) {
+            message.warning("No email to copy");
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(profileInfo.email);
+            message.success("Email copied!");
+        } catch (err) {
+            message.error("Copy failed");
+        }
+    };
+
 
 
 
     return (
         <>
             {contextHolder}
-            <ul className={style.persemp_profileView}>
-                <ProfileImage {...{ handleImageChange, handleEditClick, preview, setPreview, fileInputRef }} />
-                <div className={style.persemp_personalInfoBox}>
-                    <h5>{profileInfo?.first_name}</h5>
-                    <span className={style.persemp_lastName}>{profileInfo?.last_name}</span>
+            {contextHolder}
+            <div className={style.main_profile_box}>
+                <div className={style.cover_box}>
+                    <img src={bgProfile} alt="" className={style.cover_img} />
+                    <div>
+                        <ProfileImage {...{ handleImageChange, handleEditClick, preview, setPreview, fileInputRef }} />
+                    </div>
                 </div>
-                <div className={style.persEmp_dataList} >
-                    <li><Calender />{profileInfo?.joining_date ? `Start ${profileInfo?.joining_date?.slice(0, 10)}` : <span>Not Found</span>}</li>
-                    <li><IdCard /> {profileInfo?.emp_id ? profileInfo?.emp_id : <span>Not Found</span>}</li>
-                    <li><Email /> {profileInfo?.email?.length > 10 ? `${profileInfo?.email?.slice(0, 10)}...` : ""}</li>
-                    <li><Tag /> {profileInfo?.department_name ? profileInfo?.department_name : <span>Not Found</span>}</li>
-                    <li><Call /> {profileInfo?.mobile_number ? profileInfo?.mobile_number : <span> Not Found</span>}</li>
-                    <li><Keyboard /> {profileInfo?.phone_extension ? profileInfo?.phone_extension : <span>Not Found</span>}</li>
-                    <li><FaUserTie /> Age {userAge ? `${userAge?.days}-${userAge?.months}-${userAge?.years}` : <span>Not Found</span>}</li>
-                    <li title={profileInfo?.full_address}><Location /> {profileInfo?.full_address?.slice(0, 15)}...</li>
-                    <li title={profileInfo?.linkedin_link}><Linkedin /> <Link>{profileInfo?.linkedin_link?.slice(0, 15)}...</Link></li>
+                <div className={style.profileNamingBox}>
+                    <div>
+                        <h5>{`${profileInfo?.first_name} ${profileInfo?.last_name}`}</h5>
+                        <p>
+                            {profileInfo?.emp_id}
+                            <IoCopyOutline
+                                style={{ fontSize: "15px", cursor: "pointer", marginLeft: "8px" }}
+                                onClick={handleCopyId}
+                            />
+                        </p>
+                    </div>
+                    <span>{profileInfo?.designation_name}</span>
                 </div>
-            </ul>
+                <div className={style.infoBox}>
+                    <div className={`${style.profileFlex} mt-3`}>
+                        <Email />
+                        <div className={style.contentFlex}>
+                            <span>Email</span>
+                            <p>
+                                {profileInfo?.email?.length > 15 ? `${profileInfo?.email?.slice(0, 15)}...` : profileInfo?.email}
+                                <IoCopyOutline
+                                    style={{ fontSize: "15px", cursor: "pointer", marginLeft: "8px" }}
+                                    onClick={handleCopyEmail}
+                                />
+                            </p>
+                        </div>
+                    </div>
+                    <div className={style.profileFlex}>
+                        <Calender />
+                        <div className={style.contentFlex}>
+                            <span>Joining Date</span>
+                            <p>{profileInfo?.joining_date ? `Start ${profileInfo?.joining_date?.slice(0, 10)}` : <span>---</span>}</p>
+                        </div>
+                    </div>
+                    <div className={style.profileFlex}>
+                        <Tag />
+                        <div className={style.contentFlex}>
+                            <span>Depart Name</span>
+                            <p>{profileInfo?.department_name ? profileInfo?.department_name : <span>---</span>}</p>
+                        </div>
+                    </div>
+                    <div className={style.profileFlex}>
+                        <Call />
+                        <div className={style.contentFlex}>
+                            <span>Phone</span>
+                            <p>{profileInfo?.mobile_number ? profileInfo?.mobile_number : <span>---</span>}</p>
+                        </div>
+                    </div>
+                    <div className={style.profileFlex}>
+                        <Keyboard />
+                        <div className={style.contentFlex}>
+                            <span>Extension</span>
+                            <p>{profileInfo?.phone_extension ? profileInfo?.phone_extension : <span>---</span>}</p>
+                        </div>
+                    </div>
+                    <div className={style.profileFlex}>
+                        <Location />
+                        <div className={style.contentFlex}>
+                            <span>Address</span>
+                            <p>{profileInfo?.full_address ? `${profileInfo?.full_address?.slice(0, 15)}...` : <span>---</span>}</p>
+                        </div>
+                    </div>
+                    <div className={style.profileFlex}>
+                        <Linkedin />
+                        <div className={style.contentFlex}>
+                            <span>Linkedin</span>
+                            <p>{profileInfo?.linkedin_link ? `${profileInfo?.linkedin_link?.slice(0, 15)}...` : <span>---</span>}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </>
     )
 }
