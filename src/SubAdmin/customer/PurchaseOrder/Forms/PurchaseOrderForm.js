@@ -185,6 +185,213 @@ function PurchaseOrderForm({
                         <div className={style.QR_box}>
                             <h5 className="mx-1">Purchase Order Form</h5>
                         </div>
+
+                        <h5 className={`${style.form_checkBoxHeading} mx-1`}>Basic Information</h5>
+                        <div className={style.form_inputBox}>
+                            <FormInput
+                                className="mx-1"
+                                label={"Line Number"}
+                                name="line_number"
+                                type="number"
+                                min="1"
+                                step="1"
+                                placeholder="Line number"
+                                required={true}
+                                message={"Line number is required"}
+                            />
+
+                            <SelectInput
+                                className="mx-1"
+                                label={"Item Type"}
+                                placeholder="Select item type"
+                                name="item_type"
+                                required={true}
+                                message={"Please select item type"}
+                                options={[
+                                    { value: "Product", label: "Product (Asset)" },
+                                    { value: "Spare Part", label: "Spare Part" },
+                                    { value: "Consumable", label: "Consumable" },
+                                    { value: "Service", label: "Service" },
+                                ]}
+                            />
+
+                            <SelectInput
+                                className="mx-1"
+                                label={"Product ID / Asset Catalog ID"}
+                                placeholder="Select product"
+                                name="product_id"
+                                required={false}
+                                showSearch={true}
+                                message={"Select product if ordering from catalog"}
+                                options={[]}
+                            />
+                            <FormInput
+                                className="mx-1"
+                                label={"Description"}
+                                name="description"
+                                placeholder="Item description"
+                                required={true}
+                                message={"Description is required"}
+                            />
+                        </div>
+                        <div className={style.form_inputBox}>
+                            <FormInput
+                                className="mx-1"
+                                label={"Manufacturer"}
+                                name="manufacturer"
+                                placeholder="Enter manufacturer"
+                                required={false}
+                                message={"Enter manufacturer if applicable"}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Model / Part Number"}
+                                name="model_part_number"
+                                placeholder="Enter model or part number"
+                                required={false}
+                                message={"Enter model/part number if applicable"}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Quantity Ordered"}
+                                name="quantity_ordered"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Ordered quantity"
+                                required={true}
+                                message={"Quantity ordered is required"}
+                            />
+                        </div>
+                        <div className={style.form_inputBox}>
+                            <FormInput
+                                className="mx-1"
+                                label={"Quantity Received"}
+                                name="quantity_received"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Received quantity (updated upon receipt)"
+                                required={false}
+                                readOnly={false}
+                                message={"Enter received quantity if any"}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Quantity Invoiced"}
+                                name="quantity_invoiced"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Invoiced quantity (for matching)"
+                                required={false}
+                                message={"Enter invoiced quantity"}
+                            />
+
+                            <SelectInput
+                                className="mx-1"
+                                label={"Unit of Measure"}
+                                placeholder="Select unit"
+                                name="uom"
+                                required={true}
+                                message={"Please select unit of measure"}
+                                options={[
+                                    { value: "Each", label: "Each" },
+                                    { value: "Box", label: "Box" },
+                                    { value: "Pallet", label: "Pallet" },
+                                    { value: "Kg", label: "Kilogram" },
+                                    { value: "Lb", label: "Pound" },
+                                    { value: "Meter", label: "Meter" },
+                                    { value: "Foot", label: "Foot" },
+                                    { value: "Liter", label: "Liter" },
+                                    { value: "Hour", label: "Hour (Service)" },
+                                    { value: "Day", label: "Day (Service)" },
+                                    { value: "Other", label: "Other" },
+                                ]}
+                            />
+                        </div>
+                        <div className={style.form_inputBox}>
+                            <FormInput
+                                className="mx-1"
+                                label={"Unit Cost"}
+                                name="unit_cost"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Purchase price per unit (ex tax)"
+                                required={true}
+                                message={"Unit cost is required"}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Discount %"}
+                                name="discount_percent"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                placeholder="Discount percentage"
+                                required={false}
+                                message={"Enter discount % if applicable"}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Discount Amount"}
+                                name="discount_amount"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Discount amount (if fixed)"
+                                required={false}
+                                message={"Enter discount amount if applicable"}
+                            />
+                        </div>
+                        <div className={`${style.form_inputBox} ${style.border_bottom}`}>
+                            <FormInput
+                                className="mx-1"
+                                label={"Tax Rate %"}
+                                name="tax_rate"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                placeholder="Tax rate percentage"
+                                required={false}
+                                message={"Enter tax rate if applicable"}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Tax Amount"}
+                                name="tax_amount"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Tax amount (calculated)"
+                                required={false}
+                                readOnly={true}
+                                message={"Tax amount is auto-calculated"}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Line Total"}
+                                name="line_total"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Line total (calculated)"
+                                required={false}
+                                readOnly={true}
+                                message={"Line total is auto-calculated"}
+                            />
+                        </div>
+
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Header Information</h5>
                         <div className={style.form_inputBox}>
                             <FormInput
@@ -473,212 +680,6 @@ function PurchaseOrderForm({
                                 rows={4}
                                 required={false}
                                 message={"Enter PO terms and conditions"}
-                            />
-                        </div>
-
-                        <h5 className={`${style.form_checkBoxHeading} mx-1`}>Line Items</h5>
-                        <div className={style.form_inputBox}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Line Number"}
-                                name="line_number"
-                                type="number"
-                                min="1"
-                                step="1"
-                                placeholder="Line number"
-                                required={true}
-                                message={"Line number is required"}
-                            />
-
-                            <SelectInput
-                                className="mx-1"
-                                label={"Item Type"}
-                                placeholder="Select item type"
-                                name="item_type"
-                                required={true}
-                                message={"Please select item type"}
-                                options={[
-                                    { value: "Product", label: "Product (Asset)" },
-                                    { value: "Spare Part", label: "Spare Part" },
-                                    { value: "Consumable", label: "Consumable" },
-                                    { value: "Service", label: "Service" },
-                                ]}
-                            />
-
-                            <SelectInput
-                                className="mx-1"
-                                label={"Product ID / Asset Catalog ID"}
-                                placeholder="Select product"
-                                name="product_id"
-                                required={false}
-                                showSearch={true}
-                                message={"Select product if ordering from catalog"}
-                                options={[]}
-                            />
-                            <FormInput
-                                className="mx-1"
-                                label={"Description"}
-                                name="description"
-                                placeholder="Item description"
-                                required={true}
-                                message={"Description is required"}
-                            />
-                        </div>
-                        <div className={style.form_inputBox}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Manufacturer"}
-                                name="manufacturer"
-                                placeholder="Enter manufacturer"
-                                required={false}
-                                message={"Enter manufacturer if applicable"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Model / Part Number"}
-                                name="model_part_number"
-                                placeholder="Enter model or part number"
-                                required={false}
-                                message={"Enter model/part number if applicable"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Quantity Ordered"}
-                                name="quantity_ordered"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Ordered quantity"
-                                required={true}
-                                message={"Quantity ordered is required"}
-                            />
-                        </div>
-                        <div className={style.form_inputBox}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Quantity Received"}
-                                name="quantity_received"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Received quantity (updated upon receipt)"
-                                required={false}
-                                readOnly={false}
-                                message={"Enter received quantity if any"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Quantity Invoiced"}
-                                name="quantity_invoiced"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Invoiced quantity (for matching)"
-                                required={false}
-                                message={"Enter invoiced quantity"}
-                            />
-
-                            <SelectInput
-                                className="mx-1"
-                                label={"Unit of Measure"}
-                                placeholder="Select unit"
-                                name="uom"
-                                required={true}
-                                message={"Please select unit of measure"}
-                                options={[
-                                    { value: "Each", label: "Each" },
-                                    { value: "Box", label: "Box" },
-                                    { value: "Pallet", label: "Pallet" },
-                                    { value: "Kg", label: "Kilogram" },
-                                    { value: "Lb", label: "Pound" },
-                                    { value: "Meter", label: "Meter" },
-                                    { value: "Foot", label: "Foot" },
-                                    { value: "Liter", label: "Liter" },
-                                    { value: "Hour", label: "Hour (Service)" },
-                                    { value: "Day", label: "Day (Service)" },
-                                    { value: "Other", label: "Other" },
-                                ]}
-                            />
-                        </div>
-                        <div className={style.form_inputBox}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Unit Cost"}
-                                name="unit_cost"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Purchase price per unit (ex tax)"
-                                required={true}
-                                message={"Unit cost is required"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Discount %"}
-                                name="discount_percent"
-                                type="number"
-                                min="0"
-                                max="100"
-                                step="0.01"
-                                placeholder="Discount percentage"
-                                required={false}
-                                message={"Enter discount % if applicable"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Discount Amount"}
-                                name="discount_amount"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Discount amount (if fixed)"
-                                required={false}
-                                message={"Enter discount amount if applicable"}
-                            />
-                        </div>
-                        <div className={`${style.form_inputBox} ${style.border_bottom}`}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Tax Rate %"}
-                                name="tax_rate"
-                                type="number"
-                                min="0"
-                                max="100"
-                                step="0.01"
-                                placeholder="Tax rate percentage"
-                                required={false}
-                                message={"Enter tax rate if applicable"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Tax Amount"}
-                                name="tax_amount"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Tax amount (calculated)"
-                                required={false}
-                                readOnly={true}
-                                message={"Tax amount is auto-calculated"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Line Total"}
-                                name="line_total"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Line total (calculated)"
-                                required={false}
-                                readOnly={true}
-                                message={"Line total is auto-calculated"}
                             />
                         </div>
 
