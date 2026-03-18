@@ -169,7 +169,10 @@ const FormInputTextArea = ({
     showEdit,
     readOnly,
     onEditClick,
-    viewScreen
+    viewScreen,
+    minRows,
+    maxRows,
+    color
 }) => {
     return (
         <>
@@ -180,7 +183,7 @@ const FormInputTextArea = ({
                     rules={[{ required: required, message: message }]}
                 >
                     <FloatingLabel label={label} name={name}>
-                         <TextArea  autoSize={{ minRows: 8, maxRows: 6 }} style={{marginBottom: "10px"}}/>
+                         <TextArea  autoSize={{ minRows: minRows || 8, maxRows: maxRows || 6 }} style={{marginBottom: "10px",color:color}}/>
                     </FloatingLabel>
                 </Form.Item>
             </div>

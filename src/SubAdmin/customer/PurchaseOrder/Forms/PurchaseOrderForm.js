@@ -1,13 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import style from './form.module.css'
 import { Form, Modal, Table } from 'antd';
 import { FormInput, FormInputTextArea } from '../../../../Components/Inputs/Inputs';
 import { SelectInput } from '../../../../Components/Select/Select';
 import { Button } from '../../../../Components/Button/Button';
-import { LuArrowDownUp } from "react-icons/lu";
-import { HiDotsVertical } from "react-icons/hi";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import CustomDate from '../../../../Components/Date/CustomDate';
+import UploadFile from '../../../../Components/File/UploadFile';
 
 
 
@@ -17,6 +16,8 @@ function PurchaseOrderForm({
     setPurchaseOrdersForm
 }) {
     const [form] = Form.useForm();
+    const lastAddedRef = useRef(false);
+    const itemsValue = Form.useWatch('items', form);
     const handleOk = () => {
         setPurchaseOrdersForm(false);
     };
@@ -24,144 +25,166 @@ function PurchaseOrderForm({
         setPurchaseOrdersForm(false);
     };
 
+    const addRow = () => {
+        if (!itemsValue || itemsValue.length === 0) return;
+        const lastItem = itemsValue[itemsValue.length - 1];
+        const hasAnyValue = lastItem && Object.values(lastItem).some(
+            val => val && String(val).trim() !== ''
+        );
+        if (hasAnyValue && !lastAddedRef.current) {
+            form.setFieldsValue({
+                items: [...itemsValue, {}]
+            });
+            lastAddedRef.current = true;
+        } else if (!hasAnyValue) {
+            lastAddedRef.current = false;
+        }
+    }
+
+    useEffect(() => {
+        addRow()
+    }, [itemsValue, form]);
+
+
     const columns = [
         {
-            title: "SKU/ Model",
-            dataIndex: "SKU_Model",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
+            title: "Product ID",
+            width: 300,
+            render: (_, record) => (
+                <SelectInput
+                    placeholder="Select product"
+                    name={[record.field.name, 'product_id']}
+                    required={false}
+                    showSearch={true}
+                    message={"Select product if ordering from catalog"}
+                    options={[]}
+                />
             ),
         },
         {
             title: "Description",
-            dataIndex: "Description",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
+            width: 300,
+            render: (_, record) => (
+                <FormInput
+                    name={[record.field.name, 'description']}
+                    placeholder="Item description"
+                    required={true}
+                    message={"Description is required"}
+                />
             ),
         },
         {
-            title: "Unit Cost",
-            dataIndex: "Unit Cost",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
+            title: "Model",
+            width: 100,
+            render: (_, record) => (
+                <FormInput
+                    name={[record.field.name, 'model_part_number']}
+                    placeholder="Enter model or part number"
+                    required={false}
+                    message={"Enter model/part number if applicable"}
+                />
             ),
         },
         {
             title: "Quantity",
-            dataIndex: "Quantity",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
+            width: 100,
+            render: (_, record) => (
+                <FormInput
+                    name={[record.field.name, 'quantity']}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="quantity"
+                    required={true}
+                    message={"Quantity is required"}
+                />
             ),
         },
         {
-            title: "Tax",
-            dataIndex: "Tax",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
+            title: "Unit of Measure",
+            width: 200,
+            render: (_, record) => (
+                <SelectInput
+                    placeholder="Select unit"
+                    name={[record.field.name, 'uom']}
+                    required={true}
+                    message={"Please select unit of measure"}
+                    options={[
+                        { value: "Each", label: "Each" },
+                        { value: "Box", label: "Box" },
+                        { value: "Pallet", label: "Pallet" },
+                        { value: "Kg", label: "Kilogram" },
+                        { value: "Lb", label: "Pound" },
+                        { value: "Meter", label: "Meter" },
+                        { value: "Foot", label: "Foot" },
+                        { value: "Liter", label: "Liter" },
+                        { value: "Hour", label: "Hour (Service)" },
+                        { value: "Day", label: "Day (Service)" },
+                        { value: "Other", label: "Other" },
+                    ]}
+                />
             ),
         },
         {
-            title: "Total",
-            dataIndex: "Total",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
+            title: "Discount %",
+            width: 100,
+            render: (_, record) => (
+                <FormInput
+                    name={[record.field.name, 'discount_percent']}
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="Discount percentage"
+                    required={false}
+                    message={"Enter discount % if applicable"}
+                />
             ),
         },
         {
-            title: (
-                <LuArrowDownUp style={{ fontSize: "22px", cursor: "pointer" }} />
-            ),
-            dataIndex: "yah",
-            render: () => (
-                <div className={`${style.form_dotsIcons}`}>
-                    <HiDotsVertical />
-                    <HiDotsVertical />
-                </div>
+            title: "Tax Rate %",
+            width: 150,
+            render: (_, record) => (
+                <FormInput
+                    name={[record.field.name, 'tax_rate']}
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="Tax rate percentage"
+                    required={false}
+                    message={"Enter tax rate if applicable"}
+                />
             ),
         },
-    ];
-
-    // 👇 sirf ek dummy row do
-    const data = [
-        { key: "1" }
+        {
+            title: "Tax Amount",
+            width: 150,
+            render: (_, record) => (
+                <FormInput
+                    name={[record.field.name, 'tax_amount']}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="Tax amount (calculated)"
+                    required={false}
+                    readOnly={true}
+                    message={"Tax amount is auto-calculated"}
+                />
+            ),
+        },
+        {
+            title: "LIne Total",
+            width: 150,
+            render: (_, record) => (
+                <FormInput
+                    name={[record.field.name, 'total']}
+                    type="no"
+                    required={false}
+                    placeholder="Total"
+                />
+            ),
+        }
     ];
     return (
         <>
@@ -179,6 +202,7 @@ function PurchaseOrderForm({
                     form={form}
                     className={`${style.form_modalMainBox} mt-3`}
                     layout="vertical"
+                    initialValues={{items:[{}]}}
                 // onFinish={handleForm}
                 >
                     <div className={style.modalHardwareScroll}>
@@ -466,200 +490,24 @@ function PurchaseOrderForm({
                         </div>
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>PO Details</h5>
-                        <div className={style.form_inputBox}>
-                            <SelectInput
-                                className="mx-1"
-                                label={"Item Type"}
-                                placeholder="Select item type"
-                                name="item_type"
-                                required={true}
-                                message={"Please select item type"}
-                                options={[
-                                    { value: "Product", label: "Product (Asset)" },
-                                    { value: "Spare Part", label: "Spare Part" },
-                                    { value: "Consumable", label: "Consumable" },
-                                    { value: "Service", label: "Service" },
-                                ]}
-                            />
-
-                            <SelectInput
-                                className="mx-1"
-                                label={"Product ID / Asset Catalog ID"}
-                                placeholder="Select product"
-                                name="product_id"
-                                required={false}
-                                showSearch={true}
-                                message={"Select product if ordering from catalog"}
-                                options={[]}
-                            />
-                            <FormInput
-                                className="mx-1"
-                                label={"Description"}
-                                name="description"
-                                placeholder="Item description"
-                                required={true}
-                                message={"Description is required"}
-                            />
-                        </div>
-                        <div className={style.form_inputBox}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Manufacturer"}
-                                name="manufacturer"
-                                placeholder="Enter manufacturer"
-                                required={false}
-                                message={"Enter manufacturer if applicable"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Model / Part Number"}
-                                name="model_part_number"
-                                placeholder="Enter model or part number"
-                                required={false}
-                                message={"Enter model/part number if applicable"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Quantity Ordered"}
-                                name="quantity_ordered"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Ordered quantity"
-                                required={true}
-                                message={"Quantity ordered is required"}
-                            />
-                        </div>
-                        <div className={style.form_inputBox}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Quantity Received"}
-                                name="quantity_received"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Received quantity (updated upon receipt)"
-                                required={false}
-                                readOnly={false}
-                                message={"Enter received quantity if any"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Quantity Invoiced"}
-                                name="quantity_invoiced"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Invoiced quantity (for matching)"
-                                required={false}
-                                message={"Enter invoiced quantity"}
-                            />
-
-                            <SelectInput
-                                className="mx-1"
-                                label={"Unit of Measure"}
-                                placeholder="Select unit"
-                                name="uom"
-                                required={true}
-                                message={"Please select unit of measure"}
-                                options={[
-                                    { value: "Each", label: "Each" },
-                                    { value: "Box", label: "Box" },
-                                    { value: "Pallet", label: "Pallet" },
-                                    { value: "Kg", label: "Kilogram" },
-                                    { value: "Lb", label: "Pound" },
-                                    { value: "Meter", label: "Meter" },
-                                    { value: "Foot", label: "Foot" },
-                                    { value: "Liter", label: "Liter" },
-                                    { value: "Hour", label: "Hour (Service)" },
-                                    { value: "Day", label: "Day (Service)" },
-                                    { value: "Other", label: "Other" },
-                                ]}
-                            />
-                        </div>
-                        <div className={style.form_inputBox}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Unit Cost"}
-                                name="unit_cost"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Purchase price per unit (ex tax)"
-                                required={true}
-                                message={"Unit cost is required"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Discount %"}
-                                name="discount_percent"
-                                type="number"
-                                min="0"
-                                max="100"
-                                step="0.01"
-                                placeholder="Discount percentage"
-                                required={false}
-                                message={"Enter discount % if applicable"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Discount Amount"}
-                                name="discount_amount"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Discount amount (if fixed)"
-                                required={false}
-                                message={"Enter discount amount if applicable"}
-                            />
-                        </div>
-                        <div className={`${style.form_inputBox} ${style.border_bottom}`}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Tax Rate %"}
-                                name="tax_rate"
-                                type="number"
-                                min="0"
-                                max="100"
-                                step="0.01"
-                                placeholder="Tax rate percentage"
-                                required={false}
-                                message={"Enter tax rate if applicable"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Tax Amount"}
-                                name="tax_amount"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Tax amount (calculated)"
-                                required={false}
-                                readOnly={true}
-                                message={"Tax amount is auto-calculated"}
-                            />
-
-                            <FormInput
-                                className="mx-1"
-                                label={"Line Total"}
-                                name="line_total"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Line total (calculated)"
-                                required={false}
-                                readOnly={true}
-                                message={"Line total is auto-calculated"}
-                            />
-                        </div>
-
-                        
+                        <Form.List name="items">
+                            {(fields) => {
+                                const dataSource = fields.map(field => ({
+                                    key: field.key,
+                                    field,
+                                }));
+                                return (
+                                    <Table
+                                        className='antdCustomeTable noneRowHover'
+                                        dataSource={dataSource}
+                                        scroll={{x:1500}}
+                                        columns={columns}
+                                        pagination={false}
+                                        rowKey="key"
+                                    />
+                                );
+                            }}
+                        </Form.List>
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Receiving Information</h5>
                         <div className={`${style.form_inputBox} ${style.border_bottom}`}>
@@ -692,6 +540,144 @@ function PurchaseOrderForm({
                                 showSearch={true}
                                 message={"Please select who received the goods"}
                                 options={[]}
+                            />
+                        </div>
+
+                        <h5 className={`${style.form_checkBoxHeading} mx-1`}>Financial & Invoicing (Accounts Payable)</h5>
+                        <div className={style.form_inputBox}>
+                            <FormInput
+                                className="mx-1"
+                                label={"Vendor Invoice Number"}
+                                name="vendor_invoice_number"
+                                placeholder="Enter vendor invoice reference number"
+                                required={true}
+                                message={"Vendor invoice number is required"}
+                            />
+
+                            <CustomDate
+                                className="mx-1"
+                                label={"Vendor Invoice Date"}
+                                name="vendor_invoice_date"
+                                placeholder="Select invoice date"
+                                required={true}
+                                message={"Vendor invoice date is required"}
+                                allowToday={true}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Vendor Invoice Amount"}
+                                name="vendor_invoice_amount"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Enter invoice amount"
+                                required={true}
+                                message={"Vendor invoice amount is required"}
+                            />
+                        </div>
+                        <div className={style.form_inputBox}>
+                            <SelectInput
+                                className="mx-1"
+                                label={"Matching Status"}
+                                placeholder="Select matching status"
+                                name="matching_status"
+                                required={true}
+                                message={"Please select matching status"}
+                                options={[
+                                    { value: "Not Matched", label: "Not Matched" },
+                                    { value: "Matched", label: "Matched" },
+                                    { value: "Discrepancy", label: "Discrepancy" },
+                                ]}
+                            />
+
+                            <CustomDate
+                                className="mx-1"
+                                label={"Payment Due Date"}
+                                name="payment_due_date"
+                                placeholder="Select payment due date"
+                                required={true}
+                                message={"Payment due date is required"}
+                                allowToday={true}
+                            />
+
+                            <SelectInput
+                                className="mx-1"
+                                label={"Payment Status"}
+                                placeholder="Select payment status"
+                                name="payment_status"
+                                required={true}
+                                message={"Please select payment status"}
+                                options={[
+                                    { value: "Unpaid", label: "Unpaid" },
+                                    { value: "Paid", label: "Paid" },
+                                    { value: "Partial", label: "Partial" },
+                                ]}
+                            />
+                        </div>
+                        <div className={`${style.form_inputBox} ${style.border_bottom}`}>
+                            <FormInput
+                                className="mx-1"
+                                label={"Payment Reference"}
+                                name="payment_reference"
+                                placeholder="Enter payment reference"
+                                required={false}
+                                message={"Enter payment reference if applicable"}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Prepayment Amount"}
+                                name="prepayment_amount"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Enter advance payment"
+                                required={false}
+                                message={"Enter prepayment amount if applicable"}
+                            />
+                        </div>
+
+                        <h5 className={`${style.form_checkBoxHeading} mx-1`}>Financial & Invoicing (Accounts Payable)</h5>
+                        <div className={`${style.form_inputBox} ${style.border_bottom}`}>
+                            <FormInput
+                                className="mx-1"
+                                label={"Request for Quotation (RFQ) Reference"}
+                                name="rfq_reference"
+                                placeholder="Enter RFQ reference number"
+                                required={false}
+                                message={"Enter RFQ reference if applicable"}
+                            />
+
+                            <UploadFile
+                                className="mx-1 inputFlexBox"
+                                label={"Quotation from Vendor"}
+                                name="vendor_quotation"
+                                title={"Upload Quotation"}
+                                required={false}
+                                multiple={false}
+                                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                                message={"Upload vendor quotation document"}
+                            />
+
+                            <FormInput
+                                className="mx-1"
+                                label={"Contract Reference"}
+                                name="contract_reference"
+                                placeholder="Enter contract reference (if part of master agreement)"
+                                required={false}
+                                message={"Enter contract reference if applicable"}
+                            />
+
+                            <UploadFile
+                                className="mx-1 inputFlexBox"
+                                label={"Attachments"}
+                                name="attachments"
+                                title={"Upload Files"}
+                                required={false}
+                                multiple={true}
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx"
+                                message={"Upload scanned PO, specifications, etc."}
                             />
                         </div>
                     </div>

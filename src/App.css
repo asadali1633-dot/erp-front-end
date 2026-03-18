@@ -68,6 +68,13 @@ section{
     background: transparent;
 }
 
+.noneRowHover .ant-table-row>.ant-table-cell-row-hover {
+    background: transparent !important;
+}
+.noneRowHover .ant-table-tbody .ant-table-row td {
+    border-bottom: 1px solid transparent !important;
+}
+
 
 /* ANTD MODAL CSS FOR GLOBAL ========================================= */
 .modalBgColor .ant-modal-close-x{
@@ -182,4 +189,20 @@ section{
 }
 .bg{
     background: transparent;
+}
+
+/* TEXT EIDITOR CSS ============================== */
+.textEiditor span{
+    color: black !important;
+}
+.textEiditor p {
+    color: black !important;
+}
+
+.textEiditor ul{
+    background: transparent !important;
+}
+
+.textEiditor .ql-editor{
+    height: 300px;
 }

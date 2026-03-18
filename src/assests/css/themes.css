@@ -110,6 +110,9 @@ a{
 }
 
 /* TABLE BOX AND OUTER BOX THEME CSS =============== */
+.customerinfo_tabsPanel textarea{
+  color: black !important;
+}
 .customerinfo_tabsPanel .ant-tabs-nav-wrap{
   background:  #454544;
   padding: 0 20px;

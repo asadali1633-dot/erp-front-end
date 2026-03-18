@@ -20,6 +20,8 @@ import PeopleList from './People/List/PeopleList';
 import Cookies from "js-cookie";
 import Loader from '../../Components/Loader/Loader';
 import Client from './Client/Client';
+import Quotation from './Quotation/Quotation';
+import Invoice from './Invoice/Invoice';
 
 
 
@@ -135,11 +137,13 @@ function CustomerInfo({
         {
             key: "9",
             label: "Quotation",
+            children: <Quotation />,
             slug: "",
         },
         {
             key: "10",
             label: "Invoice",
+            children: <Invoice />,
             slug: "",
         },
         {
