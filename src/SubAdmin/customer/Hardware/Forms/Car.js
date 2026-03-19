@@ -474,7 +474,6 @@ function Car({
                                 label={"Year"}
                                 className={`mx-1`}
                                 name="year"
-                                placeholder={"Year"}
                                 message={"Year"}
                                 required={true}
                             />

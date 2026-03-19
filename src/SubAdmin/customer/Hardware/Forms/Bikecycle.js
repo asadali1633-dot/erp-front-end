@@ -14,6 +14,7 @@ import QRCODE from '../../../../Components/QR/BARCODE'
 import { Country, State, City } from "country-state-city";
 import UploadFile from '../../../../Components/File/UploadFile';
 import Year from '../../../../Components/Date/Year';
+import dayjs from "dayjs";
 
 
 function Bikecycle({
@@ -24,7 +25,10 @@ function Bikecycle({
     getBarCode,
     CreateAssetsFun,
     GetAllBrandsManufacturer,
-    GetAllEmpList
+    GetAllEmpList,
+    GetAllHardware,
+    UpdateAssets,
+    EditAssetsData
 }) {
     const [form] = Form.useForm();
     const users = Red_Assets?.Users?.[0]?.data
@@ -62,15 +66,12 @@ function Bikecycle({
     const handleForm = async (values) => {
         setloading(true);
         const field_values = {
-            // Identification & Classification
             asset_tag: values?.asset_tag,
             manufacturer_brand: values?.manufacturer_brand,
             model_name: values?.model_name,
             model_year: values?.model_year,
             frame_serial_number: values?.frame_serial_number,
             frame_size: values?.frame_size,
-
-            // Technical Specifications
             wheel_size: values?.wheel_size,
             tire_type: values?.tire_type,
             brake_type: values?.brake_type,
@@ -78,8 +79,6 @@ function Bikecycle({
             number_of_gears: values?.number_of_gears,
             shifters: values?.shifters,
             weight: values?.weight,
-
-            // Electric Bike Specific
             motor_type: values?.motor_type,
             motor_power: values?.motor_power,
             battery_capacity: values?.battery_capacity,
@@ -89,8 +88,6 @@ function Bikecycle({
             assist_levels: values?.assist_levels,
             display_model: values?.display_model,
             battery_key_number: values?.battery_key_number,
-
-            // Procurement & Financial
             po_number: values?.po_number,
             vendor_dealer: values?.vendor_dealer,
             purchase_date: values?.purchase_date,
@@ -100,8 +97,6 @@ function Bikecycle({
             warranty_expiry: values?.warranty_expiry,
             insurance_policy_number: values?.insurance_policy_number,
             insurance_expiry: values?.insurance_expiry,
-
-            // Assignment & Usage
             assigned_to: values?.assigned_to,
             assignment_date: values?.assignment_date,
             expected_return_date: values?.expected_return_date,
@@ -110,13 +105,9 @@ function Bikecycle({
             lock_combination: values?.lock_combination,
             gps_tracker_id: values?.gps_tracker_id,
             previous_assignees: values?.previous_assignees,
-
-            // Safety & Accessories
             safety_equipment: values?.safety_equipment,
             helmet_location: values?.helmet_location,
             safety_notes: values?.safety_notes,
-
-            // Maintenance & Service
             current_condition: values?.current_condition,
             last_service_date: values?.last_service_date,
             last_service_type: values?.last_service_type,
@@ -128,15 +119,11 @@ function Bikecycle({
             chain_lube_schedule: values?.chain_lube_schedule,
             brake_pad_replacement_date: values?.brake_pad_replacement_date,
             battery_health_check_date: values?.battery_health_check_date,
-
-            // Incidents & Damage
             accident_history: values?.accident_history,
             current_damage: values?.current_damage,
             theft_report: values?.theft_report,
             stolen_status: values?.stolen_status,
             vandalism_report: values?.vandalism_report,
-
-            // Lifecycle & Disposition
             bicycle_status: values?.bicycle_status,
             replacement_date: values?.replacement_date,
             retirement_reason: values?.retirement_reason,
@@ -145,8 +132,6 @@ function Bikecycle({
             donation_recipient: values?.donation_recipient,
             resale_value: values?.resale_value,
             disposal_certificate: values?.disposal_certificate,
-
-            // Documentation & Compliance
             owners_manual_location: values?.owners_manual_location,
             assembly_instructions: values?.assembly_instructions,
             proof_of_purchase: values?.proof_of_purchase,
@@ -154,8 +139,6 @@ function Bikecycle({
             safety_certification: values?.safety_certification,
             bike_registration_id: values?.bike_registration_id,
             photographs: values?.photographs,
-
-            // Administrative
             record_created_by: values?.record_created_by,
             record_created_date: values?.record_created_date,
             last_updated_by: values?.last_updated_by,
@@ -167,51 +150,164 @@ function Bikecycle({
         const payload = {
             asset_tag: values?.asset_tag,
             asset_type: assetsType,
+            assign_to: values?.assigned_to,
             field_values: field_values
         };
-        const isCheck = await CreateAssetsFun(payload, accessToken);
-        if (isCheck?.success) {
-            messageApi.success({
-                type: 'success',
-                content: isCheck?.message,
-            });
-            if (actionType === 'save') {
-                form.resetFields();
-                setTimeout(() => {
-                    setAssetsType(false);
+
+        if (code?.mode !== "Edit") {
+            const isCheck = await CreateAssetsFun(payload, accessToken);
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                GetAllHardware(pagBody, accessToken);
+                if (actionType === 'save') {
+                    form.resetFields();
+                    setTimeout(() => {
+                        setAssetsType(false);
+                        setloading(false);
+                        setActionType('');
+                    }, 1000);
+                } else if (actionType === 'createNew') {
                     setloading(false);
-                    setActionType('');
-                }, 1000);
-            } else if (actionType === 'createNew') {
-                setloading(false);
-                form.resetFields();
-                if (accessToken) {
-                    getBarCode(accessToken);
+                    form.resetFields();
+                    if (accessToken) {
+                        getBarCode(accessToken);
+                    }
                 }
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
+                setloading(false);
             }
         } else {
-            messageApi.error({
-                type: 'error',
-                content: isCheck?.message,
-            });
-            setloading(false);
+            const isCheck = await UpdateAssets(payload, accessToken, code?.code)
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                GetAllHardware(pagBody, accessToken);
+                setloading(false);
+                setTimeout(() => {
+                    setAssetsType(false);
+                }, 1500);
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
+                setloading(false);
+            }
         }
 
     };
 
     useEffect(() => {
-        if (accessToken) {
-            getBarCode(accessToken)
+        if (EditAssetsData && code?.mode === "Edit") {
+            const Data = EditAssetsData;
+            const values = EditAssetsData?.field_values;
+            form.setFieldsValue({
+                asset_tag: Data?.asset_tag,
+                manufacturer_brand: values?.manufacturer_brand,
+                model_name: values?.model_name,
+                model_year: values?.model_year ? dayjs(values.model_year) : null,
+                frame_serial_number: values?.frame_serial_number,
+                frame_size: values?.frame_size,
+                wheel_size: values?.wheel_size,
+                tire_type: values?.tire_type,
+                brake_type: values?.brake_type,
+                gearing_system: values?.gearing_system,
+                number_of_gears: values?.number_of_gears,
+                shifters: values?.shifters,
+                weight: values?.weight,
+                motor_type: values?.motor_type,
+                motor_power: values?.motor_power,
+                battery_capacity: values?.battery_capacity,
+                battery_serial_number: values?.battery_serial_number,
+                charger_serial_number: values?.charger_serial_number,
+                estimated_range: values?.estimated_range,
+                assist_levels: values?.assist_levels,
+                display_model: values?.display_model,
+                battery_key_number: values?.battery_key_number,
+                po_number: values?.po_number,
+                vendor_dealer: values?.vendor_dealer,
+                purchase_date: values?.purchase_date,
+                purchase_cost: values?.purchase_cost,
+                delivery_assembly_cost: values?.delivery_assembly_cost,
+                cost_center: values?.cost_center,
+                warranty_expiry: values?.warranty_expiry,
+                insurance_policy_number: values?.insurance_policy_number,
+                insurance_expiry: values?.insurance_expiry,
+                assigned_to: values?.assigned_to,
+                assignment_date: values?.assignment_date,
+                expected_return_date: values?.expected_return_date,
+                primary_purpose: values?.primary_purpose,
+                home_location: values?.home_location,
+                lock_combination: values?.lock_combination,
+                gps_tracker_id: values?.gps_tracker_id,
+                previous_assignees: values?.previous_assignees,
+                safety_equipment: values?.safety_equipment,
+                helmet_location: values?.helmet_location,
+                safety_notes: values?.safety_notes,
+                current_condition: values?.current_condition,
+                last_service_date: values?.last_service_date,
+                last_service_type: values?.last_service_type,
+                last_service_odometer: values?.last_service_odometer,
+                next_service_due: values?.next_service_due,
+                service_interval: values?.service_interval,
+                preferred_shop: values?.preferred_shop,
+                service_history_log: values?.service_history_log,
+                chain_lube_schedule: values?.chain_lube_schedule,
+                brake_pad_replacement_date: values?.brake_pad_replacement_date,
+                battery_health_check_date: values?.battery_health_check_date,
+                accident_history: values?.accident_history,
+                current_damage: values?.current_damage,
+                theft_report: values?.theft_report,
+                stolen_status: values?.stolen_status,
+                vandalism_report: values?.vandalism_report,
+                bicycle_status: values?.bicycle_status,
+                replacement_date: values?.replacement_date,
+                retirement_reason: values?.retirement_reason,
+                disposal_date: values?.disposal_date,
+                disposal_method: values?.disposal_method,
+                donation_recipient: values?.donation_recipient,
+                resale_value: values?.resale_value,
+                disposal_certificate: values?.disposal_certificate,
+                owners_manual_location: values?.owners_manual_location,
+                assembly_instructions: values?.assembly_instructions,
+                proof_of_purchase: values?.proof_of_purchase,
+                local_registration: values?.local_registration,
+                safety_certification: values?.safety_certification,
+                bike_registration_id: values?.bike_registration_id,
+                photographs: values?.photographs,
+                record_created_by: values?.record_created_by,
+                record_created_date: values?.record_created_date,
+                last_updated_by: values?.last_updated_by,
+                last_updated_date: values?.last_updated_date,
+                last_inventory_check: values?.last_inventory_check,
+                notes: values?.notes,
+                attachments: values?.attachments
+            });
         }
-    }, [accessToken]);
+    }, [EditAssetsData, code, form]);
 
     useEffect(() => {
-        if (barcode) {
+        if (code?.mode !== "Edit" && accessToken && !barcode) {
+            getBarCode(accessToken);
+        }
+    }, [code?.mode, accessToken, getBarCode]);
+
+    useEffect(() => {
+        if (code?.mode !== "Edit" && barcode) {
             form.setFieldsValue({
                 asset_tag: barcode
             });
         }
-    }, [barcode, form]);
+    }, [barcode, code?.mode, form]);
 
     useEffect(() => {
         if (assetsType) {
@@ -225,7 +321,7 @@ function Bikecycle({
 
     return (
         <>
-        {contextHolder}
+            {contextHolder}
             <Modal
                 title=""
                 closable={{ 'aria-label': 'Custom Close Button' }}
@@ -245,7 +341,11 @@ function Bikecycle({
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
                             <h5 className="mx-1">Bicycle Asset Form</h5>
-                            <QRCODE value={barcode} />
+                            <QRCODE
+                                value={
+                                    code?.mode === "Edit" ? EditAssetsData?.asset_tag : barcode
+                                }
+                            />
                         </div>
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Identification & Classification</h5>
@@ -612,11 +712,11 @@ function Bikecycle({
                                 label={"assigned To"}
                                 placeholder="assigned To"
                                 name="assigned_to"
-                                required={false}
+                                required={true}
                                 message={"Assigned To"}
                                 options={users?.map((item) => ({
                                     value: item.id,
-                                        label: `${item.name || ''} - ${item.email || ''}` 
+                                    label: `${item.name || ''} - ${item.email || ''}`
                                 }))}
                             />
                             <CustomDate

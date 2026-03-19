@@ -1199,7 +1199,7 @@ function ServerForm({
                                 label={"Assigned To"}
                                 placeholder="Assigned To"
                                 name="assigned_to"
-                                required={false}
+                                required={true}
                                 message={"Please Select a assigned to"}
                                 options={users?.map((item) => ({
                                     value: item.id,

@@ -207,11 +207,11 @@ function TicketForm({
                         <div className={style.form_inputBox}>
                             <SelectInput
                                 className="mx-1"
-                                label={"Salutation"}
-                                placeholder="Select Salutation"
-                                name="salutation"
+                                label={"Solutation"}
+                                placeholder="Select Solutation"
+                                name="Solutation"
                                 required={true}
-                                message={"Please select salutation"}
+                                message={"Please select solutation"}
                                 options={[
                                     { value: "Mr.", label: "Mr." },
                                     { value: "Ms.", label: "Ms." },

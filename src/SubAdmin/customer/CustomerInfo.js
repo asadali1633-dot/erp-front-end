@@ -22,6 +22,8 @@ import Loader from '../../Components/Loader/Loader';
 import Client from './Client/Client';
 import Quotation from './Quotation/Quotation';
 import Invoice from './Invoice/Invoice';
+import Payments from './payments/Payments';
+import Expenses from './expenses/Expenses';
 
 
 
@@ -145,15 +147,22 @@ function CustomerInfo({
             label: "Invoice",
             children: <Invoice />,
             slug: "",
-        },
+        },  
         {
             key: "11",
-            label: "Payment",
+            label: "Project",
             slug: "",
         },
         {
             key: "12",
+            label: "Payment",
+            children: <Payments />,
+            slug: "",
+        },
+        {
+            key: "13",
             label: "Expenses",
+            children: <Expenses />,
             slug: "",
         },
     ];

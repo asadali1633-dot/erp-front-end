@@ -13,7 +13,6 @@ import CreateBrand from './CreateBrand';
 import QRCODE from '../../../../Components/QR/BARCODE'
 import { Country, State, City } from "country-state-city";
 import UploadFile from '../../../../Components/File/UploadFile';
-import Year from '../../../../Components/Date/Year';
 
 
 function FurnitureOfficeAssets({
@@ -24,7 +23,10 @@ function FurnitureOfficeAssets({
     getBarCode,
     CreateAssetsFun,
     GetAllBrandsManufacturer,
-    GetAllEmpList
+    GetAllEmpList,
+    GetAllHardware,
+    UpdateAssets,
+    EditAssetsData
 }) {
     const [form] = Form.useForm();
     const users = Red_Assets?.Users?.[0]?.data
@@ -63,7 +65,6 @@ function FurnitureOfficeAssets({
     const handleForm = async (values) => {
         setloading(true);
         const field_values = {
-            // Basic Identification
             asset_tag: values?.asset_tag,
             item_type: values?.item_type,
             category: values?.category,
@@ -72,8 +73,6 @@ function FurnitureOfficeAssets({
             serial_number: values?.serial_number,
             color_finish: values?.color_finish,
             material: values?.material,
-
-            // Physical Specifications
             dimensions: values?.dimensions,
             weight: values?.weight,
             assembly_required: values?.assembly_required,
@@ -83,8 +82,6 @@ function FurnitureOfficeAssets({
             weight_capacity: values?.weight_capacity,
             ergonomic_certification: values?.ergonomic_certification,
             fire_safety_rating: values?.fire_safety_rating,
-
-            // Location & Assignment
             current_location: values?.current_location,
             assigned_to: values?.assigned_to,
             assignment_date: values?.assignment_date,
@@ -92,8 +89,6 @@ function FurnitureOfficeAssets({
             space_floor_plan_ref: values?.space_floor_plan_ref,
             previous_location: values?.previous_location,
             storage_location: values?.storage_location,
-
-            // Procurement Details
             po_number: values?.po_number,
             vendor_dealer: values?.vendor_dealer,
             purchase_date: values?.purchase_date,
@@ -103,8 +98,6 @@ function FurnitureOfficeAssets({
             delivery_installation_cost: values?.delivery_installation_cost,
             cost_center: values?.cost_center,
             expenditure_type: values?.expenditure_type,
-
-            // Condition & Maintenance
             condition_status: values?.condition_status,
             condition_notes: values?.condition_notes,
             last_inspection_date: values?.last_inspection_date,
@@ -115,8 +108,6 @@ function FurnitureOfficeAssets({
             warranty_expiry: values?.warranty_expiry,
             repair_history: values?.repair_history,
             cleaning_instructions: values?.cleaning_instructions,
-
-            // Ergonomic & Compliance Features
             adjustable_height: values?.adjustable_height,
             lumbar_support: values?.lumbar_support,
             armrests: values?.armrests,
@@ -126,16 +117,12 @@ function FurnitureOfficeAssets({
             gas_lift_functioning: values?.gas_lift_functioning,
             ada_compliant: values?.ada_compliant,
             standing_desk_feature: values?.standing_desk_feature,
-
-            // Storage & Cabinetry Specific
             number_of_drawers: values?.number_of_drawers,
             locking_mechanism: values?.locking_mechanism,
             number_of_keys: values?.number_of_keys,
             shelf_adjustability: values?.shelf_adjustability,
             fireproof_rating: values?.fireproof_rating,
             file_hanging_capacity: values?.file_hanging_capacity,
-
-            // Lifecycle & Depreciation
             expected_lifespan: values?.expected_lifespan,
             depreciation_schedule: values?.depreciation_schedule,
             current_book_value: values?.current_book_value,
@@ -143,16 +130,12 @@ function FurnitureOfficeAssets({
             planned_replacement_date: values?.planned_replacement_date,
             furniture_status: values?.furniture_status,
             retirement_reason: values?.retirement_reason,
-
-            // Safety & Compliance
             safety_inspection_date: values?.safety_inspection_date,
             safety_issues: values?.safety_issues,
             recall_status: values?.recall_status,
             weight_limit_labels: values?.weight_limit_labels,
             assembly_safety_check: values?.assembly_safety_check,
             electrical_certification: values?.electrical_certification,
-
-            // Office Equipment (Non-IT)
             equipment_type: values?.equipment_type,
             power_requirements: values?.power_requirements,
             service_contract_number: values?.service_contract_number,
@@ -161,8 +144,6 @@ function FurnitureOfficeAssets({
             supplies_consumables: values?.supplies_consumables,
             monthly_service_cost: values?.monthly_service_cost,
             usage_meter: values?.usage_meter,
-
-            // Disposal & Sustainability
             disposal_date: values?.disposal_date,
             disposal_method: values?.disposal_method,
             disposal_certificate: values?.disposal_certificate,
@@ -171,8 +152,6 @@ function FurnitureOfficeAssets({
             donation_recipient: values?.donation_recipient,
             resale_value: values?.resale_value,
             disposal_cost: values?.disposal_cost,
-
-            // Administrative
             asset_photos: values?.asset_photos,
             manual_location: values?.manual_location,
             assembly_diagram_ref: values?.assembly_diagram_ref,
@@ -187,51 +166,179 @@ function FurnitureOfficeAssets({
         const payload = {
             asset_tag: values?.asset_tag,
             asset_type: assetsType,
+            assign_to: values?.assigned_to,
             field_values: field_values
         };
-        const isCheck = await CreateAssetsFun(payload, accessToken);
-        if (isCheck?.success) {
-            messageApi.success({
-                type: 'success',
-                content: isCheck?.message,
-            });
-            if (actionType === 'save') {
-                form.resetFields();
-                setTimeout(() => {
-                    setAssetsType(false);
+        if (code?.mode !== "Edit") {
+            const isCheck = await CreateAssetsFun(payload, accessToken);
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                if (actionType === 'save') {
+                    form.resetFields();
+                    setTimeout(() => {
+                        setAssetsType(false);
+                        setloading(false);
+                        setActionType('');
+                    }, 1000);
+                } else if (actionType === 'createNew') {
                     setloading(false);
-                    setActionType('');
-                }, 1000);
-            } else if (actionType === 'createNew') {
-                setloading(false);
-                form.resetFields();
-                if (accessToken) {
-                    getBarCode(accessToken);
+                    form.resetFields();
+                    if (accessToken) {
+                        getBarCode(accessToken);
+                    }
                 }
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
+                setloading(false);
             }
         } else {
-            messageApi.error({
-                type: 'error',
-                content: isCheck?.message,
-            });
-            setloading(false);
+            const isCheck = await UpdateAssets(payload, accessToken, code?.code)
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: 'success',
+                    content: isCheck?.message,
+                });
+                GetAllHardware(pagBody, accessToken);
+                setloading(false);
+                setTimeout(() => {
+                    setAssetsType(false);
+                }, 1500);
+            } else {
+                messageApi.error({
+                    type: 'error',
+                    content: isCheck?.message,
+                });
+                setloading(false);
+            }
         }
 
     };
 
     useEffect(() => {
-        if (accessToken) {
-            getBarCode(accessToken)
+        if (EditAssetsData && code?.mode === "Edit") {
+            const Data = EditAssetsData;
+            const values = EditAssetsData?.field_values;
+            form.setFieldsValue({
+                asset_tag: Data?.asset_tag,
+                item_type: values?.item_type,
+                category: values?.category,
+                brand_manufacturer: values?.brand_manufacturer,
+                model_product_line: values?.model_product_line,
+                serial_number: values?.serial_number,
+                color_finish: values?.color_finish,
+                material: values?.material,
+                dimensions: values?.dimensions,
+                weight: values?.weight,
+                assembly_required: values?.assembly_required,
+                assembly_instructions_location: values?.assembly_instructions_location,
+                modular_configurable: values?.modular_configurable,
+                number_of_pieces: values?.number_of_pieces,
+                weight_capacity: values?.weight_capacity,
+                ergonomic_certification: values?.ergonomic_certification,
+                fire_safety_rating: values?.fire_safety_rating,
+                current_location: values?.current_location,
+                assigned_to: values?.assigned_to,
+                assignment_date: values?.assignment_date,
+                shared_common_area: values?.shared_common_area,
+                space_floor_plan_ref: values?.space_floor_plan_ref,
+                previous_location: values?.previous_location,
+                storage_location: values?.storage_location,
+                po_number: values?.po_number,
+                vendor_dealer: values?.vendor_dealer,
+                purchase_date: values?.purchase_date,
+                purchase_cost: values?.purchase_cost,
+                delivery_date: values?.delivery_date,
+                installation_date: values?.installation_date,
+                delivery_installation_cost: values?.delivery_installation_cost,
+                cost_center: values?.cost_center,
+                expenditure_type: values?.expenditure_type,
+                condition_status: values?.condition_status,
+                condition_notes: values?.condition_notes,
+                last_inspection_date: values?.last_inspection_date,
+                next_inspection_date: values?.next_inspection_date,
+                cleaning_schedule: values?.cleaning_schedule,
+                last_cleaning_date: values?.last_cleaning_date,
+                warranty_info: values?.warranty_info,
+                warranty_expiry: values?.warranty_expiry,
+                repair_history: values?.repair_history,
+                cleaning_instructions: values?.cleaning_instructions,
+                adjustable_height: values?.adjustable_height,
+                lumbar_support: values?.lumbar_support,
+                armrests: values?.armrests,
+                seat_depth_width: values?.seat_depth_width,
+                tilt_mechanism: values?.tilt_mechanism,
+                casters_type: values?.casters_type,
+                gas_lift_functioning: values?.gas_lift_functioning,
+                ada_compliant: values?.ada_compliant,
+                standing_desk_feature: values?.standing_desk_feature,
+                number_of_drawers: values?.number_of_drawers,
+                locking_mechanism: values?.locking_mechanism,
+                number_of_keys: values?.number_of_keys,
+                shelf_adjustability: values?.shelf_adjustability,
+                fireproof_rating: values?.fireproof_rating,
+                file_hanging_capacity: values?.file_hanging_capacity,
+                expected_lifespan: values?.expected_lifespan,
+                depreciation_schedule: values?.depreciation_schedule,
+                current_book_value: values?.current_book_value,
+                replacement_cost_estimate: values?.replacement_cost_estimate,
+                planned_replacement_date: values?.planned_replacement_date,
+                furniture_status: values?.furniture_status,
+                retirement_reason: values?.retirement_reason,
+                safety_inspection_date: values?.safety_inspection_date,
+                safety_issues: values?.safety_issues,
+                recall_status: values?.recall_status,
+                weight_limit_labels: values?.weight_limit_labels,
+                assembly_safety_check: values?.assembly_safety_check,
+                electrical_certification: values?.electrical_certification,
+                equipment_type: values?.equipment_type,
+                power_requirements: values?.power_requirements,
+                service_contract_number: values?.service_contract_number,
+                service_provider: values?.service_provider,
+                service_contract_expiry: values?.service_contract_expiry,
+                supplies_consumables: values?.supplies_consumables,
+                monthly_service_cost: values?.monthly_service_cost,
+                usage_meter: values?.usage_meter,
+                disposal_date: values?.disposal_date,
+                disposal_method: values?.disposal_method,
+                disposal_certificate: values?.disposal_certificate,
+                recyclable_materials: values?.recyclable_materials,
+                environmental_certification: values?.environmental_certification,
+                donation_recipient: values?.donation_recipient,
+                resale_value: values?.resale_value,
+                disposal_cost: values?.disposal_cost,
+                asset_photos: values?.asset_photos,
+                manual_location: values?.manual_location,
+                assembly_diagram_ref: values?.assembly_diagram_ref,
+                record_created_by: values?.record_created_by,
+                record_created_date: values?.record_created_date,
+                last_updated_by: values?.last_updated_by,
+                last_updated_date: values?.last_updated_date,
+                audit_date: values?.audit_date,
+                notes: values?.notes,
+                attachments: values?.attachments
+            });
         }
-    }, [accessToken]);
+    }, [EditAssetsData, code, form]);
 
     useEffect(() => {
-        if (barcode) {
+        if (code?.mode !== "Edit" && accessToken && !barcode) {
+            getBarCode(accessToken);
+        }
+    }, [code?.mode, accessToken, getBarCode]);
+    
+    useEffect(() => {
+        if (code?.mode !== "Edit" && barcode) {
             form.setFieldsValue({
                 asset_tag: barcode
             });
         }
-    }, [barcode, form]);
+    }, [barcode, code?.mode, form]);
 
     useEffect(() => {
         if (assetsType) {
@@ -265,7 +372,11 @@ function FurnitureOfficeAssets({
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
                             <h5 className="mx-1">Furniture & Office Assets Form</h5>
-                            <QRCODE value={barcode} />
+                            <QRCODE
+                                value={
+                                    code?.mode === "Edit" ? EditAssetsData?.asset_tag : barcode
+                                }
+                            />
                         </div>
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Basic Identification</h5>
@@ -532,11 +643,11 @@ function FurnitureOfficeAssets({
                                 label={"assigned To"}
                                 placeholder="e.g., John Smith, Sales Department"
                                 name="assigned_to"
-                                required={false}
+                                required={true}
                                 message={"Assigned To"}
                                 options={users?.map((item) => ({
                                     value: item.id,
-                                        label: `${item.name || ''} - ${item.email || ''}` 
+                                    label: `${item.name || ''} - ${item.email || ''}`
                                 }))}
                             />
 

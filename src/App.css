@@ -68,6 +68,35 @@ section{
     background: transparent;
 }
 
+
+/* =================================== */
+.userTable .ant-table-tbody .ant-table-row td{
+    padding: 5px 5px;
+}
+
+.userTable table{
+    box-shadow: 10px -2px 22px 0px #dadada;
+}
+.userTable .ant-table-tbody .ant-table-row .userTableNamingBox span{
+    background: whitesmoke;
+    height: 35px;
+    width: 35px;
+    border-radius: 50px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    box-shadow: 2px -4px 10px -2px #dadada;
+}
+
+.userTable .userTableIcons svg{
+    font-size: 23px;
+}
+.userTable .rejectedIcon svg{
+    color: red;
+}
 .noneRowHover .ant-table-row>.ant-table-cell-row-hover {
     background: transparent !important;
 }
