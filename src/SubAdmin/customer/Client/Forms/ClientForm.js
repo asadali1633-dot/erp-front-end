@@ -1,179 +1,132 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import style from './form.module.css'
-import { Form, Modal, Table } from 'antd';
+import { Form, Modal, Table,message,Button as AntdButton } from 'antd';
 import { FormInput, FormInputTextArea } from '../../../../Components/Inputs/Inputs';
 import { SelectInput } from '../../../../Components/Select/Select';
-import { Button } from '../../../../Components/Button/Button';
-import { LuArrowDownUp } from "react-icons/lu";
-import { HiDotsVertical } from "react-icons/hi";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { ActionButton, Button } from '../../../../Components/Button/Button';
 import { Country, State, City } from "country-state-city";
 import CustomDate from '../../../../Components/Date/CustomDate';
 import UploadFile from '../../../../Components/File/UploadFile';
 import { CiSquarePlus, CiSquareMinus } from "react-icons/ci";
+import * as CLIENTS_ACTIONS from "../../../../store/action/clients/index";
+import * as ASSETS_ACTIONS from "../../../../store/action/hardware/index";
+
+import { connect, useSelector } from 'react-redux';
+
 
 function ClientForm({
     ClientModalForm,
-    setClientForm
+    setClientForm,
+    getBarCode,
+    code, setCode,
+    Red_Clients,
+    CreateClientFun,
+    GetClientList,
+    Red_Assets,
+    GetAllEmpList
 }) {
     const [form] = Form.useForm();
     const countries = Country.getAllCountries();
+    const [loading, setloading] = useState(false);
     const codes = ["PK", "IN", "US", "AS"];
+    const client_code = Red_Clients?.identifier?.[0]?.data?.client_code
+    const clientList = Red_Clients?.ClientList?.[0]?.data
+    const users = Red_Assets?.Users?.[0]?.data
     const provinces = codes.flatMap((code) => State.getStatesOfCountry(code));
+    const accessToken = useSelector((state) => state.Red_Auth.accessToken);
+    const [messageApi, contextHolder] = message.useMessage();
+    const [showMore, setShowMore] = useState(false);
+
     let selectedCities = [];
     codes.forEach((code) => {
         const cities = City.getCitiesOfCountry(code);
         selectedCities = [...selectedCities, ...cities];
     });
 
+
+    const toggleShowMore = () => {
+        setShowMore(!showMore);
+    };
     const handleOk = () => {
         setClientForm(false);
+        setShowMore(false)
     };
     const handleCancel = () => {
         setClientForm(false);
+        setShowMore(false)
+        // form.resetFields();
     };
 
-    const columns = [
-        {
-            title: "SKU/ Model",
-            dataIndex: "SKU_Model",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
-            ),
-        },
-        {
-            title: "Description",
-            dataIndex: "Description",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
-            ),
-        },
-        {
-            title: "Unit Cost",
-            dataIndex: "Unit Cost",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
-            ),
-        },
-        {
-            title: "Quantity",
-            dataIndex: "Quantity",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
-            ),
-        },
-        {
-            title: "Tax",
-            dataIndex: "Tax",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
-            ),
-        },
-        {
-            title: "Total",
-            dataIndex: "Total",
-            render: () => (
-                <div>
-                    <FormInput
-                        className=""
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                    <FormInput
-                        className="mt-1"
-                        type="text"
-                        placeholder="Type here"
-                        required
-                    />
-                </div>
-            ),
-        },
-        {
-            title: (
-                <LuArrowDownUp style={{ fontSize: "22px", cursor: "pointer" }} />
-            ),
-            dataIndex: "yah",
-            render: () => (
-                <div className={`${style.form_dotsIcons}`}>
-                    <HiDotsVertical />
-                    <HiDotsVertical />
-                </div>
-            ),
-        },
-    ];
+    useEffect(() => {
+        if (code?.mode !== "Edit" && client_code) {
+            form.setFieldsValue({
+                client_id: client_code
+            });
+        }
+    }, [client_code, code?.mode, form]);
 
-    // 👇 sirf ek dummy row do
-    const data = [
-        { key: "1" }
-    ];
+    useEffect(() => {
+        getBarCode(accessToken)
+        GetClientList(accessToken)
+    }, [accessToken])
+
+    useEffect(() => {
+        GetAllEmpList(accessToken)
+    }, [accessToken])
+    
+
+
+    const handleForm = async (values) => {
+        setloading(true);
+        const formData = new FormData();
+
+        Object.keys(values).forEach((key) => {
+            if (key === "msa_document" || key === "tax_exemption_certificate" || key === "attachments") {
+                return;
+            }
+            let val = values[key];
+            if (val === undefined || val === null || val === "") {
+                return;
+            }
+            if (Array.isArray(val)) {
+                val = JSON.stringify(val);
+            }
+            formData.append(key, val);
+        });
+
+        if (values.msa_document && values.msa_document.originFileObj) {
+            formData.append("msa_document", values.msa_document.originFileObj);
+        }
+        if (values.tax_exemption_certificate && values.tax_exemption_certificate.originFileObj) {
+            formData.append("tax_exemption_certificate", values.tax_exemption_certificate.originFileObj);
+        }
+        if (values.attachments && values.attachments.originFileObj) {
+            formData.append("attachments", values.attachments.originFileObj);
+        }
+
+        const isCheck = await CreateClientFun(formData, accessToken);
+        if (isCheck?.success) {
+            messageApi.success({
+                type: "success",
+                content: isCheck?.message,
+            });
+            setClientForm(false);
+            form.resetFields();
+            // GetAllDesignations(accessToken)
+            setloading(false);
+            setShowMore(false)
+        } else {
+            setloading(false);
+            messageApi.error({
+                type: "error",
+                content: isCheck?.message,
+            });
+        }
+    };
+
     return (
         <>
+            {contextHolder}
             <Modal
                 title=""
                 closable={{ 'aria-label': 'Custom Close Button' }}
@@ -188,7 +141,7 @@ function ClientForm({
                     form={form}
                     className={`${style.form_modalMainBox} mt-3`}
                     layout="vertical"
-                // onFinish={handleForm}
+                    onFinish={handleForm}
                 >
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
@@ -213,12 +166,42 @@ function ClientForm({
                                 placeholder="Select client type"
                                 name="client_type"
                                 required={true}
+                                showSearch={true}
                                 message={"Please select client type"}
                                 options={[
-                                    { value: "Individual", label: "Individual" },
-                                    { value: "Company", label: "Company" },
-                                    { value: "Government", label: "Government" },
-                                    { value: "Non-profit", label: "Non-profit" },
+                                    { value: "Accounting & Legal", label: "Accounting & Legal" },
+                                    { value: "Advertising", label: "Advertising" },
+                                    { value: "Aerospace", label: "Aerospace" },
+                                    { value: "Agriculture", label: "Agriculture" },
+                                    { value: "Automotive", label: "Automotive" },
+                                    { value: "Banking & Finance", label: "Banking & Finance" },
+                                    { value: "Biotechnology", label: "Biotechnology" },
+                                    { value: "Broadcasting", label: "Broadcasting" },
+                                    { value: "Busniess Services", label: "Busniess Services" },
+                                    { value: "Commidities & Chemical", label: "Commidities & Chemical" },
+                                    { value: "Cummunications", label: "Cummunications" },
+                                    { value: "Computer & Hightech", label: "Computer & Hightech" },
+                                    { value: "Contructions", label: "Contructions" },
+                                    { value: "Defense", label: "Defense" },
+                                    { value: "Energy", label: "Energy" },
+                                    { value: "Entertainment", label: "Entertainment" },
+                                    { value: "Goverment", label: "Goverment" },
+                                    { value: "Healthcare & Life Sciences", label: "Healthcare & Life Sciences" },
+                                    { value: "Insurance", label: "Insurance" },
+                                    { value: "Manufacturing", label: "Manufacturing" },
+                                    { value: "Marketing", label: "Marketing" },
+                                    { value: "Media", label: "Media" },
+                                    { value: "Non-profit & Hight Ed", label: "Non-profit & Hight Ed" },
+                                    { value: "Pharmaceuticals", label: "Pharmaceuticals" },
+                                    { value: "Photography", label: "Photography" },
+                                    { value: "Professional Services & Consulting", label: "Professional Services & Consulting" },
+                                    { value: "Real Estate", label: "Real Estate" },
+                                    { value: "Resturant & Catering", label: "Resturant & Catering" },
+                                    { value: "Retail & Wholesale", label: "Retail & Wholesale" },
+                                    { value: "Sports", label: "Sports" },
+                                    { value: "Transportation", label: "Transportation" },
+                                    { value: "Travel & Luxury", label: "Travel & Luxury" },
+                                    { value: "Others", label: "Others" },
                                 ]}
                             />
 
@@ -346,7 +329,10 @@ function ClientForm({
                                 required={false}
                                 showSearch={true}
                                 message={"Select parent client for corporate groups"}
-                                options={[]} // Will be populated from Client DB
+                                options={clientList?.map((item) => ({
+                                    value: item.id,
+                                    label: `${item.company_name} (${item.client_code})`
+                                }))}
                             />
                         </div>
                         <div className={`${style.form_inputBox} ${style.border_bottom}`}>
@@ -394,6 +380,8 @@ function ClientForm({
                             />
                         </div>
 
+                        {showMore && (
+                            <>
                         <Form>
                             <Form.List name="contacts" initialValue={[{}]}>
                                 {(fields, { add, remove }) => (
@@ -423,7 +411,7 @@ function ClientForm({
                                                         label="First Name"
                                                         name={[field.name, 'first_name']}
                                                         placeholder="Enter first name"
-                                                        required
+                                                        required={false}
                                                         message="First name is required"
                                                     />
                                                     <FormInput
@@ -431,7 +419,7 @@ function ClientForm({
                                                         label="Last Name"
                                                         name={[field.name, 'last_name']}
                                                         placeholder="Enter last name"
-                                                        required
+                                                        required={false}
                                                         message="Last name is required"
                                                     />
                                                     <FormInput
@@ -439,7 +427,7 @@ function ClientForm({
                                                         label="Job Title"
                                                         name={[field.name, 'job_title']}
                                                         placeholder="Enter job title"
-                                                        required
+                                                        required={false}
                                                         message="Job title is required"
                                                     />
                                                     <FormInput
@@ -458,7 +446,7 @@ function ClientForm({
                                                         name={[field.name, 'email']}
                                                         type="email"
                                                         placeholder="Enter email address"
-                                                        required
+                                                        required={false}
                                                         message="Email is required"
                                                     />
                                                     <FormInput
@@ -476,7 +464,7 @@ function ClientForm({
                                                         name={[field.name, 'mobile']}
                                                         type="tel"
                                                         placeholder="Enter mobile number"
-                                                        required
+                                                        required={false}
                                                         message="Mobile number is required"
                                                     />
                                                 </div>
@@ -492,7 +480,7 @@ function ClientForm({
                             <FormInput
                                 className="mx-1"
                                 label={"Address Line 1"}
-                                name="address_line1"
+                                name="billing_address_line1"
                                 placeholder="Enter address line 1"
                                 required={false}
                                 message={"Please enter address line 1"}
@@ -501,7 +489,7 @@ function ClientForm({
                             <FormInput
                                 className="mx-1"
                                 label={"Address Line 2"}
-                                name="address_line2"
+                                name="billing_address_line2"
                                 placeholder="Enter address line 2 (optional)"
                                 required={false}
                                 message={""}
@@ -510,7 +498,7 @@ function ClientForm({
                             <FormInput
                                 className="mx-1"
                                 label={"City"}
-                                name="city"
+                                name="billing_city"
                                 placeholder="Enter city"
                                 required={false}
                                 message={"Please enter city"}
@@ -529,7 +517,7 @@ function ClientForm({
                             <FormInput
                                 className="mx-1"
                                 label={"Postal / Zip Code"}
-                                name="postal_code"
+                                name="billing_postal_code"
                                 placeholder="Enter postal or zip code"
                                 required={false}
                                 message={"Please enter postal/zip code"}
@@ -562,7 +550,7 @@ function ClientForm({
                                 ]}
                             />
                         </div>
-                        
+
                         <Form.List name="shipping_addresses" initialValue={[{}]}>
                             {(fields, { add, remove }) => (
                                 <>
@@ -618,7 +606,7 @@ function ClientForm({
                                                     name={[field.name, 'city']}
                                                     label="City"
                                                     message="City is required"
-                                                    required={true}
+                                                    required={false}
                                                     classNameColor={`${style.inputDefaultBg}`}
                                                     options={selectedCities?.map((item) => ({
                                                         value: `${item.stateCode}-${item.name}`,
@@ -633,7 +621,7 @@ function ClientForm({
                                                     name={[field.name, 'state_province']}
                                                     label="Province"
                                                     message="Province is required"
-                                                    required={true}
+                                                    required={false}
                                                     classNameColor={`${style.inputDefaultBg}`}
                                                     options={provinces?.map((item) => ({
                                                         value: `${item.countryCode}-${item.name}`,
@@ -655,7 +643,7 @@ function ClientForm({
                                                     name={[field.name, 'country']}
                                                     label="Country"
                                                     message="Country is required"
-                                                    required={true}
+                                                    required={false}
                                                     classNameColor={`${style.inputDefaultBg}`}
                                                     options={countries?.map((item) => ({
                                                         value: `${item.isoCode}-${item.name}`,
@@ -720,7 +708,7 @@ function ClientForm({
                                 label={"Default Payment Terms"}
                                 placeholder="Select payment terms"
                                 name="payment_terms"
-                                required={true}
+                                required={false}
                                 message={"Please select payment terms"}
                                 options={[
                                     { value: "Due on Receipt", label: "Due on Receipt" },
@@ -1012,13 +1000,13 @@ function ClientForm({
                         </div>
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Communication Log</h5>
-                        <div className={style.form_inputBox}>
+                        <div className={style.form_inputBox}>2
                             <CustomDate
                                 className="mx-1"
                                 label={"Date/Time"}
                                 name="activity_datetime"
                                 placeholder="Select date and time"
-                                required={true}
+                                required={false}
                                 message={"Please select date and time"}
                                 showTime={true}
                                 allowToday={true}
@@ -1029,7 +1017,7 @@ function ClientForm({
                                 label={"Type"}
                                 placeholder="Select activity type"
                                 name="activity_type"
-                                required={true}
+                                required={false}
                                 message={"Please select activity type"}
                                 options={[
                                     { value: "Call", label: "Call" },
@@ -1045,7 +1033,7 @@ function ClientForm({
                                 label={"Subject"}
                                 name="subject"
                                 placeholder="Enter subject/title"
-                                required={true}
+                                required={false}
                                 message={"Subject is required"}
                             />
 
@@ -1236,10 +1224,13 @@ function ClientForm({
                                 label={"Account Manager / Sales Rep"}
                                 placeholder="Select account manager"
                                 name="account_manager"
-                                required={true}
+                                required={false}
                                 showSearch={true}
                                 message={"Please select primary account manager"}
-                                options={[]}
+                                options={users?.map((item) => ({
+                                    value: item.id,
+                                        label: `${item.name || ''} - ${item.email || ''}` 
+                                }))}
                             />
 
                             <SelectInput
@@ -1250,7 +1241,10 @@ function ClientForm({
                                 required={false}
                                 showSearch={true}
                                 message={"Select secondary account manager if applicable"}
-                                options={[]}
+                                options={users?.map((item) => ({
+                                    value: item.id,
+                                        label: `${item.name || ''} - ${item.email || ''}` 
+                                }))}
                             />
 
                             <SelectInput
@@ -1262,7 +1256,10 @@ function ClientForm({
                                 readOnly={true}
                                 showSearch={true}
                                 message={"Created by is auto-filled"}
-                                options={[]}
+                                options={users?.map((item) => ({
+                                    value: item.id,
+                                        label: `${item.name || ''} - ${item.email || ''}` 
+                                }))}
                             />
 
                             <CustomDate
@@ -1346,11 +1343,19 @@ function ClientForm({
                                 ]}
                             />
                         </div>
+                        </>
+                        )}
+                         <ActionButton
+                            type="link"
+                            onClick={toggleShowMore}
+                            className={"mx-1 mt-2 w-auto"}
+                            title={showMore ? 'Show Less' : 'Show More'} loading={loading}
+                        />
                     </div>
                     <div className={style.vendor_modalBtns}>
                         <Button
-                            title={"Submit"}
                             className={"mx-1 mt-2 w-auto"}
+                            title={loading ? "Loading" : "Create"} loading={loading}
                         />
                     </div>
                 </Form>
@@ -1359,4 +1364,14 @@ function ClientForm({
     )
 }
 
-export default ClientForm
+function mapStateToProps(state) {
+    return {
+        Red_Clients: state.Red_Clients,
+        Red_Assets: state.Red_Assets,
+    };
+}
+const AllActions = {
+    ...CLIENTS_ACTIONS,
+    ...ASSETS_ACTIONS,
+};
+export default connect(mapStateToProps, AllActions)(ClientForm);

@@ -45,8 +45,8 @@ function Personal({
         pageSize: 10,
     });
     const pageBody = {
-        page: pagination.current,
-        pageSize: pagination.pageSize,
+        page: pagination.current || 1,
+        pageSize: pagination.pageSize || 10,
         search: search || "",
     };
 

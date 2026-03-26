@@ -1,0 +1,123 @@
+.form_modalMainBox {}
+
+.form_modalMainBox h5 {
+    color: black !important;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.form_inputBox {
+    display: flex;
+    width: 100%;
+}
+
+.form_checkBoxHeading {
+    font-size: 15px !important;
+    font-weight: 600;
+    margin-top: 10px;
+    display: block;
+}
+
+.QR_box{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+.modalHardwareScroll{
+    margin-top: 10px;
+    height: 450px;
+    overflow-y: scroll;
+}
+
+.modalHardwareScroll::-webkit-scrollbar {
+    width: 6px;
+    background: whitesmoke;
+    border-radius: 10px;
+}
+
+.modalHardwareScroll::-webkit-scrollbar-thumb {
+    background: #00BAFF;
+    border-radius: 10px;
+}
+
+.vendor_modalBtns{
+     display: flex;
+    justify-content: end;
+}
+.border_bottom{
+    border-bottom: 1px solid black;
+    padding-bottom: 10px;
+}
+
+/* .form_footerFlexBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form_footerFlexBox button {
+    width: auto;
+    padding: 9px 20px;
+    margin: 0;
+}
+
+.form_dotsIcons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: inherit;
+    height: 87px;
+    align-items: center;
+}
+
+.form_dotsIcons svg {
+    font-size: 22px;
+}
+
+.form_tabsBox {
+    margin-top: 10px;
+}
+
+.form_TabList {
+    padding: 0;
+}
+
+.form_TabList li {
+    color: white;
+}
+
+.form_TabPanel {
+    color: white;
+}
+
+.form_TabPanel h6 {}
+
+.form_TabPanel p {
+    background: #2f2f2f;
+    padding: 15px 15px;
+    border-radius: 20px;
+}
+
+.form_footerBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form_footerBox div {
+    display: flex;
+    align-items: center;
+}
+
+.form_footerBox input {}
+
+.form_footerBox label {
+    color: white;
+    margin-left: 5px;
+}
+
+.form_footerBox button {
+    padding: 10px 19px;
+    width: auto;
+} */

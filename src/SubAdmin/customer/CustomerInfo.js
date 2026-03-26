@@ -24,6 +24,7 @@ import Quotation from './Quotation/Quotation';
 import Invoice from './Invoice/Invoice';
 import Payments from './payments/Payments';
 import Expenses from './expenses/Expenses';
+import ProjectMngt from './expenses copy/ProjectMngt';
 
 
 
@@ -151,6 +152,7 @@ function CustomerInfo({
         {
             key: "11",
             label: "Project",
+            children: <ProjectMngt />,
             slug: "",
         },
         {

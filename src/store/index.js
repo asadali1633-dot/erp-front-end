@@ -18,6 +18,7 @@ import Red_Emp from "./redcure/emp";
 import Red_Education from "./redcure/education/index";
 import Red_Qualification from "./redcure/qualification/index";
 import Red_Experiance from './redcure/experiance/index'
+import Red_Clients from './redcure/clients/index'
 
 
 
@@ -45,7 +46,8 @@ const reducers = combineReducers({
   Red_Emp,
   Red_Education,
   Red_Qualification,
-  Red_Experiance
+  Red_Experiance,
+  Red_Clients
 });
 
 const composeEnhancers = window.REDUX_DEVTOOLS_EXTENSION_COMPOSE || compose;
