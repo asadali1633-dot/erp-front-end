@@ -6,7 +6,8 @@ import {
     CLIENTS_DATA_END,
     CLIENTS_UNIQUE_IDENTIFIER,
     GET_ALL_CLIENTS_LIST,
-    GET_ALL_CLIENTS
+    GET_ALL_CLIENTS,
+    GET_SINGLE_CLIENT
 } from '../types'
 import baseUrl from '../../../config.json'
 
@@ -27,9 +28,10 @@ export const getBarCode = (accessToken) => async (dispatch, getState) => {
         });
         if (response.status === 200) {
             const res = await response.json();
+            console.log("API response:", res)
             dispatch({
                 type: CLIENTS_UNIQUE_IDENTIFIER,
-                payload: [res],
+                payload: res,
                 loading: false,
             });
         } else {
@@ -144,3 +146,56 @@ export const GetAllClientithPage = (body,accessToken) => async (dispatch, getSta
     }
 };
 
+export const getClientById = (id,accessToken) => async (dispatch, getState) => {
+    try{
+        dispatch({
+            type: CLIENTS_DATA_START,
+            payload: true,
+            loading: true,
+        });
+        const response = await fetch(`${baseUrl.baseUrl}/api/client/get/${id}`, {
+            headers: {
+                "Authorization": "Bearer " + accessToken,
+                "Content-Type": "application/json",
+            },
+        });
+        if (response.status === 200) {
+            const res = await response.json();
+            dispatch({
+                type: GET_SINGLE_CLIENT,
+                payload: [res],
+                loading: false,
+            });
+        } else {
+            const res = await response.json();
+            dispatch({
+                type: CLIENTS_DATA_END,
+                payload: [res],
+                loading: false,
+            });
+        }
+
+    } catch (error) {
+        dispatch({
+            type: CLIENTS_DATA_END,
+            payload: false,
+            loading: false,
+        });
+    }
+};
+
+export const UpdateClient = (id,body,accessToken) => async (dispatch) => {
+    const response = await fetch(`${baseUrl.baseUrl}/api/client/update/${id}`, {
+        method: "PUT",
+        headers: {
+             "Authorization": "Bearer " + accessToken,
+        },
+        body: body
+    });
+    const res = await response.json();
+    if (res) {
+        return res;
+    } else {
+        return res;
+    }
+}

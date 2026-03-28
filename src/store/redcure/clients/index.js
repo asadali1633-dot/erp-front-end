@@ -4,13 +4,15 @@ import {
     CLIENTS_DATA_END,
     CLIENTS_UNIQUE_IDENTIFIER,
     GET_ALL_CLIENTS_LIST,
-    GET_ALL_CLIENTS
+    GET_ALL_CLIENTS,
+    GET_SINGLE_CLIENT
 } from '../../action/types'
 
 const initState = {
     identifier: [],
     ClientList: [],
-    GetAllClient: []
+    GetAllClient: [],
+    SingleClient: []
 
 }
 
@@ -39,12 +41,19 @@ const Red_Clients = (state = initState, action) => {
                 GetAllClient: action.payload,
                 loading: action.loading
             }
+        case GET_SINGLE_CLIENT: 
+            return {
+                ...state,
+                SingleClient: action.payload,
+                loading: action.loading
+            }
         case CLIENTS_DATA_END:
             return {
                 ...state,
                 identifier: action.payload,
                 ClientList: action.payload,
                 GetAllClient: action.payload,
+                SingleClient: action.payload,
             };
         default:
             return state;

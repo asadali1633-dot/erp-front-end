@@ -7,16 +7,21 @@ import { OutLineButton } from '../../../Components/Button/Button';
 import ClientForm from './Forms/ClientForm';
 import * as ACTIONS  from '../../../store/action/clients/index';
 import { connect, useSelector } from 'react-redux';
+import { BiEditAlt } from "react-icons/bi";
+import Loader from '../../../Components/Loader/Loader';
 
 function Client({
     Red_Clients,
-    GetAllClientithPage
+    GetAllClientithPage,
+    getClientById
 }) {
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const [ClientModalForm, setClientForm] = useState(false)
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [messageApi, contextHolder] = message.useMessage();
     const tableData = Red_Clients?.GetAllClient?.[0]
+    const editData = Red_Clients?.SingleClient
+    const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
     const [code, setCode] = useState({
         mode: "",
@@ -88,37 +93,39 @@ function Client({
             key: 'action',
             render: (data) => (
                 <Space size="middle">
-                    
+                    <button className={`${style.hardware_editBtn}`}
+                        onClick={() => UserAction(data?.id)}><BiEditAlt /></button>
+                    {/* <Popconfirm
+                        title="Delete the Hardware"
+                        description="Are you sure to delete the Hardware?"
+                        okText="Yes"
+                        cancelText="No"
+                        onConfirm={() => {
+                            handleConfirmDelete(data?.id)
+                        }}
+                    >
+                        <button className={`${style.hardware_deleteBtn}`}><MdDeleteOutline /></button>
+                    </Popconfirm> */}
                 </Space>
             ),
         },
     ];
 
-    const data = [
-        {
-            key: "1",
-            Name: "Computer is slow",
-            Purchase_Order: "PO-ITC-11102212",
-            Amount: "100,000",
-            Vendor_Name: "Microtech",
-            Date: "27 Feb 2025",
-            Due_date: "27 Feb 2025",
-            Activity_status: "Last reply Asad",
-            // Status: "Open"
-        },
-        {
-            key: "2",
-            Name: "Computer is slow",
-            Purchase_Order: "PO-ITC-11102212",
-            Amount: "100,000",
-            Vendor_Name: "Microtech",
-            Date: "27 Feb 2025",
-            Due_date: "27 Feb 2025",
-            Activity_status: "Last reply Asad ",
-            // Status: "Close"
-        },
-    ];
-
+    const UserAction = async (id) => {
+        setLoading(true);
+        try {
+            await getClientById(id, accessToken);
+            setCode({
+                mode: "Edit",
+                code: id
+            });
+            setClientForm(true);
+        } catch (error) {
+            console.error("Error fetching client:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             // console.log("selectedRowKeys:", selectedRowKeys, "selectedRows:", selectedRows);
@@ -128,14 +135,18 @@ function Client({
             name: record.name,
         }),
     };
+
     const handle = () => {
+        setLoading(true);
         setClientForm(!ClientModalForm)
+        setTimeout(() => {
+            setLoading(false);
+        }, 1000);
     }
     useEffect(() => {
         GetAllClientithPage(pageBody, accessToken);
     }, [pagination.current, pagination.pageSize, search]);
 
-    console.log("Red_Clients",Red_Clients)
 
 
     return (
@@ -152,13 +163,6 @@ function Client({
                         <OutLineButton title={"Create Client"} onClick={handle} />
                     </div>
                 </div>
-                {/* <Table
-                    className='antdCustomeTable'
-                    rowSelection={rowSelection}
-                    columns={columns}
-                    dataSource={data}
-                    pagination={false}
-                /> */}
                 <Table
                     className='antdCustomeTable'
                     rowSelection={rowSelection}
@@ -183,8 +187,9 @@ function Client({
                 />
             </div>
 
+            {loading && <Loader />}
             {setClientForm && (
-                <ClientForm {...{ ClientModalForm, setClientForm,code, setCode }} />
+                <ClientForm {...{ ClientModalForm, setClientForm,code, setCode,pageBody,editData }} />
             )}
         </>
     )

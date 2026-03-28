@@ -88,9 +88,26 @@ const DeleteButton = ({
     )
 }
 
+const ShoMore = ({
+    title,
+    className,
+    loading,
+    disabled,
+    onClick,
+    actionInfo,
+    add
+}) => {
+    return (
+        <>
+         <Link onClick={onClick} className={`${style.button} ${className}`}>{title}</Link> 
+        </>
+    )
+}
+
 export { 
     Button,
     ActionButton,
     OutLineButton,
-    DeleteButton
+    DeleteButton,
+    ShoMore
  };
