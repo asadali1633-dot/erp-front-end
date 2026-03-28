@@ -1,23 +1,32 @@
 import React, { useEffect, useRef, useState } from 'react'
 import style from './form.module.css'
-import { Form, Modal, Table } from 'antd';
+import { Form, message, Modal, Table } from 'antd';
 import { FormInput, FormInputTextArea } from '../../../../Components/Inputs/Inputs';
 import { SelectInput } from '../../../../Components/Select/Select';
 import { Button } from '../../../../Components/Button/Button';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import CustomDate from '../../../../Components/Date/CustomDate';
 import UploadFile from '../../../../Components/File/UploadFile';
+import * as CLIENTS_ACTIONS from "../../../../store/action/clients/index";
+import { connect, useSelector } from 'react-redux';
+import dayjs from "dayjs";
+import baseUrl from '../../../../config.json'
 
 
 
 
 function QuotationForm({
     QuotationModal,
-    setQuotationModal
+    setQuotationModal,
+    Red_Clients,
+    GetClientList
 }) {
     const [form] = Form.useForm();
     const lastAddedRef = useRef(false);
     const itemsValue = Form.useWatch('items', form);
+    const accessToken = useSelector((state) => state.Red_Auth.accessToken);
+    const clientList = Red_Clients?.ClientList?.[0]?.data
+    const [messageApi, contextHolder] = message.useMessage();
     const handleOk = () => {
         setQuotationModal(false);
     };
@@ -43,6 +52,11 @@ function QuotationForm({
     useEffect(() => {
         addRow()
     }, [itemsValue, form]);
+
+    useEffect(() => {
+        GetClientList(accessToken);
+    }, [accessToken])
+
 
     const columns = [
         {
@@ -184,8 +198,30 @@ function QuotationForm({
         }
     ];
 
+    const handleClientSelect = async (clientId) => {
+        console.log("clientId", clientId)
+        const response = await fetch(`${baseUrl.baseUrl}/api/quotation/generate-number`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({ client_id: clientId })
+        });
+        const res = await response.json();
+        console.log("ree", res)
+        if (res.success) {
+            form.setFieldsValue({ 
+                quotation_number: res.data.quotation_number,
+                customer_name: res?.data?.customer_contact,
+                customer_phone: res?.data?.customer_phone
+            });
+        }
+    };
+
     return (
         <>
+            {contextHolder}
             <Modal
                 title=""
                 closable={{ 'aria-label': 'Custom Close Button' }}
@@ -200,8 +236,14 @@ function QuotationForm({
                     form={form}
                     className={`${style.form_modalMainBox} mt-3`}
                     layout="vertical"
-                    initialValues={{items:[{}]}}
-                // onFinish={handleForm}
+                    initialValues={{ items: [{}] }}
+                    onValuesChange={async (changedValues, allValues) => {
+                        console.log("changedValues",changedValues?.customer_id)
+                        if (changedValues.customer_id) {
+                            handleClientSelect(changedValues.customer_id)
+                           
+                        }
+                    }}
                 >
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
@@ -210,6 +252,19 @@ function QuotationForm({
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Quotation Identification</h5>
                         <div className={style.form_inputBox}>
+                            <SelectInput
+                                className="mx-1"
+                                label={"Customer ID"}
+                                placeholder="Select customer"
+                                name="customer_id"
+                                required={true}
+                                showSearch={true}
+                                message={"Please select a customer"}
+                                options={clientList?.map((item) => ({
+                                    value: item.id,
+                                    label: `${item.company_name} (${item.client_code})`
+                                }))}
+                            />
                             <FormInput
                                 className="mx-1"
                                 label={"Quotation Number"}
@@ -228,6 +283,8 @@ function QuotationForm({
                                 message={"Quote date is required"}
                                 allowToday={true}
                             />
+                        </div>
+                        <div className={style.form_inputBox}>
                             <CustomDate
                                 className="mx-1"
                                 label={"Valid Until"}
@@ -237,8 +294,6 @@ function QuotationForm({
                                 message={"Valid until date is required"}
                                 allowToday={true}
                             />
-                        </div>
-                        <div className={style.form_inputBox}>
                             <FormInput
                                 className="mx-1"
                                 label={"Revision Number"}
@@ -249,16 +304,6 @@ function QuotationForm({
                                 placeholder="Enter revision number (for amendments)"
                                 required={false}
                                 message={"Enter revision number if applicable"}
-                            />
-                            <SelectInput
-                                className="mx-1"
-                                label={"Customer ID"}
-                                placeholder="Select customer"
-                                name="customer_id"
-                                required={true}
-                                showSearch={true}
-                                message={"Please select a customer"}
-                                options={[]}
                             />
                             <FormInput
                                 className="mx-1"
@@ -480,4 +525,13 @@ function QuotationForm({
     )
 }
 
-export default QuotationForm
+
+function mapStateToProps(state) {
+    return {
+        Red_Clients: state.Red_Clients,
+    };
+}
+const AllActions = {
+    ...CLIENTS_ACTIONS,
+};
+export default connect(mapStateToProps, AllActions)(QuotationForm);

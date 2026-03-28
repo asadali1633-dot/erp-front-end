@@ -31,7 +31,6 @@ function ClientForm({
     editData,
     UpdateClient
 }) {
-    console.log("code", code)
     const [form] = Form.useForm();
     const countries = Country.getAllCountries();
     const [loading, setloading] = useState(false);
@@ -122,6 +121,7 @@ function ClientForm({
             GetAllEmpList(accessToken);
         }
     }
+    
     useEffect(() => {
        fetchingData()
     }, [ClientModalForm, accessToken, form]);
@@ -132,7 +132,8 @@ function ClientForm({
         }
     }, [code, accessToken])
 
-    useEffect(() => {
+
+    const editFuntionData =()=>{
         if (editData && code?.mode === "Edit") {
             const data = editData?.[0]?.data;
             if (!data) return;
@@ -166,7 +167,6 @@ function ClientForm({
                 credit_check_reference: data.credit_check_reference,
                 payment_method: data.payment_method,
                 bank_account_details: data.bank_account_details,
-                // File fields – can't set file input, so keep as is or ignore
                 tax_exemption_certificate: null,
                 invoicing_delivery_method: data.invoicing_delivery_method,
                 invoice_emails: data.invoice_emails,
@@ -189,38 +189,17 @@ function ClientForm({
                 last_project_date: data.last_project_date ? dayjs(data.last_project_date) : null,
                 last_service_date: data.last_service_date ? dayjs(data.last_service_date) : null,
                 next_followup_date: data.next_followup_date ? dayjs(data.next_followup_date) : null,
-                account_manager_ids: data.employee_account_manager_id || data.super_admin_account_manager_id,
-                secondary_account_manager_ids: data.employee_secondary_account_manager_id || data.super_admin_secondary_account_manager_id,
+                account_manager_id: data?.account_manager_id,
+                secondary_account_manager_id: data?.secondary_account_manager_id,
                 internal_notes: data.internal_notes,
                 gdpr_consent_date: data.gdpr_consent_date ? dayjs(data.gdpr_consent_date) : null,
                 marketing_opt_out: data.marketing_opt_out,
                 contacts: data.contacts || [],
                 shipping_addresses: data.shipping_addresses || [],
-                created_by: data?.created_by_employee_id || data?.created_by_super_admin_id
+                created_by: data?.created_by_employee_id || data?.created_by_super_admin_id,
             }
 
             form.setFieldsValue(formValues);
-            if (data.account_manager_type === 'super_admin') {
-                setAccountManagerId(data.super_admin_account_manager_id);
-                setAccountManagerType('super_admin');
-            } else if (data.employee_account_manager_id) {
-                setAccountManagerId(data.employee_account_manager_id);
-                setAccountManagerType('employee');
-            } else {
-                setAccountManagerId(null);
-                setAccountManagerType(null);
-            }
-
-            if (data.secondary_account_manager_type === 'super_admin') {
-                setSecondaryManagerId(data.super_admin_secondary_account_manager_id);
-                setSecondaryManagerType('super_admin');
-            } else if (data.employee_secondary_account_manager_id) {
-                setSecondaryManagerId(data.employee_secondary_account_manager_id);
-                setSecondaryManagerType('employee');
-            } else {
-                setSecondaryManagerId(null);
-                setSecondaryManagerType(null);
-            }
             let hasMore = false;
 
             // 1. Check advanced fields
@@ -245,22 +224,12 @@ function ClientForm({
                 setShowMore(false);
             }
         }
+    }
+
+    useEffect(() => {
+        editFuntionData()
     }, [editData, code, form]);
    
-    console.log("editData", editData)
-
-
-
-
-    // useEffect(() => {
-    //     getBarCode(accessToken);
-    //     if (ClientModalForm) {
-    //         GetClientList(accessToken);
-    //         GetAllEmpList(accessToken);
-    //     }
-    // }, [accessToken]);
-
-
 
     const handleForm = async (values) => {
         setloading(true);
@@ -291,13 +260,13 @@ function ClientForm({
         if (values.attachments && values.attachments.originFileObj) {
             formData.append("attachments", values.attachments.originFileObj);
         }
-        if (accountManagerId) {
-            formData.append("account_manager_id", accountManagerId);
-            formData.append("account_manager_type", accountManagerType);
+        if (values?.account_manager_id) {
+            const selected = users.find(user => user.id === values.account_manager_id);
+            formData.append("account_manager_type", selected?.user_type);
         }
-        if (secondaryManagerId) {
-            formData.append("secondary_account_manager_id", secondaryManagerId);
-            formData.append("secondary_account_manager_type", secondaryManagerType);
+        if (values?.secondary_account_manager_id) {
+            const selected = users.find(user => user.id === values.account_manager_id);
+            formData.append("secondary_account_manager_type", selected?.user_type);
         }
 
        if(code?.mode !== "Edit"){
@@ -326,10 +295,10 @@ function ClientForm({
                     type: "success",
                     content: isCheck?.message,
                 });
-                setClientForm(false);
+                // setClientForm(false);
                 form.resetFields();
                 setloading(false);
-                setShowMore(false)
+                // setShowMore(false)
                 GetAllClientithPage(pageBody, accessToken);
             } else {
                 setloading(false);
@@ -360,20 +329,7 @@ function ClientForm({
                     form={form}
                     className={`${style.form_modalMainBox} mt-3`}
                     layout="vertical"
-                    onFinish={handleForm}
-                    onValuesChange={(changedValues) => {
-                        if (changedValues.account_manager_id) {
-                            const selected = users.find(user => user.id === changedValues.account_manager_id);
-                            setAccountManagerId(selected?.id);
-                            setAccountManagerType(selected?.user_type);
-                        }
-                        if (changedValues.secondary_account_manager_id) {
-                            const selected = users.find(user => user.id === changedValues.secondary_account_manager_id);
-                            setSecondaryManagerId(selected?.id);
-                            setSecondaryManagerType(selected?.user_type);
-                        }
-                    }}
-                >
+                    onFinish={handleForm}>
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
                             <h5 className="mx-1">Client Form</h5>
@@ -396,7 +352,7 @@ function ClientForm({
                                 label={"Client Type"}
                                 placeholder="Select client type"
                                 name="client_type"
-                                required={true}
+                                required={false}
                                 showSearch={true}
                                 message={"Please select client type"}
                                 options={[
@@ -489,7 +445,7 @@ function ClientForm({
                                 label={"Industry / Sector"}
                                 placeholder="Select industry"
                                 name="industry"
-                                required={true}
+                                required={false}
                                 message={"Please select industry/sector"}
                                 options={[
                                     { value: "IT", label: "IT" },
@@ -511,7 +467,7 @@ function ClientForm({
                                 label={"Client Since"}
                                 name="client_since"
                                 placeholder="Date of creation"
-                                required={true}
+                                required={false}
                                 readOnly={true}
                                 message={"Client since date is auto-set"}
                                 allowToday={true}
@@ -523,7 +479,7 @@ function ClientForm({
                                 label={"Status"}
                                 placeholder="Select client status"
                                 name="status"
-                                required={true}
+                                required={false}
                                 message={"Please select status"}
                                 options={[
                                     { value: "Active", label: "Active" },
@@ -592,7 +548,7 @@ function ClientForm({
                                 label={"Currency Preference"}
                                 placeholder="Select default currency"
                                 name="currency"
-                                required={true}
+                                required={false}
                                 message={"Please select default currency for quotes/invoices"}
                                 options={[
                                     { value: "USD", label: "USD - US Dollar" },
@@ -1453,7 +1409,7 @@ function ClientForm({
                                     className="mx-1"
                                     label={"Account Manager / Sales Rep"}
                                     placeholder="Select account manager"
-                                    name="account_manager_ids"
+                                    name="account_manager_id"
                                     required={false}
                                     showSearch={true}
                                     value={accountManagerId}
@@ -1461,7 +1417,7 @@ function ClientForm({
                                     options={users?.map((item) => ({
                                         value: item.id,
                                         label: `${item.name || ''} - ${item.email || ''}`,
-                                        user_type: item.user_type
+                                        // user_type: item.user_type
                                     }))}
                                 />
 
@@ -1469,7 +1425,7 @@ function ClientForm({
                                     className="mx-1"
                                     label={"Secondary Account Manager"}
                                     placeholder="Select secondary account manager"
-                                    name="secondary_account_manager_ids"
+                                    name="secondary_account_manager_id"
                                     required={false}
                                     showSearch={true}
                                     value={secondaryManagerId}
@@ -1477,7 +1433,7 @@ function ClientForm({
                                     options={users?.map((item) => ({
                                         value: item.id,
                                         label: `${item.name || ''} - ${item.email || ''}`,
-                                        user_type: item.user_type
+                                        // user_type: item.user_type
                                     }))}
                                 />
 
