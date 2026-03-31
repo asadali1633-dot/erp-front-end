@@ -1,84 +1,141 @@
-import React, { useState } from 'react'
-import { Table } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { Space, Table } from 'antd';
 import style from './Quotation.module.css'
 import Heading from '../../../Components/Heading/Heading';
 import { SearchBar } from '../../../Components/SearchBar/SearchBar';
 import { OutLineButton } from '../../../Components/Button/Button';
 import QuotationForm from './Forms/QuotationForm';
+import { connect, useSelector } from 'react-redux';
+import * as QUOTE_ACTIONS from "../../../store/action/quote/index";
+import { BiEditAlt } from "react-icons/bi";
+import Loader from '../../../Components/Loader/Loader';
 
-function Quotation() {
+function Quotation({
+    Red_Quote,
+    GetAllQuotewithPage,
+    getQuoteById
+}) {
+    const accessToken = useSelector((state) => state.Red_Auth.accessToken);
+    const tableData = Red_Quote?.getAllDataWithPage?.[0]
+    const editData = Red_Quote?.GetByIdData
     const [QuotationModal, setQuotationModal] = useState(false)
+    const [search, setSearch] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [code, setCode] = useState({
+        mode: "",
+        code: null
+    })
+    const [pagination, setPagination] = useState({
+        current: 1,
+        pageSize: 10,
+    });
+    const pageBody = {
+        page: pagination.current || 1,
+        pageSize: pagination.pageSize || 10,
+        search: search || "",
+    };
 
     const columns = [
-        {
-            title: "Name",
-            dataIndex: "Name",
+         {
+            title: "SN",
+            key: "SN",
+            render: (_, __, index) => (  
+                <span>{index + 1}</span>
+            )
         },
         {
-            title: "Purchase Order",
-            dataIndex: "Purchase_Order",
+            title: "Quote No",
+            dataIndex: "quotation_number",
+            render: (data) =>
+                data ? <span>{data}</span> : <span>-</span>
         },
         {
-            title: "Amount",
-            dataIndex: "Amount",
+            title: "Customer Name",
+            dataIndex: "customer_name",
+            render: (data) =>
+                data ? <span>{data}</span> : <span>-</span>
         },
         {
-            title: "Vendor Name",
-            dataIndex: "Vendor_Name",
+            title: "Revision Number",
+            dataIndex: "revision_number",
+            render: (data) =>
+                data ? <span>{data}</span> : <span>-</span>
         },
         {
-            title: "Date",
-            dataIndex: "Date",
+            title: "Status",
+            dataIndex: "status",
+            render: (data) =>
+                data ? <span>{data}</span> : <span>-</span>
         },
         {
-            title: "Due date",
-            dataIndex: "Due_date",
+            title: "Currency",
+            dataIndex: "currency",
+            render: (data) =>
+                data ? <span>{data}</span> : <span>-</span>
         },
         {
-            title: "Activity status",
-            dataIndex: "Activity_status"
+            title: "Payment Terms",
+            dataIndex: "payment_terms",
+            render: (data) =>
+                data ? <span>{data}</span> : <span>-</span>
         },
-        // {
-        //     title: "Status",
-        //     dataIndex: "Status",
-        //     render : (Priority) =>
-        //         Priority == "Close" ? 
-        //         <span 
-        //             className='customer_payment_status'
-        //             style={{background: "#ff0004"}}
-        //         >{Priority}</span> :
-        //         Priority == "Open" ? 
-        //         <span
-        //              className='customer_payment_status'
-        //              style={{background: "#12da65"}}
-        //         >{Priority}</span> : false
-        // },
+        {
+            title: "Quote Date",
+            dataIndex: "quote_date",
+            render: (data) =>
+                data ? <span>{data?.slice(0,10)}</span> : <span>-</span>
+        },
+        {
+            title: "Valid Until",
+            dataIndex: "valid_until",
+            render: (data) =>
+                data ? <span>{data?.slice(0,10)}</span> : <span>-</span>
+        },
+        {
+            title: "Total Amount",
+            dataIndex: "total_amount",
+            render: (data) =>
+                data ? <span>{data}</span> : <span>-</span>
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (data) => (
+                <Space size="middle">
+                    <button className={`${style.hardware_editBtn}`}
+                        onClick={() => UserAction(data?.id)}><BiEditAlt /></button>
+                    {/* <Popconfirm
+                        title="Delete the Hardware"
+                        description="Are you sure to delete the Hardware?"
+                        okText="Yes"
+                        cancelText="No"
+                        onConfirm={() => {
+                            handleConfirmDelete(data?.id)
+                        }}
+                    >
+                        <button className={`${style.hardware_deleteBtn}`}><MdDeleteOutline /></button>
+                    </Popconfirm> */}
+                </Space>
+            ),
+        },
+        
     ];
 
-    const data = [
-        {
-            key: "1",
-            Name: "Computer is slow",
-            Purchase_Order: "PO-ITC-11102212",
-            Amount: "100,000",
-            Vendor_Name: "Microtech",
-            Date: "27 Feb 2025",
-            Due_date: "27 Feb 2025",
-            Activity_status: "Last reply Asad",
-            // Status: "Open"
-        },
-        {
-            key: "2",
-            Name: "Computer is slow",
-            Purchase_Order: "PO-ITC-11102212",
-            Amount: "100,000",
-            Vendor_Name: "Microtech",
-            Date: "27 Feb 2025",
-            Due_date: "27 Feb 2025",
-            Activity_status: "Last reply Asad ",
-            // Status: "Close"
-        },
-    ];
+    const UserAction = async (id) => {
+        setLoading(true);
+        try {
+            await getQuoteById(id, accessToken);
+            setCode({
+                mode: "Edit",
+                code: id
+            });
+            setQuotationModal(true);
+        } catch (error) {
+            console.error("Error fetching client:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
@@ -92,6 +149,10 @@ function Quotation() {
     const handle = () => {
         setQuotationModal(!QuotationModal)
     }
+
+    useEffect(() => {
+        GetAllQuotewithPage(pageBody, accessToken);
+    }, [pagination.current, pagination.pageSize, search]);
 
 
     return (
@@ -107,20 +168,59 @@ function Quotation() {
                         <OutLineButton title={"Create Quotation"} onClick={handle} />
                     </div>
                 </div>
-                <Table
+                {/* <Table
                     className='antdCustomeTable'
                     rowSelection={rowSelection}
                     columns={columns}
                     dataSource={data}
                     pagination={false}
+                /> */}
+
+                <Table
+                    className='antdCustomeTable'
+                    rowSelection={rowSelection}
+                    columns={columns}
+                    dataSource={tableData?.data?.map((item) => ({
+                        ...item,
+                        key: item.id,
+                    }))}
+                    loading={Red_Quote?.loading}
+                    scroll={{ x: 10 }}
+                    pagination={{
+                        current: pagination.current,
+                        pageSize: pagination.pageSize,
+                        total: tableData?.total || 0,
+                        showSizeChanger: true,
+                        pageSizeOptions: ["5", "10", "20", "50", "100"],
+                        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} users`,
+                        onChange: (page, pageSize) => {
+                            setPagination({ current: page, pageSize });
+                        },
+                    }}
                 />
             </div>
 
+            {loading && <Loader />}
             {QuotationModal && (
-                <QuotationForm {...{ QuotationModal, setQuotationModal }} />
+                <QuotationForm {...{
+                    QuotationModal,
+                    setQuotationModal, code, setCode,
+                    QuotationModal, setQuotationModal,
+                    pageBody,
+                    editData
+                }} />
             )}
         </>
     )
 }
 
-export default Quotation
+
+function mapStateToProps(state) {
+    return {
+        Red_Quote: state.Red_Quote,
+    };
+}
+const AllActions = {
+    ...QUOTE_ACTIONS,
+};
+export default connect(mapStateToProps, AllActions)(Quotation);

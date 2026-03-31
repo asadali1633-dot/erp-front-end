@@ -59,3 +59,10 @@
     background: #ff0004;
     border-radius: 20px;
 }
+
+
+/* PDF STYLING ================================= */
+.headerPdf{
+    display: flex;
+    justify-content: space-between;
+}

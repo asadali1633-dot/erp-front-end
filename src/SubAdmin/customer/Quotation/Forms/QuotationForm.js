@@ -8,9 +8,13 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import CustomDate from '../../../../Components/Date/CustomDate';
 import UploadFile from '../../../../Components/File/UploadFile';
 import * as CLIENTS_ACTIONS from "../../../../store/action/clients/index";
+import * as QUOTE_ACTIONS from "../../../../store/action/quote/index";
+
 import { connect, useSelector } from 'react-redux';
 import dayjs from "dayjs";
 import baseUrl from '../../../../config.json'
+import QuotationLivePreview from '../QuotationLivePreview';
+import { PDFViewer } from '@react-pdf/renderer';
 
 
 
@@ -19,57 +23,58 @@ function QuotationForm({
     QuotationModal,
     setQuotationModal,
     Red_Clients,
-    GetClientList
+    Red_Quote,
+    GetClientList,
+    CreateQuoteFun,
+    code,
+    setCode,
+    pageBody,
+    editData,
+    UpdateQuote,
+    GetAllQuotewithPage
 }) {
     const [form] = Form.useForm();
+    const formValues = Form.useWatch([], form);
+    const [loading, setloading] = useState(false);
     const lastAddedRef = useRef(false);
     const itemsValue = Form.useWatch('items', form);
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const clientList = Red_Clients?.ClientList?.[0]?.data
     const [messageApi, contextHolder] = message.useMessage();
+    const [isReady, setIsReady] = useState(false);
+
     const handleOk = () => {
         setQuotationModal(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
     const handleCancel = () => {
         setQuotationModal(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
-    const addRow = () => {
-        if (!itemsValue || itemsValue.length === 0) return;
-        const lastItem = itemsValue[itemsValue.length - 1];
-        const hasAnyValue = lastItem && Object.values(lastItem).some(
-            val => val && String(val).trim() !== ''
-        );
-        if (hasAnyValue && !lastAddedRef.current) {
-            form.setFieldsValue({
-                items: [...itemsValue, {}]
-            });
-            lastAddedRef.current = true;
-        } else if (!hasAnyValue) {
-            lastAddedRef.current = false;
-        }
-    }
-
-    useEffect(() => {
-        addRow()
-    }, [itemsValue, form]);
-
-    useEffect(() => {
-        GetClientList(accessToken);
-    }, [accessToken])
-
-
     const columns = [
         {
             title: "Product ID",
             width: 300,
             render: (_, record) => (
-                <SelectInput
-                    placeholder="Select product"
+                // <SelectInput
+                //     placeholder="Select product"
+                //     name={[record.field.name, 'product_id']}
+                //     required={false}
+                //     showSearch={true}
+                //     message={"Select product if ordering from catalog"}
+                //     options={[]}
+                // />
+                <FormInput
                     name={[record.field.name, 'product_id']}
+                    placeholder="Select product"
                     required={false}
-                    showSearch={true}
                     message={"Select product if ordering from catalog"}
-                    options={[]}
                 />
             ),
         },
@@ -80,7 +85,7 @@ function QuotationForm({
                 <FormInput
                     name={[record.field.name, 'description']}
                     placeholder="Item description"
-                    required={true}
+                    required={false}
                     message={"Description is required"}
                 />
             ),
@@ -93,7 +98,7 @@ function QuotationForm({
                     name={[record.field.name, 'quantity']}
                     type="number"
                     placeholder="quantity"
-                    required={true}
+                    required={false}
                     message={"Quantity is required"}
                 />
             ),
@@ -105,7 +110,7 @@ function QuotationForm({
                 <SelectInput
                     placeholder="Select unit"
                     name={[record.field.name, 'uom']}
-                    required={true}
+                    required={false}
                     message={"Please select unit of measure"}
                     options={[
                         { value: "Each", label: "Each" },
@@ -131,7 +136,7 @@ function QuotationForm({
                     name={[record.field.name, 'Unit_Price']}
                     type="number"
                     placeholder="Unit Price"
-                    required={true}
+                    required={false}
                     message={"Unit Price is required"}
                 />
             ),
@@ -198,8 +203,100 @@ function QuotationForm({
         }
     ];
 
+    const addRow = () => {
+        if (!itemsValue || itemsValue.length === 0) return;
+        const lastItem = itemsValue[itemsValue.length - 1];
+        const hasAnyValue = lastItem && Object.values(lastItem).some(
+            val => val && String(val).trim() !== ''
+        );
+        if (hasAnyValue && !lastAddedRef.current) {
+            form.setFieldsValue({
+                items: [...itemsValue, {}]
+            });
+            lastAddedRef.current = true;
+        } else if (!hasAnyValue) {
+            lastAddedRef.current = false;
+        }
+    }
+
+    const getPreviewData = () => {
+        if (!formValues) return {};
+        let items = formValues.items || [];
+        // Empty rows filter karo (jisme kuch bhi na ho)
+        items = items.filter(item => item.description || item.quantity || item.Unit_Price);
+        return {
+            quotation_number: formValues.quotation_number,
+            quote_date: formValues.quote_date,
+            valid_until: formValues.valid_until,
+            customer_name: formValues.customer_name,
+            customer_contact: formValues.customer_contact,
+            customer_email: formValues.customer_email,
+            customer_phone: formValues.customer_phone,
+            billing_address: formValues.billing_address,
+            items: items,
+            currency: formValues.currency,
+            payment_terms: formValues.payment_terms,
+        };
+    };
+
+    useEffect(() => {
+        // Wait a short moment for the form to initialize
+        const timer = setTimeout(() => setIsReady(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const editFuntionData = () => {
+        if (editData && code?.mode === "Edit") {
+            const data = editData?.[0]?.data;
+            console.log("data", data)
+            if (!data) return;
+
+
+            let transformedItems = [];
+            if (data.items && Array.isArray(data.items)) {
+                transformedItems = data.items.map(item => ({
+                    product_id: item.product_id,
+                    description: item.description,
+                    quantity: item.quantity,
+                    Unit_Price: item.unit_price,
+                    discount_percent: item.discount_percent,
+                    tax_rate: item.tax_rate,
+                    tax_amount: item.tax_amount,
+                    total: item.line_total,
+                    uom: item.uom
+                }));
+            }
+
+
+            const formValues = {
+                client_id: data.client_id,
+                quotation_number: data.quotation_number,
+                quote_date: data.quote_date?.slice(0, 10),
+                valid_until: data.valid_until?.slice(0, 10),
+                revision_number: data.revision_number,
+                customer_name: data.customer_name,
+                customer_contact: data.customer_contact,
+                customer_email: data.customer_email,
+                customer_phone: data.customer_phone,
+                billing_address: data.billing_address,
+                shipping_address: data.shipping_address,
+                project_id: data.project_id,
+                sales_person: data.sales_person_id,
+                currency: data.currency,
+                exchange_rate: data.exchange_rate,
+                payment_terms: data.payment_terms,
+                delivery_terms: data.delivery_terms,
+                status: data.status,
+                private_notes: data.private_notes,
+                terms_conditions: data.terms_conditions,
+                items: transformedItems
+            };
+
+            form.setFieldsValue(formValues);
+        }
+    };
+
     const handleClientSelect = async (clientId) => {
-        console.log("clientId", clientId)
         const response = await fetch(`${baseUrl.baseUrl}/api/quotation/generate-number`, {
             method: 'POST',
             headers: {
@@ -209,15 +306,139 @@ function QuotationForm({
             body: JSON.stringify({ client_id: clientId })
         });
         const res = await response.json();
-        console.log("ree", res)
         if (res.success) {
-            form.setFieldsValue({ 
+            form.setFieldsValue({
                 quotation_number: res.data.quotation_number,
-                customer_name: res?.data?.customer_contact,
-                customer_phone: res?.data?.customer_phone
+                customer_name: res?.data?.customer_name,
+                customer_contact: res?.data?.customer_contact,
+                customer_email: res?.data?.customer_email,
+                customer_phone: res?.data?.customer_phone,
+                billing_address: res?.data?.billing_address,
+                currency: res?.data?.currency,
+                payment_terms: res?.data?.payment_terms,
             });
         }
     };
+
+    const lineTotal = () => {
+        if (itemsValue && itemsValue.length > 0) {
+            itemsValue.forEach((item, index) => {
+                const qty = parseFloat(item?.quantity) || 0;
+                const price = parseFloat(item?.Unit_Price) || 0;
+                const discountPercent = parseFloat(item?.discount_percent) || 0;
+                const taxRate = parseFloat(item?.tax_rate) || 0;
+
+                const subtotal = qty * price;
+                const discountAmount = subtotal * (discountPercent / 100);
+                const lineTotal = subtotal - discountAmount;
+                const taxAmount = lineTotal * (taxRate / 100);
+
+                // Update line total
+                const currentTotal = parseFloat(item?.total) || 0;
+                if (Math.abs(currentTotal - lineTotal) > 0.01) {
+                    form.setFieldValue(['items', index, 'total'], lineTotal.toFixed(2));
+                }
+
+                // Update tax amount
+                const currentTax = parseFloat(item?.tax_amount) || 0;
+                if (Math.abs(currentTax - taxAmount) > 0.01) {
+                    form.setFieldValue(['items', index, 'tax_amount'], taxAmount.toFixed(2));
+                }
+            });
+        }
+    }
+
+    const handleForm = async (values) => {
+        setloading(true);
+        let filteredItems = [];
+        if (values.items && Array.isArray(values.items)) {
+            filteredItems = values.items.filter(item => {
+                const hasProduct = item.product_id && String(item.product_id).trim() !== '';
+                const hasDescription = item.description && String(item.description).trim() !== '';
+                const hasQuantity = item.quantity !== undefined && item.quantity !== null && item.quantity !== '';
+                const hasPrice = item.Unit_Price !== undefined && item.Unit_Price !== null && item.Unit_Price !== '';
+                return hasProduct || hasDescription || hasQuantity || hasPrice;
+            });
+        }
+        const formData = new FormData();
+        Object.keys(values).forEach(key => {
+            if (key === 'items') return;
+            if (key === 'attachments') return;
+            let val = values[key];
+            if (val === undefined || val === null || val === '') return;
+            if (Array.isArray(val)) val = JSON.stringify(val);
+            formData.append(key, val);
+        });
+
+        if (filteredItems.length > 0) {
+            formData.append('items', JSON.stringify(filteredItems));
+        }
+        if (values.attachments && values.attachments.fileList) {
+            values.attachments.fileList.forEach(file => {
+                if (file.originFileObj) {
+                    formData.append('attachments', file.originFileObj);
+                }
+            });
+        }
+
+        // Log for debugging
+        for (let pair of formData.entries()) {
+            console.log(pair[0], pair[1]);
+        }
+
+        if (code?.mode !== "Edit") {
+            const isCheck = await CreateQuoteFun(formData, accessToken);
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: "success",
+                    content: isCheck?.message,
+                });
+                setQuotationModal(false);
+                form.resetFields();
+                setloading(false);
+                GetAllQuotewithPage(pageBody, accessToken);
+            } else {
+                setloading(false);
+                messageApi.error({
+                    type: "error",
+                    content: isCheck?.message,
+                });
+            }
+        } else {
+            const isCheck = await UpdateQuote(code?.code, formData, accessToken);
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: "success",
+                    content: isCheck?.message,
+                });
+                setQuotationModal(false);
+                form.resetFields();
+                setloading(false);
+                GetAllQuotewithPage(pageBody, accessToken);
+            } else {
+                setloading(false);
+                messageApi.error({
+                    type: "error",
+                    content: isCheck?.message,
+                });
+            }
+        }
+    };
+
+    useEffect(() => {
+        lineTotal()
+    }, [itemsValue, form]);
+
+    useEffect(() => {
+        addRow()
+    }, [itemsValue, form]);
+
+    useEffect(() => {
+        GetClientList(accessToken);
+    }, [accessToken])
+    useEffect(() => {
+        editFuntionData()
+    }, [editData, code, form]);
 
     return (
         <>
@@ -236,12 +457,13 @@ function QuotationForm({
                     form={form}
                     className={`${style.form_modalMainBox} mt-3`}
                     layout="vertical"
+                    onFinish={handleForm}
                     initialValues={{ items: [{}] }}
                     onValuesChange={async (changedValues, allValues) => {
-                        console.log("changedValues",changedValues?.customer_id)
-                        if (changedValues.customer_id) {
-                            handleClientSelect(changedValues.customer_id)
-                           
+                        console.log("changedValues", changedValues?.client_id)
+                        if (changedValues.client_id && code?.mode == null) {
+                            handleClientSelect(changedValues.client_id)
+
                         }
                     }}
                 >
@@ -256,7 +478,7 @@ function QuotationForm({
                                 className="mx-1"
                                 label={"Customer ID"}
                                 placeholder="Select customer"
-                                name="customer_id"
+                                name="client_id"
                                 required={true}
                                 showSearch={true}
                                 message={"Please select a customer"}
@@ -381,7 +603,7 @@ function QuotationForm({
                                 label={"Sales Person"}
                                 placeholder="Select sales representative"
                                 name="sales_person"
-                                required={true}
+                                required={false}
                                 showSearch={true}
                                 message={"Please select sales person"}
                                 options={[]}
@@ -449,7 +671,7 @@ function QuotationForm({
                                 label={"Status"}
                                 placeholder="Select quote status"
                                 name="status"
-                                required={true}
+                                required={false}
                                 message={"Please select status"}
                                 options={[
                                     { value: "Draft", label: "Draft" },
@@ -486,7 +708,7 @@ function QuotationForm({
                                 name={'attachments'}
                                 className="inputFlexBox"
                                 label={"Attachments"}
-                                required={true}
+                                required={false}
                                 multiple={true}
                                 accept="image/jpeg,image/png"
                                 message={"Attachments"}
@@ -515,11 +737,21 @@ function QuotationForm({
                     </div>
                     <div className={style.vendor_modalBtns}>
                         <Button
-                            title={"Submit"}
                             className={"mx-1 mt-2 w-auto"}
+                            title={loading ? "Loading" : code?.mode == "Edit" ? "Update Client" : "Create"} loading={loading}
                         />
                     </div>
                 </Form>
+
+
+                {/* <QuotationLivePreview data={getPreviewData()} />  */}
+                {isReady && formValues?.quotation_number && (
+                    <div style={{ marginTop: 20, border: '1px solid #ccc', borderRadius: 8, overflow: 'hidden' }}>
+                        {/* <PDFViewer key={formValues.quotation_number} style={{ width: '100%', height: '500px' }}> */}
+                            <QuotationLivePreview data={getPreviewData()} />
+                        {/* </PDFViewer> */}
+                    </div>
+                )}
             </Modal>
         </>
     )
@@ -529,9 +761,11 @@ function QuotationForm({
 function mapStateToProps(state) {
     return {
         Red_Clients: state.Red_Clients,
+        Red_Quote: state.Red_Quote,
     };
 }
 const AllActions = {
     ...CLIENTS_ACTIONS,
+    ...QUOTE_ACTIONS,
 };
 export default connect(mapStateToProps, AllActions)(QuotationForm);
