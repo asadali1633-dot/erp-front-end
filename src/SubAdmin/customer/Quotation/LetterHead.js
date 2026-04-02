@@ -6,7 +6,6 @@ import baseUrl from '../../../../src/config.json'
 import { Button } from '../../../Components/Button/Button';
 
 
-
 Font.register({
     family: 'Roboto',
     fonts: [
@@ -16,16 +15,10 @@ Font.register({
     ]
 });
 
-
 const styles = StyleSheet.create({
     page: {
         padding: 20,
         fontFamily: 'Roboto',
-    },
-    richText: {
-        marginTop: 20,
-        fontSize: 10,
-        lineHeight: 1.4,
     },
     headerRow: {
         flexDirection: 'row',
@@ -37,6 +30,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 15,
         paddingBottom: 5,
+        marginTop: 50
     },
     headerRow3: {
         flexDirection: 'row',
@@ -170,15 +164,14 @@ const styles = StyleSheet.create({
     },
 });
 
-
-const QuotationLivePreview = ({ data }) => {
+const LetterHead = ({ data }) => {
     const {
         quotation_number, quote_date, valid_until,
         customer_name, customer_contact, customer_email, customer_phone, billing_address,
-        items, currency,
+        items, currency, private_notes,
         company_name, company_logo, company_address, company_phone, company_whatsapp,
-        company_email, company_website, ntn_vat, business_id,
-        ntn, strn, terms_conditions
+        company_email, company_website, ntn_vat, business_id, terms_conditions,
+        ntn, strn
     } = data;
 
     const renderQuillContent = (html = '') => {
@@ -246,6 +239,7 @@ const QuotationLivePreview = ({ data }) => {
     const grandTotal = subtotal - totalDiscount + totalTax;
     const discountPercentOverall = subtotal ? (totalDiscount / subtotal) * 100 : 0;
     const taxPercentOverall = subtotal ? (totalTax / subtotal) * 100 : 0;
+
     const formatNumber = (value) => {
         if (value === undefined || value === null || value === '') return '-';
         const num = parseFloat(value);
@@ -253,36 +247,19 @@ const QuotationLivePreview = ({ data }) => {
         if (Number.isInteger(num)) {
             return num.toLocaleString('en-PK');
         }
-        return num.toLocaleString('en-PK', { 
-            minimumFractionDigits: 0, 
-            maximumFractionDigits: 2 
+        return num.toLocaleString('en-PK', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
         });
     };
+
+
     const totalAmount = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
 
     return (
         <>
             <Document>
                 <Page size="A4" style={styles.page}>
-                    <View style={styles.headerRow}>
-                        <View style={styles.col33}>
-                            <Image style={styles.logo} src={`${baseUrl.baseUrl}${company_logo}`} />
-                        </View>
-                        <View style={styles.col33}>
-                            <Text style={styles.headertxt}>Company: {company_name}</Text>
-                            <Text style={styles.headertxt}>NTN: {ntn_vat}</Text>
-                            <Text style={styles.headertxt}>Web: {company_website}</Text>
-                            <Text style={styles.headertxt}>Email: {company_email}</Text>
-                            <Text style={styles.headertxt}>Phone: {company_phone}</Text>
-                        </View>
-                        <View style={styles.col33}>
-                            <View style={styles.addressBox}>
-                                <Text style={styles.textRight}>
-                                    <Text style={[styles.headertxt, { lineHeight: 1.5 }]}>{company_address}</Text>
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
                     <View style={styles.headerRow2}>
                         <View style={styles.col50}>
                             <Text style={styles.title}>Quote issued to:</Text>
@@ -384,4 +361,4 @@ const QuotationLivePreview = ({ data }) => {
     );
 };
 
-export default QuotationLivePreview;
+export default LetterHead;

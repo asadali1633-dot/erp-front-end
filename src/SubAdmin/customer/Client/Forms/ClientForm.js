@@ -79,6 +79,7 @@ function ClientForm({
     const handleOk = () => {
         setClientForm(false);
         setShowMore(false)
+        form.resetFields();
         setCode({
             mode: null,
             code: null
@@ -87,6 +88,7 @@ function ClientForm({
     const handleCancel = () => {
         setClientForm(false);
         setShowMore(false)
+        form.resetFields();
         setCode({
             mode: null,
             code: null
@@ -112,18 +114,18 @@ function ClientForm({
 
     const fetchingData = () => {
         if (ClientModalForm) {
-            if(code?.mdoe !== "Edit"){
-                 fetchClientCode();
+            if (code?.mdoe !== "Edit") {
+                fetchClientCode();
             }
             form.resetFields();
-           
+
             GetClientList(accessToken);
             GetAllEmpList(accessToken);
         }
     }
-    
+
     useEffect(() => {
-       fetchingData()
+        fetchingData()
     }, [ClientModalForm, accessToken, form]);
 
     useEffect(() => {
@@ -133,7 +135,7 @@ function ClientForm({
     }, [code, accessToken])
 
 
-    const editFuntionData =()=>{
+    const editFuntionData = () => {
         if (editData && code?.mode === "Edit") {
             const data = editData?.[0]?.data;
             if (!data) return;
@@ -229,28 +231,20 @@ function ClientForm({
     useEffect(() => {
         editFuntionData()
     }, [editData, code, form]);
-   
+
 
     const handleForm = async (values) => {
         setloading(true);
         const formData = new FormData();
-        Object.keys(values).forEach((key) => {
-            if (key === "msa_document" || key === "tax_exemption_certificate" || key === "attachments") {
-                return;
-            }
+        Object.keys(values).forEach(key => {
+            if (key === 'msa_document') return;
+            if (key === 'tax_exemption_certificate') return;
+            if (key === 'attachments') return;
             let val = values[key];
-            if (val === undefined || val === null || val === "") {
-                return;
-            }
-            if (Array.isArray(val)) {
-                val = JSON.stringify(val);
-            }
+            if (val === undefined || val === null || val === '') return;
+            if (Array.isArray(val)) val = JSON.stringify(val);
             formData.append(key, val);
         });
-        // for (let pair of formData.entries()) {
-        //     console.log(pair[0], pair[1]);
-        // }
-
         if (values.msa_document && values.msa_document.originFileObj) {
             formData.append("msa_document", values.msa_document.originFileObj);
         }
@@ -265,12 +259,12 @@ function ClientForm({
             formData.append("account_manager_type", selected?.user_type);
         }
         if (values?.secondary_account_manager_id) {
-            const selected = users.find(user => user.id === values.account_manager_id);
+            const selected = users.find(user => user.id === values.secondary_account_manager_id);
             formData.append("secondary_account_manager_type", selected?.user_type);
         }
 
-       if(code?.mode !== "Edit"){
-         const isCheck = await CreateClientFun(formData, accessToken);
+        if (code?.mode !== "Edit") {
+            const isCheck = await CreateClientFun(formData, accessToken);
             if (isCheck?.success) {
                 messageApi.success({
                     type: "success",
@@ -288,8 +282,8 @@ function ClientForm({
                     content: isCheck?.message,
                 });
             }
-       }else{
-         const isCheck = await UpdateClient(code?.code,formData, accessToken);
+        } else {
+            const isCheck = await UpdateClient(code?.code, formData, accessToken);
             if (isCheck?.success) {
                 messageApi.success({
                     type: "success",
@@ -307,7 +301,7 @@ function ClientForm({
                     content: isCheck?.message,
                 });
             }
-       }
+        }
 
     };
 
@@ -329,6 +323,7 @@ function ClientForm({
                     form={form}
                     className={`${style.form_modalMainBox} mt-3`}
                     layout="vertical"
+                    initialValues={{ contacts: [{}],shipping_addresses:[{}] }}
                     onFinish={handleForm}>
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
@@ -412,7 +407,7 @@ function ClientForm({
                             />
                             <FormInput
                                 className="mx-1"
-                                label={"Registration Number"}
+                                label={"STRN"}
                                 name="registration_number"
                                 placeholder="Company registration / VAT ID / Tax ID"
                                 required={false}
@@ -567,99 +562,109 @@ function ClientForm({
                             />
                         </div>
 
+
                         <div style={{ display: showMore ? 'block' : 'none' }}>
-                            {/* <Form>
-                                <Form.List name="contacts" initialValue={[{}]}>
-                                    {(fields, { add, remove }) => (
-                                        <>
-                                            {fields.map((field, index) => (
-                                                <div key={field.key} style={{ marginBottom: '30px', borderBottom: '1px dashed #ccc', paddingBottom: '20px' }}>
-                                                    <h5 className={style.form_checkBoxHeading}>
-                                                        Point of Contact Details #{index + 1}
-                                                        {index === 0 && (
-                                                            <CiSquarePlus
-                                                                style={{ cursor: 'pointer', marginLeft: '8px', fontSize: '24px', verticalAlign: 'middle' }}
-                                                                onClick={() => add()}
-                                                            />
-                                                        )}
+                            <Form.List name="contacts">
+                                {(fields, { add, remove }) => (
+                                    <>
+                                        {fields.map((field, index) => (
+                                            <div key={field.key} style={{ marginBottom: '30px', borderBottom: '1px dashed #ccc', paddingBottom: '20px' }}>
+                                                <h5 className={style.form_checkBoxHeading}>
+                                                    Point of Contact Details #{index + 1}
+                                                    {index === 0 && (
+                                                        <CiSquarePlus
+                                                            style={{ cursor: 'pointer', marginLeft: '8px', fontSize: '24px', verticalAlign: 'middle' }}
+                                                            onClick={() => add()}
+                                                        />
+                                                    )}
 
-                                                        {index > 0 && (
-                                                            <CiSquareMinus
-                                                                style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff4d4f', fontSize: '24px', verticalAlign: 'middle' }}
-                                                                onClick={() => remove(field.name)}
-                                                            />
-                                                        )}
-                                                    </h5>
+                                                    {index > 0 && (
+                                                        <CiSquareMinus
+                                                            style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff4d4f', fontSize: '24px', verticalAlign: 'middle' }}
+                                                            onClick={() => remove(field.name)}
+                                                        />
+                                                    )}
+                                                </h5>
 
-                                                    <div className={style.form_inputBox}>
-                                                        <FormInput
-                                                            className="mx-1"
-                                                            label="First Name"
-                                                            name={[field.name, 'first_name']}
-                                                            placeholder="Enter first name"
-                                                            required={false}
-                                                            message="First name is required"
-                                                        />
-                                                        <FormInput
-                                                            className="mx-1"
-                                                            label="Last Name"
-                                                            name={[field.name, 'last_name']}
-                                                            placeholder="Enter last name"
-                                                            required={false}
-                                                            message="Last name is required"
-                                                        />
-                                                        <FormInput
-                                                            className="mx-1"
-                                                            label="Job Title"
-                                                            name={[field.name, 'job_title']}
-                                                            placeholder="Enter job title"
-                                                            required={false}
-                                                            message="Job title is required"
-                                                        />
-                                                        <FormInput
-                                                            className="mx-1"
-                                                            label="Department"
-                                                            name={[field.name, 'department']}
-                                                            placeholder="Enter department"
-                                                            required={false}
-                                                            message="Enter department if applicable"
-                                                        />
-                                                    </div>
-                                                    <div className={`${style.form_inputBox} ${style.border_bottom}`}>
-                                                        <FormInput
-                                                            className="mx-1"
-                                                            label="Email"
-                                                            name={[field.name, 'email']}
-                                                            type="email"
-                                                            placeholder="Enter email address"
-                                                            required={false}
-                                                            message="Email is required"
-                                                        />
-                                                        <FormInput
-                                                            className="mx-1"
-                                                            label="Phone (Direct)"
-                                                            name={[field.name, 'phone_direct']}
-                                                            type="tel"
-                                                            placeholder="Enter direct phone number"
-                                                            required={false}
-                                                            message="Enter direct phone number"
-                                                        />
-                                                        <FormInput
-                                                            className="mx-1"
-                                                            label="Mobile"
-                                                            name={[field.name, 'mobile']}
-                                                            type="tel"
-                                                            placeholder="Enter mobile number"
-                                                            required={false}
-                                                            message="Mobile number is required"
-                                                        />
-                                                    </div>
+                                                <div className={style.form_inputBox}>
+                                                    <FormInput
+                                                        className="mx-1"
+                                                        label="First Name"
+                                                        name={[field.name, 'first_name']}
+                                                        placeholder="Enter first name"
+                                                        required={false}
+                                                        message="First name is required"
+                                                    />
+                                                    <FormInput
+                                                        className="mx-1"
+                                                        label="Last Name"
+                                                        name={[field.name, 'last_name']}
+                                                        placeholder="Enter last name"
+                                                        required={false}
+                                                        message="Last name is required"
+                                                    />
+                                                    <FormInput
+                                                        className="mx-1"
+                                                        label="Job Title"
+                                                        name={[field.name, 'job_title']}
+                                                        placeholder="Enter job title"
+                                                        required={false}
+                                                        message="Job title is required"
+                                                    />
+                                                    <FormInput
+                                                        className="mx-1"
+                                                        label="Department"
+                                                        name={[field.name, 'department']}
+                                                        placeholder="Enter department"
+                                                        required={false}
+                                                        message="Enter department if applicable"
+                                                    />
                                                 </div>
-                                            ))}
-                                        </>
-                                    )}
-                                </Form.List>
-                            </Form> */}
+                                                <div className={`${style.form_inputBox} ${style.border_bottom}`}>
+                                                    <FormInput
+                                                        className="mx-1"
+                                                        label="Email"
+                                                        name={[field.name, 'email']}
+                                                        type="email"
+                                                        placeholder="Enter email address"
+                                                        required={false}
+                                                        message="Email is required"
+                                                    />
+                                                    <FormInput
+                                                        className="mx-1"
+                                                        label="Phone (Direct)"
+                                                        name={[field.name, 'phone_direct']}
+                                                        type="tel"
+                                                        placeholder="Enter direct phone number"
+                                                        required={false}
+                                                        message="Enter direct phone number"
+                                                    />
+                                                    <FormInput
+                                                        className="mx-1"
+                                                        label="Mobile"
+                                                        name={[field.name, 'mobile']}
+                                                        type="tel"
+                                                        placeholder="Enter mobile number"
+                                                        required={false}
+                                                        message="Mobile number is required"
+                                                    />
+                                                    <SelectInput
+                                                        className="mx-1"
+                                                        label="Primary Contact"
+                                                        name={[field.name, 'is_primary']}
+                                                        required={false}
+                                                        message="Please select primary contact"
+                                                        options={[
+                                                            { value: 1, label: "Yes" },
+                                                            { value: 0, label: "No" },
+                                                        ]}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
+                            </Form.List>
 
                             <h5 className={`${style.form_checkBoxHeading} mx-1`}>Billing Address</h5>
                             <div className={style.form_inputBox}>
@@ -737,7 +742,7 @@ function ClientForm({
                                 />
                             </div>
 
-                            {/* <Form.List name="shipping_addresses" initialValue={[{}]}>
+                            <Form.List name="shipping_addresses">
                                 {(fields, { add, remove }) => (
                                     <>
                                         {fields.map((field, index) => (
@@ -885,7 +890,7 @@ function ClientForm({
                                         ))}
                                     </>
                                 )}
-                            </Form.List> */}
+                            </Form.List>
 
                             <h5 className={`${style.form_checkBoxHeading} mx-1`}>Financial & Credit</h5>
                             <div className={style.form_inputBox}>
@@ -1025,24 +1030,6 @@ function ClientForm({
                                     rows={2}
                                     required={false}
                                     message={"Enter bank account details if direct debit"}
-                                />
-
-                                <FormInput
-                                    className="mx-1"
-                                    label={"NTN"}
-                                    name="ntn"
-                                    placeholder="National Tax Number"
-                                    required={false}
-                                    message={"Enter NTN if applicable"}
-                                />
-
-                                <FormInput
-                                    className="mx-1"
-                                    label={"STRN"}
-                                    name="strn"
-                                    placeholder="Sales Tax Registration Number"
-                                    required={false}
-                                    message={"Enter STRN if applicable"}
                                 />
                             </div>
                             <div className={`${style.form_inputBox} ${style.border_bottom}`}>
@@ -1544,7 +1531,7 @@ function ClientForm({
                     <div className={style.vendor_modalBtns}>
                         <Button
                             className={"mx-1 mt-2 w-auto"}
-                            title={loading ? "Loading" : code?.mode == "Edit"? "Update Client": "Create"} loading={loading}
+                            title={loading ? "Loading" : code?.mode == "Edit" ? "Update Client" : "Create"} loading={loading}
                         />
                     </div>
                 </Form>

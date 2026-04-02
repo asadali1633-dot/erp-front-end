@@ -3,18 +3,20 @@ import style from './form.module.css'
 import { Form, message, Modal, Table } from 'antd';
 import { FormInput, FormInputTextArea } from '../../../../Components/Inputs/Inputs';
 import { SelectInput } from '../../../../Components/Select/Select';
-import { Button } from '../../../../Components/Button/Button';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { ActionButton, Button } from '../../../../Components/Button/Button';
+import { Tabs } from 'antd';
 import CustomDate from '../../../../Components/Date/CustomDate';
 import UploadFile from '../../../../Components/File/UploadFile';
 import * as CLIENTS_ACTIONS from "../../../../store/action/clients/index";
 import * as QUOTE_ACTIONS from "../../../../store/action/quote/index";
-
+import { useReactToPrint } from 'react-to-print';
 import { connect, useSelector } from 'react-redux';
 import dayjs from "dayjs";
 import baseUrl from '../../../../config.json'
 import QuotationLivePreview from '../QuotationLivePreview';
-import { PDFViewer } from '@react-pdf/renderer';
+import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+import ReactQuill from 'react-quill'
+import LetterHead from '../LetterHead';
 
 
 
@@ -31,7 +33,8 @@ function QuotationForm({
     pageBody,
     editData,
     UpdateQuote,
-    GetAllQuotewithPage
+    GetAllQuotewithPage,
+    Red_Emp
 }) {
     const [form] = Form.useForm();
     const formValues = Form.useWatch([], form);
@@ -41,7 +44,24 @@ function QuotationForm({
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const clientList = Red_Clients?.ClientList?.[0]?.data
     const [messageApi, contextHolder] = message.useMessage();
-    const [isReady, setIsReady] = useState(false);
+    const [strn, setstrn] = useState(null)
+    const [ntn, setntn] = useState(null)
+    const [formatDoc, setformatDoc] = useState("PDF")
+    const [privateNotes, setPrivateNotes] = useState('');
+    const [termsConditions, setTermsConditions] = useState('');
+
+     const formatNumber = (value) => {
+        if (value === undefined || value === null || value === '') return '-';
+        const num = parseFloat(value);
+        if (isNaN(num)) return '-';
+        if (Number.isInteger(num)) {
+            return num.toLocaleString('en-PK');
+        }
+        return num.toLocaleString('en-PK', { 
+            minimumFractionDigits: 0, 
+            maximumFractionDigits: 2 
+        });
+    };
 
     const handleOk = () => {
         setQuotationModal(false);
@@ -57,27 +77,8 @@ function QuotationForm({
             code: null
         })
     };
+
     const columns = [
-        {
-            title: "Product ID",
-            width: 300,
-            render: (_, record) => (
-                // <SelectInput
-                //     placeholder="Select product"
-                //     name={[record.field.name, 'product_id']}
-                //     required={false}
-                //     showSearch={true}
-                //     message={"Select product if ordering from catalog"}
-                //     options={[]}
-                // />
-                <FormInput
-                    name={[record.field.name, 'product_id']}
-                    placeholder="Select product"
-                    required={false}
-                    message={"Select product if ordering from catalog"}
-                />
-            ),
-        },
         {
             title: "Description",
             width: 300,
@@ -96,7 +97,6 @@ function QuotationForm({
             render: (_, record) => (
                 <FormInput
                     name={[record.field.name, 'quantity']}
-                    type="number"
                     placeholder="quantity"
                     required={false}
                     message={"Quantity is required"}
@@ -134,7 +134,6 @@ function QuotationForm({
             render: (_, record) => (
                 <FormInput
                     name={[record.field.name, 'Unit_Price']}
-                    type="number"
                     placeholder="Unit Price"
                     required={false}
                     message={"Unit Price is required"}
@@ -147,10 +146,6 @@ function QuotationForm({
             render: (_, record) => (
                 <FormInput
                     name={[record.field.name, 'discount_percent']}
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
                     placeholder="Discount percentage"
                     required={false}
                     message={"Enter discount % if applicable"}
@@ -163,10 +158,6 @@ function QuotationForm({
             render: (_, record) => (
                 <FormInput
                     name={[record.field.name, 'tax_rate']}
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
                     placeholder="Tax rate percentage"
                     required={false}
                     message={"Enter tax rate if applicable"}
@@ -179,9 +170,6 @@ function QuotationForm({
             render: (_, record) => (
                 <FormInput
                     name={[record.field.name, 'tax_amount']}
-                    type="number"
-                    min="0"
-                    step="0.01"
                     placeholder="Tax amount (calculated)"
                     required={false}
                     readOnly={true}
@@ -195,13 +183,68 @@ function QuotationForm({
             render: (_, record) => (
                 <FormInput
                     name={[record.field.name, 'total']}
-                    type="no"
                     required={false}
                     placeholder="Total"
+                    readOnly={true}
                 />
             ),
         }
     ];
+
+    const modules = {
+        toolbar: [
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            [{ font: [] }],
+            [{ size: ['small', false, 'large', 'huge'] }],
+            // [{ color: [] }, { background: [] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['link', 'image'],
+            ['clean'],
+        ],
+    };
+
+    const items = [
+        {
+            label: 'Private Notes / Memo',
+            key: '1',
+            children: <>
+                <div>
+                    <ReactQuill
+                        theme="snow"
+                        className='textEiditor'
+                        value={privateNotes}
+                        onChange={(value) => {
+                            setPrivateNotes(value);
+                            form.setFieldsValue({ private_notes: value });
+                        }}
+                        modules={modules}
+                        placeholder="Write Here..."
+                    />
+                </div>
+            </>,
+        },
+        {
+            key: '2',
+            label: 'Terms & Conditions',
+            children: <>
+                <div>
+                    <ReactQuill
+                        theme="snow"
+                        name="terms_conditions"
+                        className='textEiditor'
+                        value={termsConditions}
+                        onChange={(value) => {
+                            setTermsConditions(value);
+                            form.setFieldsValue({ terms_conditions: value });
+                        }}
+                        modules={modules}
+                        placeholder="Write Here..."
+                    />
+                </div>
+            </>,
+        },
+    ]
 
     const addRow = () => {
         if (!itemsValue || itemsValue.length === 0) return;
@@ -220,50 +263,62 @@ function QuotationForm({
     }
 
     const getPreviewData = () => {
-        if (!formValues) return {};
+        if (!formValues) return { items: [] };
         let items = formValues.items || [];
-        // Empty rows filter karo (jisme kuch bhi na ho)
-        items = items.filter(item => item.description || item.quantity || item.Unit_Price);
+        items = items.filter(item => item?.description || item?.quantity || item?.Unit_Price || item?.discount_percent || item?.tax_rate || item?.tax_amount || item?.total);
+        const company = Red_Emp?.GetUserLoginTime?.[0]?.data || {};
+
+        const quoteDate = formValues.quote_date
+            ? dayjs(formValues.quote_date).format('YYYY-MM-DD')
+            : '';
+        const validUntil = formValues.valid_until
+            ? dayjs(formValues.valid_until).format('YYYY-MM-DD')
+            : '';
         return {
-            quotation_number: formValues.quotation_number,
-            quote_date: formValues.quote_date,
-            valid_until: formValues.valid_until,
-            customer_name: formValues.customer_name,
-            customer_contact: formValues.customer_contact,
-            customer_email: formValues.customer_email,
-            customer_phone: formValues.customer_phone,
-            billing_address: formValues.billing_address,
+            quotation_number: formValues.quotation_number || '-',
+            quote_date: quoteDate || "-",
+            valid_until: validUntil || "-",
+            customer_name: formValues.customer_name || '-',
+            customer_contact: formValues.customer_contact || '-',
+            customer_email: formValues.customer_email || '-',
+            customer_phone: formValues.customer_phone || '-',
+            billing_address: formValues.billing_address || '-',
             items: items,
-            currency: formValues.currency,
-            payment_terms: formValues.payment_terms,
+            currency: formValues.currency || '-',
+            terms_conditions: termsConditions,
+            private_notes: formValues.private_notes || '-',
+            // Company details
+            company_name: company.company_name || '-',
+            company_logo: company.company_logo || '',
+            company_address: company.company_address || '-',
+            company_phone: company.company_phone || '',
+            company_whatsapp: company.company_whatsapp_no || '-',
+            company_email: company.email || '',
+            company_website: company.company_website_url || '-',
+            ntn_vat: company.ntn_vat || '-',
+            business_id: company.business_id || '-',
+            ntn: ntn || '-',
+            strn: strn || '-'
         };
     };
-
-    useEffect(() => {
-        // Wait a short moment for the form to initialize
-        const timer = setTimeout(() => setIsReady(true), 100);
-        return () => clearTimeout(timer);
-    }, []);
 
     const editFuntionData = () => {
         if (editData && code?.mode === "Edit") {
             const data = editData?.[0]?.data;
-            console.log("data", data)
             if (!data) return;
 
 
             let transformedItems = [];
             if (data.items && Array.isArray(data.items)) {
                 transformedItems = data.items.map(item => ({
-                    product_id: item.product_id,
-                    description: item.description,
-                    quantity: item.quantity,
-                    Unit_Price: item.unit_price,
-                    discount_percent: item.discount_percent,
-                    tax_rate: item.tax_rate,
-                    tax_amount: item.tax_amount,
-                    total: item.line_total,
-                    uom: item.uom
+                    description: item?.description,
+                    quantity: item?.quantity,
+                    Unit_Price: item?.unit_price,
+                    discount_percent: item?.discount_percent,
+                    tax_rate: item?.tax_rate,
+                    tax_amount: item?.tax_amount,
+                    total: item?.line_total,
+                    uom: item?.uom
                 }));
             }
 
@@ -287,8 +342,8 @@ function QuotationForm({
                 payment_terms: data.payment_terms,
                 delivery_terms: data.delivery_terms,
                 status: data.status,
-                private_notes: data.private_notes,
-                terms_conditions: data.terms_conditions,
+                private_notes: setPrivateNotes(data.private_notes),
+                terms_conditions: setTermsConditions(data.terms_conditions),
                 items: transformedItems
             };
 
@@ -307,15 +362,17 @@ function QuotationForm({
         });
         const res = await response.json();
         if (res.success) {
+            setstrn(res?.data?.strn_no)
+            setntn(res?.data?.ntn_no)
             form.setFieldsValue({
-                quotation_number: res.data.quotation_number,
+                quotation_number: res?.data?.quotation_number,
                 customer_name: res?.data?.customer_name,
                 customer_contact: res?.data?.customer_contact,
                 customer_email: res?.data?.customer_email,
                 customer_phone: res?.data?.customer_phone,
                 billing_address: res?.data?.billing_address,
+                shipping_address: res?.data?.shiping_address,
                 currency: res?.data?.currency,
-                payment_terms: res?.data?.payment_terms,
             });
         }
     };
@@ -330,34 +387,32 @@ function QuotationForm({
 
                 const subtotal = qty * price;
                 const discountAmount = subtotal * (discountPercent / 100);
-                const lineTotal = subtotal - discountAmount;
-                const taxAmount = lineTotal * (taxRate / 100);
+                const taxAmount = subtotal * (taxRate / 100);
+                const lineTotal = subtotal - discountAmount + taxAmount;
 
-                // Update line total
+
                 const currentTotal = parseFloat(item?.total) || 0;
                 if (Math.abs(currentTotal - lineTotal) > 0.01) {
-                    form.setFieldValue(['items', index, 'total'], lineTotal.toFixed(2));
+                    form.setFieldValue(['items', index, 'total'], formatNumber(lineTotal.toFixed(2)));
                 }
 
-                // Update tax amount
                 const currentTax = parseFloat(item?.tax_amount) || 0;
                 if (Math.abs(currentTax - taxAmount) > 0.01) {
-                    form.setFieldValue(['items', index, 'tax_amount'], taxAmount.toFixed(2));
+                    form.setFieldValue(['items', index, 'tax_amount'], formatNumber(taxAmount.toFixed(2)));
                 }
             });
         }
-    }
+    };
 
     const handleForm = async (values) => {
         setloading(true);
         let filteredItems = [];
         if (values.items && Array.isArray(values.items)) {
             filteredItems = values.items.filter(item => {
-                const hasProduct = item.product_id && String(item.product_id).trim() !== '';
                 const hasDescription = item.description && String(item.description).trim() !== '';
                 const hasQuantity = item.quantity !== undefined && item.quantity !== null && item.quantity !== '';
                 const hasPrice = item.Unit_Price !== undefined && item.Unit_Price !== null && item.Unit_Price !== '';
-                return hasProduct || hasDescription || hasQuantity || hasPrice;
+                return hasDescription || hasQuantity || hasPrice;
             });
         }
         const formData = new FormData();
@@ -380,10 +435,11 @@ function QuotationForm({
                 }
             });
         }
-
-        // Log for debugging
-        for (let pair of formData.entries()) {
-            console.log(pair[0], pair[1]);
+        if (privateNotes) {
+            formData.append('private_notes', privateNotes);
+        }
+        if (termsConditions) {
+            formData.append('terms_conditions', termsConditions);
         }
 
         if (code?.mode !== "Edit") {
@@ -425,6 +481,8 @@ function QuotationForm({
         }
     };
 
+
+
     useEffect(() => {
         lineTotal()
     }, [itemsValue, form]);
@@ -436,6 +494,7 @@ function QuotationForm({
     useEffect(() => {
         GetClientList(accessToken);
     }, [accessToken])
+
     useEffect(() => {
         editFuntionData()
     }, [editData, code, form]);
@@ -460,10 +519,8 @@ function QuotationForm({
                     onFinish={handleForm}
                     initialValues={{ items: [{}] }}
                     onValuesChange={async (changedValues, allValues) => {
-                        console.log("changedValues", changedValues?.client_id)
                         if (changedValues.client_id && code?.mode == null) {
                             handleClientSelect(changedValues.client_id)
-
                         }
                     }}
                 >
@@ -533,7 +590,6 @@ function QuotationForm({
                                 name="customer_name"
                                 placeholder="Auto-populated from Customer ID"
                                 required={false}
-                                readOnly={true}
                                 message={"Customer name auto-populated"}
                             />
                         </div>
@@ -642,32 +698,6 @@ function QuotationForm({
                         <div className={style.form_inputBox}>
                             <SelectInput
                                 className="mx-1"
-                                label={"Payment Terms"}
-                                placeholder="Select payment terms"
-                                name="payment_terms"
-                                required={true}
-                                message={"Please select payment terms"}
-                                options={[
-                                    { value: "Net 30", label: "Net 30" },
-                                    { value: "Net 60", label: "Net 60" },
-                                    { value: "50% Advance", label: "50% Advance" },
-                                    { value: "100% Advance", label: "100% Advance" },
-                                    { value: "Due on Receipt", label: "Due on Receipt" },
-                                    { value: "2/10 Net 30", label: "2/10 Net 30" },
-                                    { value: "COD", label: "Cash on Delivery" },
-                                    { value: "Other", label: "Other" },
-                                ]}
-                            />
-                            <FormInput
-                                className="mx-1"
-                                label={"Delivery Terms"}
-                                name="delivery_terms"
-                                placeholder="Enter Incoterms or custom delivery terms"
-                                required={false}
-                                message={"Enter delivery terms if applicable"}
-                            />
-                            <SelectInput
-                                className="mx-1"
                                 label={"Status"}
                                 placeholder="Select quote status"
                                 name="status"
@@ -682,28 +712,6 @@ function QuotationForm({
                                     { value: "Converted", label: "Converted" },
                                 ]}
                             />
-                        </div>
-                        <div className={`${style.form_inputBox} ${style.border_bottom}`}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Private Notes"}
-                                name="private_notes"
-                                placeholder="Enter internal remarks (not visible to customer)"
-                                multiline={true}
-                                rows={3}
-                                required={false}
-                                message={"Enter private notes if any"}
-                            />
-                            <FormInput
-                                className="mx-1"
-                                label={"Terms & Conditions"}
-                                name="terms_conditions"
-                                placeholder="Enter standard or custom terms and conditions"
-                                multiline={true}
-                                rows={4}
-                                required={false}
-                                message={"Enter terms and conditions"}
-                            />
                             <UploadFile
                                 name={'attachments'}
                                 className="inputFlexBox"
@@ -714,7 +722,6 @@ function QuotationForm({
                                 message={"Attachments"}
                             />
                         </div>
-
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Products | Services</h5>
                         <Form.List name="items">
                             {(fields) => {
@@ -735,6 +742,12 @@ function QuotationForm({
                             }}
                         </Form.List>
                     </div>
+                    <Tabs
+                        className={"customerinfo_tabsPanel mt-3 mx-2"}
+                        defaultActiveKey="1"
+                        items={items}
+                    />
+
                     <div className={style.vendor_modalBtns}>
                         <Button
                             className={"mx-1 mt-2 w-auto"}
@@ -742,16 +755,30 @@ function QuotationForm({
                         />
                     </div>
                 </Form>
+                <div className={style.printBtn}>
+                    <ActionButton
+                        className={"mt-2 mr-4 w-auto"}
+                        title={"Letter Head"}
+                        onClick={() => { setformatDoc("letter_head") }}
+                    />
+                    <ActionButton
+                        className={"mt-2 w-auto"}
+                        title={"PDF"}
+                        onClick={() => { setformatDoc("PDF") }}
+                    />
+                </div>
+                <div style={{ marginTop: 20 }}>
+                    {
+                        formatDoc == "PDF" ?
+                            <PDFViewer width="100%" height="500px">
+                                <QuotationLivePreview data={getPreviewData()} />
+                            </PDFViewer> :
+                            <PDFViewer width="100%" height="500px">
+                                <LetterHead data={getPreviewData()} />
+                            </PDFViewer>
+                    }
 
-
-                {/* <QuotationLivePreview data={getPreviewData()} />  */}
-                {isReady && formValues?.quotation_number && (
-                    <div style={{ marginTop: 20, border: '1px solid #ccc', borderRadius: 8, overflow: 'hidden' }}>
-                        {/* <PDFViewer key={formValues.quotation_number} style={{ width: '100%', height: '500px' }}> */}
-                            <QuotationLivePreview data={getPreviewData()} />
-                        {/* </PDFViewer> */}
-                    </div>
-                )}
+                </div>
             </Modal>
         </>
     )
@@ -762,10 +789,12 @@ function mapStateToProps(state) {
     return {
         Red_Clients: state.Red_Clients,
         Red_Quote: state.Red_Quote,
+        Red_Emp: state.Red_Emp
     };
 }
 const AllActions = {
     ...CLIENTS_ACTIONS,
     ...QUOTE_ACTIONS,
+    // ...COMPANY_ACTIONS
 };
 export default connect(mapStateToProps, AllActions)(QuotationForm);

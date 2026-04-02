@@ -20,7 +20,7 @@ function InfoHeader({
     }, [accessToken]);
     return (
         <>
-            <div className={style.customerHeader_headerBox}>
+            {/* <div className={style.customerHeader_headerBox}>
                 <div className={style.customerHeader_customerName}>
                     <img src={arrowLeft} alt="" />
                     <div>
@@ -31,7 +31,7 @@ function InfoHeader({
                 <div className={style.customerHeader_contactInfo}>
                     <div>
                         <span>Mobile#</span>
-                        <p>{role == "admin" ? data?.company?.phone : data?.phone}</p>
+                        <p>{data?.company?.phone}</p>
                     </div>
                     <div>
                         <span>Domain</span>
@@ -48,7 +48,7 @@ function InfoHeader({
                     </div>
                 </div>
                 <DeleteButton title={"Delete Customer"} />
-            </div>
+            </div> */}
         </>
     )
 }
