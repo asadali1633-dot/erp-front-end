@@ -199,3 +199,37 @@ export const UpdateClient = (id,body,accessToken) => async (dispatch) => {
         return res;
     }
 }
+
+export const updateClientFiles = (id,type,body,accessToken) => async (dispatch) => {
+    const response = await fetch(`${baseUrl.baseUrl}/api/client/update-file/${id}/${type}`, {
+        method: "PATCH",
+        headers: {
+             "Authorization": "Bearer " + accessToken,
+        },
+        body: body
+    });
+    const res = await response.json();
+    if (res) {
+        return res;
+    } else {
+        return res;
+    }
+}
+
+export const deleteClientFile =  (clientId, field, index,accessToken ) => async (dispatch) => {
+   const body = index !== undefined && index !== null ? JSON.stringify({ index }) : null;
+    const response = await fetch(`${baseUrl.baseUrl}/api/client/delete-file/${clientId}/${field}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + accessToken,
+        },
+        body: body
+    });
+    const res = await response.json();
+     if (res) {
+        return res;
+    } else {
+        return res;
+    }
+}

@@ -41,19 +41,19 @@ function Experiance({
     const [loading, setloading] = useState(false);
     const [reasonText, setreasonText] = useState(null)
     const [dutyText, setdutyText] = useState(null)
-    const [Working,setWorking] = useState("0")
+    const [Working, setWorking] = useState("0")
     const [code, setCode] = useState({
         mode: "",
         code: null
     })
 
-    
-    
+
+
     const columns = [
         {
             title: "SN",
             key: "SN",
-            render: (_, __, index) => (  
+            render: (_, __, index) => (
                 <span>{index + 1}</span>
             )
         },
@@ -227,16 +227,16 @@ function Experiance({
             formData.append("file", values.file.originFileObj);
         }
         setloading(true);
-        const isCheck = await EmployeeUpdateExper(code.code,formData, accessToken);
+        const isCheck = await EmployeeUpdateExper(code.code, formData, accessToken);
         if (isCheck?.success) {
             messageApi.success(isCheck?.message);
-            getEmpExper(selectId,accessToken);
+            getEmpExper(selectId, accessToken);
         } else {
             messageApi.error(isCheck?.message);
         }
         setloading(false);
     };
-        
+
 
 
     useEffect(() => {
@@ -275,7 +275,7 @@ function Experiance({
                         form={form}
                         layout="vertical"
                         onFinish={
-                            code.mode == "Edit" ? handleUpdateExperiance: handleExperiance
+                            code.mode == "Edit" ? handleUpdateExperiance : handleExperiance
                         }
                     >
                         <Heading title={"Job Experiance"} />
@@ -358,7 +358,7 @@ function Experiance({
                                     { value: "0", label: "No" },
                                 ]}
                             />
-                            
+
                         </div>
                         <div className={style.emp_inputbox}>
                             {Working === "0" && (

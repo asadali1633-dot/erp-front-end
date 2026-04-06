@@ -19,10 +19,12 @@ footer {
     font-family: 'Poppins', sans-serif;
     /* font-family: 'Red Hat Display', sans-serif; */
 }
-.m-right{
+
+.m-right {
     margin: 0 0 0 auto;
 }
-section{
+
+section {
     overflow-x: clip;
 }
 
@@ -30,6 +32,7 @@ section{
 .antdCustomeTable .ant-table-thead tr th::before {
     background: #6060604f !important;
 }
+
 .antdCustomeTable .ant-table-thead tr th {
     border-bottom: 1px solid #87878745 !important;
     padding: 10px 5px;
@@ -51,17 +54,20 @@ section{
 .antdCustomeTable .ant-table-row.ant-table-row-selected>.ant-table-cell {
     background: #87878752 !important;
 }
-.antdCustomeTable .ant-pagination{
-  background: transparent !important;
-}
-.antdCustomeTable .ant-pagination  span{
-  color: black !important;
-}
-.antdCustomeTable .ant-select-selector .ant-select-selection-search-input{
-  background: transparent !important;
+
+.antdCustomeTable .ant-pagination {
+    background: transparent !important;
 }
 
-.antdCustomeTable .ant-checkbox .ant-checkbox-inner{
+.antdCustomeTable .ant-pagination span {
+    color: black !important;
+}
+
+.antdCustomeTable .ant-select-selector .ant-select-selection-search-input {
+    background: transparent !important;
+}
+
+.antdCustomeTable .ant-checkbox .ant-checkbox-inner {
     width: 14px;
     height: 14px;
     border: 1px solid #2e2e2e;
@@ -70,14 +76,15 @@ section{
 
 
 /* =================================== */
-.userTable .ant-table-tbody .ant-table-row td{
+.userTable .ant-table-tbody .ant-table-row td {
     padding: 5px 5px;
 }
 
-.userTable table{
+.userTable table {
     box-shadow: 10px -2px 22px 0px #dadada;
 }
-.userTable .ant-table-tbody .ant-table-row .userTableNamingBox span{
+
+.userTable .ant-table-tbody .ant-table-row .userTableNamingBox span {
     background: whitesmoke;
     height: 35px;
     width: 35px;
@@ -91,24 +98,28 @@ section{
     box-shadow: 2px -4px 10px -2px #dadada;
 }
 
-.userTable .userTableIcons svg{
+.userTable .userTableIcons svg {
     font-size: 23px;
 }
-.userTable .rejectedIcon svg{
+
+.userTable .rejectedIcon svg {
     color: red;
 }
+
 .noneRowHover .ant-table-row>.ant-table-cell-row-hover {
     background: transparent !important;
 }
+
 .noneRowHover .ant-table-tbody .ant-table-row td {
     border-bottom: 1px solid transparent !important;
 }
 
 
 /* ANTD MODAL CSS FOR GLOBAL ========================================= */
-.modalBgColor .ant-modal-close-x{
+.modalBgColor .ant-modal-close-x {
     color: white;
 }
+
 /* .ant-modal-root .ant-modal-wrap{
     z-index: 99999;
 } */
@@ -127,11 +138,11 @@ section{
     color: white;
 }
 
-.ant-form-item{
+.ant-form-item {
     margin-bottom: 0px !important;
 }
 
-.simpleButtonAction{
+.simpleButtonAction {
     border: none;
     background-color: #00BAFF;
     color: white;
@@ -144,62 +155,75 @@ section{
 
 
 /* ANTD SETTING BAR CSS ============================ */
-.settingBar .ant-menu{
+.settingBar .ant-menu {
     background: #171717 !important;
 }
-.settingBar .ant-menu-submenu-title{
+
+.settingBar .ant-menu-submenu-title {
     padding-left: 10px !important;
 }
-.settingBar .ant-menu-submenu-title svg{
+
+.settingBar .ant-menu-submenu-title svg {
     font-size: 20px !important;
     color: white !important;
 
 }
-.settingBar .ant-menu-submenu-title span{
+
+.settingBar .ant-menu-submenu-title span {
     color: white;
 }
-.settingBar .ant-menu-sub li{
-     padding-left: 10px !important;
+
+.settingBar .ant-menu-sub li {
+    padding-left: 10px !important;
 }
-.settingBar .ant-menu-sub li span{
+
+.settingBar .ant-menu-sub li span {
     color: white;
 }
-.settingBar .ant-menu-sub li svg{
+
+.settingBar .ant-menu-sub li svg {
     font-size: 20px !important;
     color: white !important;
 }
-.settingBar .ant-menu-sub li.ant-menu-item-selected{
+
+.settingBar .ant-menu-sub li.ant-menu-item-selected {
     background: #2f2f2f !important;
 }
-.settingBar .ant-menu-item{
-     padding-left: 10px !important;
+
+.settingBar .ant-menu-item {
+    padding-left: 10px !important;
 }
-.settingBar .ant-menu-item svg{
+
+.settingBar .ant-menu-item svg {
     font-size: 20px !important;
     color: white !important;
 }
-.settingBar .ant-menu-item span{
+
+.settingBar .ant-menu-item span {
     color: white !important;
 }
+
 /* ANTD SPIN LOADER ================= */
-.ant-spin-lg .ant-spin-dot{
+.ant-spin-lg .ant-spin-dot {
     font-size: 17px !important;
     color: #00BAFF !important;
 }
+
 .ant-spin-lg .ant-spin-dot-holder i {
     width: 35px !important;
     height: 35px !important;
 }
 
 /* INPU ANTD CSS ======================== */
-.inputFlexBox .ant-row{
+.inputFlexBox .ant-row {
     display: flex;
     flex-direction: column;
 }
 
-.inputFlexBox .ant-form-item-label label{
+.inputFlexBox .ant-form-item-label label {
     display: flex;
 }
+
 /* .inputFlexBox input{
     height: 30px !important;
     font-size: 12px !important;
@@ -209,33 +233,101 @@ section{
 } */
 
 /* ANDT LABELS CSS ========================== */
-.ant-form-item .ant-form-item-label >label{
+.ant-form-item .ant-form-item-label>label {
     font-size: 12px;
     color: black !important;
 }
-.ant-form-item-vertical .ant-form-item-label{
+
+.ant-form-item-vertical .ant-form-item-label {
     padding: 0;
 }
-.bg{
+
+.bg {
     background: transparent;
 }
 
 /* TEXT EIDITOR CSS ============================== */
-.textEiditor span{
+.textEiditor span {
     color: black !important;
 }
+
 .textEiditor p {
     color: black !important;
 }
 
-.textEiditor ul{
+.textEiditor ul {
     background: transparent !important;
 }
 
-.textEiditor .ql-editor{
+.textEiditor .ql-editor {
     height: 300px;
 }
 
-.textEiditor .ql-editor p,strong,ul,li,h1,h2,h3,h4,h5,h6{
+.textEiditor .ql-editor p,
+strong,
+ul,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     color: black !important;
+}
+
+
+
+/* PDF LOADER ========================= */
+
+.load-bar {
+    position: relative;
+    margin-top: 20px;
+    width: 100%;
+    height: 6px;
+    background-color: #fdba2c;
+}
+
+.bar {
+    content: "";
+    display: inline;
+    position: absolute;
+    width: 0;
+    height: 100%;
+    left: 50%;
+    text-align: center;
+}
+
+.bar:nth-child(1) {
+    background-color: #da4733;
+    animation: loading 3s linear infinite;
+}
+
+.bar:nth-child(2) {
+    background-color: #3b78e7;
+    animation: loading 3s linear 1s infinite;
+}
+
+.bar:nth-child(3) {
+    background-color: #fdba2c;
+    animation: loading 3s linear 2s infinite;
+}
+
+@keyframes loading {
+    from {
+        left: 0;
+        width: 0;
+        z-index: 100;
+    }
+
+    33.3333% {
+        left: 0;
+        width: 100%;
+        z-index: 10;
+    }
+
+    to {
+        left: 0;
+        width: 100%;
+    }
 }

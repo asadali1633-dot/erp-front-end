@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { message, Space, Table } from 'antd';
+import { message, Modal, Space, Table } from 'antd';
 import style from './Client.module.css'
 import Heading from '../../../Components/Heading/Heading';
 import { SearchBar } from '../../../Components/SearchBar/SearchBar';
 import { OutLineButton } from '../../../Components/Button/Button';
 import ClientForm from './Forms/ClientForm';
-import * as ACTIONS  from '../../../store/action/clients/index';
+import * as ACTIONS from '../../../store/action/clients/index';
 import { connect, useSelector } from 'react-redux';
 import { BiEditAlt } from "react-icons/bi";
 import Loader from '../../../Components/Loader/Loader';
+import FileView from './Forms/FileView';
 
 function Client({
     Red_Clients,
@@ -21,13 +22,15 @@ function Client({
     const [messageApi, contextHolder] = message.useMessage();
     const tableData = Red_Clients?.GetAllClient?.[0]
     const editData = Red_Clients?.SingleClient
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false)
+    const [fileModal, setFileModal] = useState(null);
     const [search, setSearch] = useState("");
     const [code, setCode] = useState({
         mode: "",
         code: null
     })
 
+    
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10,
@@ -42,7 +45,7 @@ function Client({
         {
             title: "SN",
             key: "SN",
-            render: (_, __, index) => (  
+            render: (_, __, index) => (
                 <span>{index + 1}</span>
             )
         },
@@ -89,6 +92,16 @@ function Client({
                 data ? <span>{data}</span> : <span>-</span>
         },
         {
+            title: 'Docs',
+            key: 'Docs',
+            render: (data) => (
+                <Space size="middle">
+                    <button className={`${style.hardware_editBtn}`}
+                        onClick={() => fileActions(data?.id, data)}><BiEditAlt /></button>
+                </Space>
+            ),
+        },
+        {
             title: 'Action',
             key: 'action',
             render: (data) => (
@@ -111,6 +124,49 @@ function Client({
         },
     ];
 
+    const fileActions = async (id, data) => {
+        setLoading(true);
+        try {
+            await getClientById(id, accessToken);
+            setCode({
+                mode: "Edit",
+                code: id
+            });
+            let attachmentsArray = [];
+            let msaDocArray = [];
+            let taxCertArray = [];
+            if (data.attachments) {
+                try {
+                    let parsed = typeof data.attachments === 'string'
+                        ? JSON.parse(data.attachments)
+                        : data.attachments;
+                    if (Array.isArray(parsed)) {
+                        attachmentsArray = parsed;
+                    } else if (typeof parsed === 'string' && parsed.trim()) {
+                        attachmentsArray = [parsed];
+                    }
+                } catch (e) {
+                    if (data.attachments.trim()) attachmentsArray = [data.attachments];
+                }
+            }
+            if (data.msa_document && data.msa_document.trim()) {
+                msaDocArray = [data.msa_document];
+            }
+            if (data.tax_exemption_certificate && data.tax_exemption_certificate.trim()) {
+                taxCertArray = [data.tax_exemption_certificate];
+            }
+            setFileModal({
+                attachments: attachmentsArray,
+                msa_document: msaDocArray,
+                tax_exemption_certificate: taxCertArray
+            });
+
+        } catch (error) {
+            console.error("Error fetching client:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
     const UserAction = async (id) => {
         setLoading(true);
         try {
@@ -126,6 +182,7 @@ function Client({
             setLoading(false);
         }
     };
+
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             // console.log("selectedRowKeys:", selectedRowKeys, "selectedRows:", selectedRows);
@@ -189,8 +246,12 @@ function Client({
 
             {loading && <Loader />}
             {setClientForm && (
-                <ClientForm {...{ ClientModalForm, setClientForm,code, setCode,pageBody,editData }} />
+                <ClientForm {...{ ClientModalForm, setClientForm, code, setCode, pageBody, editData }} />
             )}
+            {fileModal && (
+                <FileView {...{ fileModal, setFileModal,code,pageBody }} />
+            )}
+            
         </>
     )
 }

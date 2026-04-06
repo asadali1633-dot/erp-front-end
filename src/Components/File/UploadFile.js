@@ -17,34 +17,13 @@ const UploadFile = ({
   multiple,
   accept
 }) => {
-  const [fileList, setFileList] = useState([
-    {
-      uid: '-1',
-      name: 'xxx.png',
-      status: 'done',
-      url: 'http://www.baidu.com/xxx.png',
-    },
-  ]);
 
-
-  const handleChange = info => {
-    // let newFileList = [...info.fileList];
-    // newFileList = newFileList.slice(-2);
-    // newFileList = newFileList.map(file => {
-    //   if (file.response) {
-    //     file.url = file.response.url;
-    //   }
-    //   return file;
-    // });
-    // setFileList(newFileList);
-  };
-
+  const handleChange = info => {};
   const props = {
     onChange: handleChange,
     multiple: multiple,
   };
   return (
-    // fileList={fileList}
     <>
       <ConfigProvider
         theme={{

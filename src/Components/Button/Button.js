@@ -88,7 +88,7 @@ const DeleteButton = ({
     )
 }
 
-const ShoMore = ({
+const ShowMore = ({
     title,
     className,
     loading,
@@ -99,7 +99,7 @@ const ShoMore = ({
 }) => {
     return (
         <>
-         <Link onClick={onClick} className={`${style.button} ${className}`}>{title}</Link> 
+         <span onClick={onClick} style={{color:"#0020F2",cursor:"pointer"}} className={` ${className}`}>{title}</span> 
         </>
     )
 }
@@ -109,5 +109,5 @@ export {
     ActionButton,
     OutLineButton,
     DeleteButton,
-    ShoMore
+    ShowMore
  };

@@ -2,7 +2,7 @@ import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/
 import regularFont from '../../../assests/font/Roboto.ttf'
 import boldFont from '../../../assests/font/Roboto.ttf';
 import style from './Forms/form.module.css'
-import baseUrl from '../../../../src/config.json'
+import baseUrl from '../../../config.json'
 import { Button } from '../../../Components/Button/Button';
 
 
@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 15,
         paddingBottom: 5,
-        marginTop: 70
     },
     headerRow3: {
         flexDirection: 'row',
@@ -172,7 +171,7 @@ const styles = StyleSheet.create({
 });
 
 
-const LetterHead = ({ data }) => {
+const AlternateQuote = ({ data }) => {
     const {
         quotation_number, quote_date, valid_until,
         customer_name, customer_contact, customer_email, customer_phone, billing_address,
@@ -287,6 +286,27 @@ const LetterHead = ({ data }) => {
                         <View style={{ flex: 1 }}>
                             {pageIndex === 0 && (
                                 <>
+                                    <View style={styles.headerRow}>
+                                        <View style={styles.col33}>
+                                            <Image style={styles.logo} src={`${baseUrl.baseUrl}${company_logo}`} />
+                                        </View>
+                                        <View style={styles.col33}>
+                                            <View>
+                                                {company_name ? <Text style={styles.headertxt}>Company: {company_name}</Text> : null}
+                                                {ntn_vat ? <Text style={styles.headertxt}>NTN: {ntn_vat}</Text> : null}
+                                                {company_website ? <Text style={styles.headertxt}>Web: {company_website}</Text> : null}
+                                                {company_email ? <Text style={styles.headertxt}>Email: {company_email}</Text> : null}
+                                                {company_phone ? <Text style={styles.headertxt}>Phone: {company_phone}</Text> : null}
+                                            </View>
+                                        </View>
+                                        <View style={styles.col33}>
+                                            <View style={styles.addressBox}>
+                                                <Text style={styles.textRight}>
+                                                    <Text style={[styles.headertxt, { lineHeight: 1.5 }]}>{company_address ? company_address : null}</Text>
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </View>
                                     <View style={styles.headerRow2}>
                                         <View style={styles.col50}>
                                             {
@@ -334,6 +354,8 @@ const LetterHead = ({ data }) => {
                                     </View>
                                 </>
                             )}
+
+
                             <View style={styles.table}>
                                 <View style={styles.tableRowHeader}>
                                     <Text style={[styles.colDesc, styles.colorWhite]}>Item Description</Text>
@@ -369,32 +391,13 @@ const LetterHead = ({ data }) => {
                                     </View>
                                 ))}
                             </View>
+
                             {pageIndex === batches.length - 1 && (
                                 <>
-                                    <View style={styles.headerRow3}>
+                                <View style={styles.headerRow3}>
                                         <View style={styles.col50}>
                                             <Text style={styles.title}>Quote Terms:</Text>
                                             <Text style={[styles.termText]}>Taxes: {"All taxes are included."}</Text>
-                                        </View>
-                                        <View style={styles.col50Right}>
-                                            <View style={styles.grandTotalBox}>
-                                                <View style={styles.rowBetween}>
-                                                    <Text style={[styles.termText]}>Subtotal:</Text>
-                                                    <Text style={[styles.termText]}>Rs {formatNumber(subtotal)}</Text>
-                                                </View>
-                                                <View style={styles.rowBetween}>
-                                                    <Text style={[styles.termText]}>Discount:{formatNumber(discountPercentOverall.toFixed(2))}%</Text>
-                                                    <Text style={[styles.termText]}>Rs {formatNumber(totalDiscount)}</Text>
-                                                </View>
-                                                <View style={styles.rowBetween}>
-                                                    <Text style={[styles.termText]}>Tax:{formatNumber(taxPercentOverall.toFixed(2))}%</Text>
-                                                    <Text style={[styles.termText]}>Rs {formatNumber(totalTax)}</Text>
-                                                </View>
-                                                <View style={styles.rowBetween}>
-                                                    <Text style={[styles.termText]}>Total:</Text>
-                                                    <Text style={[styles.termText]}>Rs {formatNumber(grandTotal)}</Text>
-                                                </View>
-                                            </View>
                                         </View>
                                     </View>
                                     {
@@ -412,6 +415,7 @@ const LetterHead = ({ data }) => {
                                 </>
                             )}
                         </View>
+                        <Text style={styles.footer}>Computer-generated quotation. No signature required.</Text>
                     </Page>
                 ))}
             </Document>
@@ -420,4 +424,4 @@ const LetterHead = ({ data }) => {
     );
 };
 
-export default LetterHead;
+export default AlternateQuote;

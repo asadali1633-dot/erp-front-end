@@ -3,7 +3,7 @@ import style from './form.module.css'
 import { Form, Modal, Table, message, Button as AntdButton } from 'antd';
 import { FormInput, FormInputTextArea } from '../../../../Components/Inputs/Inputs';
 import { SelectInput } from '../../../../Components/Select/Select';
-import { ActionButton, Button, ShoMore } from '../../../../Components/Button/Button';
+import { ActionButton, Button, ShowMore } from '../../../../Components/Button/Button';
 import { Country, State, City } from "country-state-city";
 import CustomDate from '../../../../Components/Date/CustomDate';
 import UploadFile from '../../../../Components/File/UploadFile';
@@ -13,6 +13,8 @@ import * as ASSETS_ACTIONS from "../../../../store/action/hardware/index";
 import { connect, useSelector } from 'react-redux';
 import dayjs from "dayjs";
 import baseUrl from '../../../../config.json'
+import { IoCopyOutline } from "react-icons/io5";
+import MultipleUploads from '../../../../Components/File/MultipleUploads';
 
 
 function ClientForm({
@@ -53,25 +55,8 @@ function ClientForm({
         selectedCities = [...selectedCities, ...cities];
     });
 
-    const basicFields = [
-        'client_code', 'client_type', 'company_name', 'trading_name', 'registration_number',
-        'ntn', 'strn', 'website', 'industry', 'client_since', 'status', 'client_source',
-        'parent_client_id', 'language', 'currency'
-    ];
 
-    const advancedFields = [
-        'billing_address_line1', 'billing_address_line2', 'billing_city', 'billing_state',
-        'billing_postal_code', 'billing_country',
-        'payment_terms', 'credit_limit', 'credit_currency', 'credit_risk_rating',
-        'credit_check_date', 'credit_check_reference', 'payment_method', 'bank_account_details',
-        'invoicing_delivery_method', 'invoice_emails', 'dunning_contact',
-        'msa_reference', 'msa_start_date', 'msa_end_date', 'nda_signed', 'nda_date', 'nda_expiry',
-        'preferred_status', 'total_lifetime_revenue', 'number_of_quotes', 'number_of_projects',
-        'number_of_service_orders', 'number_of_assets', 'last_quote_date', 'last_invoice_date',
-        'last_project_date', 'last_service_date', 'next_followup_date',
-        'account_manager_id', 'secondary_account_manager_id', 'internal_notes',
-        'gdpr_consent_date', 'marketing_opt_out'
-    ];
+
 
     const toggleShowMore = () => {
         setShowMore(!showMore);
@@ -112,33 +97,23 @@ function ClientForm({
         }
     };
 
-    const fetchingData = () => {
-        if (ClientModalForm) {
-            if (code?.mdoe !== "Edit") {
-                fetchClientCode();
-            }
-            form.resetFields();
-
-            GetClientList(accessToken);
-            GetAllEmpList(accessToken);
-        }
-    }
-
-    useEffect(() => {
-        fetchingData()
-    }, [ClientModalForm, accessToken, form]);
-
-    useEffect(() => {
-        if (code?.mode == "Edit") {
-            getClientById(code?.code, accessToken)
-        }
-    }, [code, accessToken])
-
-
     const editFuntionData = () => {
         if (editData && code?.mode === "Edit") {
             const data = editData?.[0]?.data;
+            console.log("data",data)
             if (!data) return;
+            let contactsToSet = [];
+            if (data.contacts && Array.isArray(data.contacts) && data.contacts.length > 0) {
+                contactsToSet = data.contacts;
+            } else {
+                contactsToSet = [{}];
+            }
+            let shippingToSet = [];
+            if (data.shipping_addresses && Array.isArray(data.shipping_addresses) && data.shipping_addresses.length > 0) {
+                shippingToSet = data.shipping_addresses;
+            } else {
+                shippingToSet = [{}];
+            }
             const formValues = {
                 client_id: data.client_code,
                 client_type: data.client_type,
@@ -191,47 +166,25 @@ function ClientForm({
                 last_project_date: data.last_project_date ? dayjs(data.last_project_date) : null,
                 last_service_date: data.last_service_date ? dayjs(data.last_service_date) : null,
                 next_followup_date: data.next_followup_date ? dayjs(data.next_followup_date) : null,
-                account_manager_id: data?.account_manager_id,
-                secondary_account_manager_id: data?.secondary_account_manager_id,
+                // account_manager_id: data?.account_manager_id,
+                // secondary_account_manager_id: data?.secondary_account_manager_id,
+                account_manager_id: data?.account_manager_type && data?.account_manager_id
+                    ? `${data.account_manager_type}_${data.account_manager_id}`
+                    : null,
+
+                secondary_account_manager_id: data?.secondary_account_manager_type && data?.secondary_account_manager_id
+                    ? `${data.secondary_account_manager_type}_${data.secondary_account_manager_id}`
+                    : null,
                 internal_notes: data.internal_notes,
                 gdpr_consent_date: data.gdpr_consent_date ? dayjs(data.gdpr_consent_date) : null,
                 marketing_opt_out: data.marketing_opt_out,
-                contacts: data.contacts || [],
-                shipping_addresses: data.shipping_addresses || [],
+                contacts: contactsToSet,
+                shipping_addresses: shippingToSet,
                 created_by: data?.created_by_employee_id || data?.created_by_super_admin_id,
             }
-
             form.setFieldsValue(formValues);
-            let hasMore = false;
-
-            // 1. Check advanced fields
-            for (let field of advancedFields) {
-                const val = data[field];
-                if (val !== undefined && val !== null && val !== '') {
-                    // Agar array hai to check length
-                    if (Array.isArray(val) && val.length === 0) continue;
-                    hasMore = true;
-                    break;
-                }
-            }
-
-            // 2. Check contacts, shipping, attachments (jo arrays hain)
-            if (!hasMore && data.contacts && data.contacts.length > 0) hasMore = true;
-            if (!hasMore && data.shipping_addresses && data.shipping_addresses.length > 0) hasMore = true;
-            if (!hasMore && data.attachments && data.attachments.length > 0) hasMore = true;
-
-            if (hasMore) {
-                setShowMore(true);
-            } else {
-                setShowMore(false);
-            }
         }
     }
-
-    useEffect(() => {
-        editFuntionData()
-    }, [editData, code, form]);
-
 
     const handleForm = async (values) => {
         setloading(true);
@@ -240,6 +193,8 @@ function ClientForm({
             if (key === 'msa_document') return;
             if (key === 'tax_exemption_certificate') return;
             if (key === 'attachments') return;
+            if (key === 'account_manager_id') return;
+            if (key === 'secondary_account_manager_id') return;
             let val = values[key];
             if (val === undefined || val === null || val === '') return;
             if (Array.isArray(val)) val = JSON.stringify(val);
@@ -251,16 +206,28 @@ function ClientForm({
         if (values.tax_exemption_certificate && values.tax_exemption_certificate.originFileObj) {
             formData.append("tax_exemption_certificate", values.tax_exemption_certificate.originFileObj);
         }
-        if (values.attachments && values.attachments.originFileObj) {
-            formData.append("attachments", values.attachments.originFileObj);
+        if (values.attachments && Array.isArray(values.attachments) && values.attachments.length > 0) {
+            values.attachments.forEach(file => {
+                if (file.originFileObj) {
+                    formData.append('attachments', file.originFileObj);
+                }
+            });
         }
         if (values?.account_manager_id) {
-            const selected = users.find(user => user.id === values.account_manager_id);
-            formData.append("account_manager_type", selected?.user_type);
+            const parts = values.account_manager_id.split("_");
+            const id = parts.pop();
+            const type = parts.join("_");
+
+            formData.append("account_manager_type", type);
+            formData.append("account_manager_id", id);
         }
         if (values?.secondary_account_manager_id) {
-            const selected = users.find(user => user.id === values.secondary_account_manager_id);
-            formData.append("secondary_account_manager_type", selected?.user_type);
+            const parts = values.secondary_account_manager_id.split("_");
+            const id = parts.pop();
+            const type = parts.join("_");
+
+            formData.append("secondary_account_manager_type", type);
+            formData.append("secondary_account_manager_id", id);
         }
 
         if (code?.mode !== "Edit") {
@@ -289,10 +256,9 @@ function ClientForm({
                     type: "success",
                     content: isCheck?.message,
                 });
-                // setClientForm(false);
+                setClientForm(false);
                 form.resetFields();
                 setloading(false);
-                // setShowMore(false)
                 GetAllClientithPage(pageBody, accessToken);
             } else {
                 setloading(false);
@@ -304,6 +270,54 @@ function ClientForm({
         }
 
     };
+
+    const handleCopy = () => {
+        const billing_address_line1 = form.getFieldValue('billing_address_line1');
+        const billing_address_line2 = form.getFieldValue('billing_address_line2');
+        const billing_city = form.getFieldValue('billing_city')
+        const billing_state = form.getFieldValue('state')
+        const billing_postal_code = form.getFieldValue('billing_postal_code')
+        const billing_country = form.getFieldValue('country')
+
+        if (billing_address_line1 || billing_address_line2 || billing_city || billing_country || billing_state || billing_postal_code) {
+            form.setFieldValue(['shipping_addresses', 0, 'address_line1'], billing_address_line1 || '');
+            form.setFieldValue(['shipping_addresses', 0, 'address_line2'], billing_address_line2 || '');
+            form.setFieldValue(['shipping_addresses', 0, 'city'], billing_city || '');
+            form.setFieldValue(['shipping_addresses', 0, 'state_province'], billing_state || '');
+            form.setFieldValue(['shipping_addresses', 0, 'postal_code'], billing_postal_code || '');
+            form.setFieldValue(['shipping_addresses', 0, 'country'], billing_country || '');
+            messageApi.success('Billing address copied to shipping address');
+        } else {
+            messageApi.warning('Billing address is empty');
+        }
+    }
+
+    const fetchingData = () => {
+        if (ClientModalForm) {
+            if (code?.mdoe !== "Edit") {
+                fetchClientCode();
+            }
+            form.resetFields();
+
+            GetClientList(accessToken);
+            GetAllEmpList(accessToken);
+        }
+    }
+
+    useEffect(() => {
+        fetchingData()
+    }, [ClientModalForm, accessToken, form]);
+
+    useEffect(() => {
+        if (code?.mode == "Edit") {
+            getClientById(code?.code, accessToken)
+        }
+    }, [code, accessToken])
+
+
+    useEffect(() => {
+        editFuntionData()
+    }, [editData, code, form]);
 
 
     return (
@@ -323,7 +337,7 @@ function ClientForm({
                     form={form}
                     className={`${style.form_modalMainBox} mt-3`}
                     layout="vertical"
-                    initialValues={{ contacts: [{}],shipping_addresses:[{}] }}
+                    initialValues={{ contacts: [{}], shipping_addresses: [{}] }}
                     onFinish={handleForm}>
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
@@ -337,8 +351,7 @@ function ClientForm({
                                 label={"Client ID"}
                                 name="client_id"
                                 placeholder="Auto-generated (e.g., IT-001)"
-                                required={false}
-                                readOnly={false}
+                                required={true}
                                 message={"Client ID is auto-generated"}
                             />
 
@@ -363,7 +376,9 @@ function ClientForm({
                                     { value: "Commidities & Chemical", label: "Commidities & Chemical" },
                                     { value: "Cummunications", label: "Cummunications" },
                                     { value: "Computer & Hightech", label: "Computer & Hightech" },
-                                    { value: "Contructions", label: "Contructions" },
+                                    { value: "Constructions", label: "Contructions" },
+                                    { value: "Education", label: "Education" },
+                                    { value: "Textile", label: "Textile" },
                                     { value: "Defense", label: "Defense" },
                                     { value: "Energy", label: "Energy" },
                                     { value: "Entertainment", label: "Entertainment" },
@@ -383,6 +398,7 @@ function ClientForm({
                                     { value: "Sports", label: "Sports" },
                                     { value: "Transportation", label: "Transportation" },
                                     { value: "Travel & Luxury", label: "Travel & Luxury" },
+                                    { value: "Engineering", label: "Engineering" },
                                     { value: "Others", label: "Others" },
                                 ]}
                             />
@@ -563,7 +579,7 @@ function ClientForm({
                         </div>
 
 
-                        <div style={{ display: showMore ? 'block' : 'none' }}>
+                        <div style={{ display: showMore ? 'block' : 'none'}}>
                             <Form.List name="contacts">
                                 {(fields, { add, remove }) => (
                                     <>
@@ -665,7 +681,6 @@ function ClientForm({
                                     </>
                                 )}
                             </Form.List>
-
                             <h5 className={`${style.form_checkBoxHeading} mx-1`}>Billing Address</h5>
                             <div className={style.form_inputBox}>
                                 <FormInput
@@ -685,24 +700,33 @@ function ClientForm({
                                     required={false}
                                     message={""}
                                 />
-
-                                <FormInput
+                                <SelectInput
                                     className="mx-1"
-                                    label={"City"}
+                                    showSearch={true}
                                     name="billing_city"
-                                    placeholder="Enter city"
+                                    label="City"
+                                    message="City is required"
                                     required={false}
-                                    message={"Please enter city"}
+                                    classNameColor={`${style.inputDefaultBg}`}
+                                    options={selectedCities?.map((item) => ({
+                                        value: `${item.stateCode}-${item.name}`,
+                                        label: item.name,
+                                    }))}
                                 />
                             </div>
                             <div className={`${style.form_inputBox} ${style.border_bottom}`}>
-                                <FormInput
+                                <SelectInput
                                     className="mx-1"
-                                    label={"State / Province"}
+                                    showSearch={true}
                                     name="state"
-                                    placeholder="Enter state or province"
+                                    label="Province"
+                                    message="Province is required"
                                     required={false}
-                                    message={"Please enter state/province"}
+                                    classNameColor={`${style.inputDefaultBg}`}
+                                    options={provinces?.map((item) => ({
+                                        value: `${item.countryCode}-${item.name}`,
+                                        label: item.name,
+                                    }))}
                                 />
 
                                 <FormInput
@@ -716,32 +740,18 @@ function ClientForm({
 
                                 <SelectInput
                                     className="mx-1"
-                                    label={"Country"}
-                                    placeholder="Select country"
-                                    name="country"
-                                    required={false}
                                     showSearch={true}
-                                    message={"Please select country"}
-                                    options={[
-                                        { value: "United States", label: "United States" },
-                                        { value: "Canada", label: "Canada" },
-                                        { value: "United Kingdom", label: "United Kingdom" },
-                                        { value: "Australia", label: "Australia" },
-                                        { value: "Germany", label: "Germany" },
-                                        { value: "France", label: "France" },
-                                        { value: "India", label: "India" },
-                                        { value: "Pakistan", label: "Pakistan" },
-                                        { value: "UAE", label: "United Arab Emirates" },
-                                        { value: "Saudi Arabia", label: "Saudi Arabia" },
-                                        { value: "China", label: "China" },
-                                        { value: "Japan", label: "Japan" },
-                                        { value: "Singapore", label: "Singapore" },
-                                        { value: "Malaysia", label: "Malaysia" },
-                                        { value: "Other", label: "Other" },
-                                    ]}
+                                    name="country"
+                                    label="Country"
+                                    message="Country is required"
+                                    required={false}
+                                    classNameColor={`${style.inputDefaultBg}`}
+                                    options={countries?.map((item) => ({
+                                        value: `${item.isoCode}-${item.name}`,
+                                        label: item.name,
+                                    }))}
                                 />
                             </div>
-
                             <Form.List name="shipping_addresses">
                                 {(fields, { add, remove }) => (
                                     <>
@@ -750,10 +760,18 @@ function ClientForm({
                                                 <h5 className={`${style.form_checkBoxHeading} mx-1`}>
                                                     Shipping Address #{index + 1}
                                                     {index === 0 && (
-                                                        <CiSquarePlus
-                                                            style={{ cursor: 'pointer', marginLeft: '8px', fontSize: '24px', verticalAlign: 'middle' }}
-                                                            onClick={() => add()}
-                                                        />
+                                                        <>
+                                                            <CiSquarePlus
+                                                                style={{ cursor: 'pointer', marginLeft: '8px', fontSize: '24px', verticalAlign: 'middle' }}
+                                                                onClick={() => add()}
+                                                            />
+                                                            <a
+                                                                onClick={handleCopy}
+                                                                className={"mx-1"}
+                                                                style={{ fontSize: "12px", color: "#0000EE" }}
+                                                            >Copy Billing Address</a>
+                                                        </>
+
                                                     )}
                                                     {index > 0 && (
                                                         <CiSquareMinus
@@ -891,7 +909,6 @@ function ClientForm({
                                     </>
                                 )}
                             </Form.List>
-
                             <h5 className={`${style.form_checkBoxHeading} mx-1`}>Financial & Credit</h5>
                             <div className={style.form_inputBox}>
                                 <SelectInput
@@ -1402,9 +1419,8 @@ function ClientForm({
                                     value={accountManagerId}
                                     message={"Please select primary account manager"}
                                     options={users?.map((item) => ({
-                                        value: item.id,
-                                        label: `${item.name || ''} - ${item.email || ''}`,
-                                        // user_type: item.user_type
+                                        value: `${item.user_type}_${item.id}`,
+                                        label: `${item.name || ''} - ${item.email || ''} (${item.user_type})`
                                     }))}
                                 />
 
@@ -1418,9 +1434,8 @@ function ClientForm({
                                     value={secondaryManagerId}
                                     message={"Select secondary account manager if applicable"}
                                     options={users?.map((item) => ({
-                                        value: item.id,
-                                        label: `${item.name || ''} - ${item.email || ''}`,
-                                        // user_type: item.user_type
+                                        value: `${item.user_type}_${item.id}`,
+                                        label: `${item.name || ''} - ${item.email || ''} (${item.user_type})`
                                     }))}
                                 />
 
@@ -1474,7 +1489,7 @@ function ClientForm({
                                     message={"Last modified date is auto-filled"}
                                 />
 
-                                <UploadFile
+                                <MultipleUploads
                                     className="mx-1 inputFlexBox"
                                     label={"Attachments"}
                                     name="attachments"
@@ -1521,15 +1536,17 @@ function ClientForm({
                                 />
                             </div>
                         </div>
-                        <ShoMore
+                       
+                    </div>
+                    <div className={style.vendor_modalBtns}>
+                        
+                        <ShowMore
                             type="link"
                             onClick={toggleShowMore}
                             className={"mx-1 mt-5"}
                             title={showMore ? 'Show Less' : 'Show More'}
                         />
-                    </div>
-                    <div className={style.vendor_modalBtns}>
-                        <Button
+                        <ActionButton
                             className={"mx-1 mt-2 w-auto"}
                             title={loading ? "Loading" : code?.mode == "Edit" ? "Update Client" : "Create"} loading={loading}
                         />

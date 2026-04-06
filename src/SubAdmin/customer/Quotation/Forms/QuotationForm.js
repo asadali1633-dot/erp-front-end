@@ -17,6 +17,7 @@ import QuotationLivePreview from '../QuotationLivePreview';
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import ReactQuill from 'react-quill'
 import LetterHead from '../LetterHead';
+import AlternateQuote from '../AlternateQuote';
 
 
 
@@ -49,17 +50,18 @@ function QuotationForm({
     const [formatDoc, setformatDoc] = useState("PDF")
     const [privateNotes, setPrivateNotes] = useState('');
     const [termsConditions, setTermsConditions] = useState('');
+    const [pdfLoading, setPdfLoading] = useState(false);
 
-     const formatNumber = (value) => {
+    const formatNumber = (value) => {
         if (value === undefined || value === null || value === '') return '-';
         const num = parseFloat(value);
         if (isNaN(num)) return '-';
         if (Number.isInteger(num)) {
             return num.toLocaleString('en-PK');
         }
-        return num.toLocaleString('en-PK', { 
-            minimumFractionDigits: 0, 
-            maximumFractionDigits: 2 
+        return num.toLocaleString('en-PK', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
         });
     };
 
@@ -275,30 +277,29 @@ function QuotationForm({
             ? dayjs(formValues.valid_until).format('YYYY-MM-DD')
             : '';
         return {
-            quotation_number: formValues.quotation_number || '-',
-            quote_date: quoteDate || "-",
-            valid_until: validUntil || "-",
-            customer_name: formValues.customer_name || '-',
-            customer_contact: formValues.customer_contact || '-',
-            customer_email: formValues.customer_email || '-',
-            customer_phone: formValues.customer_phone || '-',
-            billing_address: formValues.billing_address || '-',
+            quotation_number: formValues.quotation_number,
+            quote_date: quoteDate,
+            valid_until: validUntil,
+            customer_name: formValues.customer_name,
+            customer_contact: formValues.customer_contact,
+            customer_email: formValues.customer_email,
+            customer_phone: formValues.customer_phone,
+            billing_address: formValues.billing_address,
             items: items,
-            currency: formValues.currency || '-',
+            currency: formValues.currency,
             terms_conditions: termsConditions,
-            private_notes: formValues.private_notes || '-',
             // Company details
-            company_name: company.company_name || '-',
-            company_logo: company.company_logo || '',
-            company_address: company.company_address || '-',
-            company_phone: company.company_phone || '',
-            company_whatsapp: company.company_whatsapp_no || '-',
-            company_email: company.email || '',
-            company_website: company.company_website_url || '-',
-            ntn_vat: company.ntn_vat || '-',
-            business_id: company.business_id || '-',
-            ntn: ntn || '-',
-            strn: strn || '-'
+            company_name: company.company_name,
+            company_logo: company.company_logo,
+            company_address: company.company_address,
+            company_phone: company.company_phone,
+            company_whatsapp: company.company_whatsapp_no,
+            company_email: company.email,
+            company_website: company.company_website_url,
+            ntn_vat: company.ntn_vat,
+            business_id: company.business_id,
+            ntn: ntn || editData?.[0]?.data?.ntn,
+            strn: strn || editData?.[0]?.data?.registration_number
         };
     };
 
@@ -481,7 +482,84 @@ function QuotationForm({
         }
     };
 
+    const pdfLoader = () => {
+        const items = formValues?.items || [];
+        const hasValidItems = items.some(item =>
+            item?.description && item?.quantity && item?.Unit_Price
+        );
+        if (!hasValidItems) return;
 
+        setPdfLoading(true);
+        const timer = setTimeout(() => {
+            setPdfLoading(false);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }
+
+    const renderPDFPreview = () => {
+        const items = formValues?.items || [];
+        const hasValidItems = items.some(item =>
+            item?.description && item?.quantity && item?.Unit_Price
+        );
+        if (!hasValidItems) return null;
+            const buttons = (
+                <div className={style.printBtn}>
+                    <ActionButton
+                        className={"mt-2 mx-1 w-auto"}
+                        title={"Alternate Quote"}
+                        onClick={() => setformatDoc("alternateQuote")}
+                    />
+                    <ActionButton
+                        className={"mt-2 mx-1 mr-4 w-auto"}
+                        title={"Letter Head"}
+                        onClick={() => setformatDoc("letter_head")}
+                    />
+                    <ActionButton
+                        className={"mt-2 w-auto"}
+                        title={"PDF"}
+                        onClick={() => setformatDoc("PDF")}
+                    />
+                </div>
+            );
+        if (pdfLoading) {
+            return (
+                <>
+                    {buttons}
+                    <div class="load-bar">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </>
+            );
+        }
+        const viewer = formatDoc === "PDF" ? (
+            <PDFViewer width="100%" height="1000px">
+                <QuotationLivePreview data={getPreviewData()} />
+            </PDFViewer>
+        ) : formatDoc == "letter_head"? (
+            <PDFViewer width="100%" height="1000px">
+                <LetterHead data={getPreviewData()} />
+            </PDFViewer>
+        ): formatDoc == "alternateQuote"? (
+            <PDFViewer width="100%" height="1000px">
+                <AlternateQuote data={getPreviewData()} />
+            </PDFViewer>
+        ): null  
+
+        return (
+            <>
+                {buttons}
+                {viewer}
+            </>
+        );
+    };
+
+
+    useEffect(() => {
+        pdfLoader()
+    }, [formatDoc, formValues]);
 
     useEffect(() => {
         lineTotal()
@@ -519,7 +597,7 @@ function QuotationForm({
                     onFinish={handleForm}
                     initialValues={{ items: [{}] }}
                     onValuesChange={async (changedValues, allValues) => {
-                        if (changedValues.client_id && code?.mode == null) {
+                        if (changedValues.client_id) {
                             handleClientSelect(changedValues.client_id)
                         }
                     }}
@@ -549,8 +627,7 @@ function QuotationForm({
                                 label={"Quotation Number"}
                                 name="quotation_number"
                                 placeholder="Auto-generated (e.g., ClientFirst-3000-01)"
-                                required={false}
-                                readOnly={true}
+                                required={true}
                                 message={"Quotation number is auto-generated"}
                             />
                             <CustomDate
@@ -755,29 +832,10 @@ function QuotationForm({
                         />
                     </div>
                 </Form>
-                <div className={style.printBtn}>
-                    <ActionButton
-                        className={"mt-2 mr-4 w-auto"}
-                        title={"Letter Head"}
-                        onClick={() => { setformatDoc("letter_head") }}
-                    />
-                    <ActionButton
-                        className={"mt-2 w-auto"}
-                        title={"PDF"}
-                        onClick={() => { setformatDoc("PDF") }}
-                    />
-                </div>
-                <div style={{ marginTop: 20 }}>
-                    {
-                        formatDoc == "PDF" ?
-                            <PDFViewer width="100%" height="500px">
-                                <QuotationLivePreview data={getPreviewData()} />
-                            </PDFViewer> :
-                            <PDFViewer width="100%" height="500px">
-                                <LetterHead data={getPreviewData()} />
-                            </PDFViewer>
-                    }
 
+
+                <div style={{ marginTop: 20 }}>
+                    {renderPDFPreview()}
                 </div>
             </Modal>
         </>
