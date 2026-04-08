@@ -9,6 +9,7 @@ import CustomDate from '../../../../Components/Date/CustomDate';
 import UploadFile from '../../../../Components/File/UploadFile';
 import * as CLIENTS_ACTIONS from "../../../../store/action/clients/index";
 import * as QUOTE_ACTIONS from "../../../../store/action/quote/index";
+import * as ASSETS_ACTIONS from "../../../../store/action/hardware/index";
 import { useReactToPrint } from 'react-to-print';
 import { connect, useSelector } from 'react-redux';
 import dayjs from "dayjs";
@@ -18,6 +19,7 @@ import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import ReactQuill from 'react-quill'
 import LetterHead from '../LetterHead';
 import AlternateQuote from '../AlternateQuote';
+import MultipleUploads from '../../../../Components/File/MultipleUploads';
 
 
 
@@ -35,7 +37,9 @@ function QuotationForm({
     editData,
     UpdateQuote,
     GetAllQuotewithPage,
-    Red_Emp
+    Red_Emp,
+    Red_Assets,
+    GetAllEmpList,
 }) {
     const [form] = Form.useForm();
     const formValues = Form.useWatch([], form);
@@ -44,6 +48,7 @@ function QuotationForm({
     const itemsValue = Form.useWatch('items', form);
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const clientList = Red_Clients?.ClientList?.[0]?.data
+    const users = Red_Assets?.Users?.[0]?.data
     const [messageApi, contextHolder] = message.useMessage();
     const [strn, setstrn] = useState(null)
     const [ntn, setntn] = useState(null)
@@ -308,7 +313,6 @@ function QuotationForm({
             const data = editData?.[0]?.data;
             if (!data) return;
 
-
             let transformedItems = [];
             if (data.items && Array.isArray(data.items)) {
                 transformedItems = data.items.map(item => ({
@@ -321,6 +325,10 @@ function QuotationForm({
                     total: item?.line_total,
                     uom: item?.uom
                 }));
+            }
+
+            if (transformedItems.length === 0) {
+                transformedItems = [{}];
             }
 
 
@@ -337,7 +345,9 @@ function QuotationForm({
                 billing_address: data.billing_address,
                 shipping_address: data.shipping_address,
                 project_id: data.project_id,
-                sales_person: data.sales_person_id,
+                sales_person_id: data?.sales_person_id && data?.sales_person_type
+                    ? `${data.sales_person_type}_${data.sales_person_id}`
+                    : null,
                 currency: data.currency,
                 exchange_rate: data.exchange_rate,
                 payment_terms: data.payment_terms,
@@ -420,6 +430,7 @@ function QuotationForm({
         Object.keys(values).forEach(key => {
             if (key === 'items') return;
             if (key === 'attachments') return;
+            if(key === "sales_person_id") return;
             let val = values[key];
             if (val === undefined || val === null || val === '') return;
             if (Array.isArray(val)) val = JSON.stringify(val);
@@ -429,12 +440,20 @@ function QuotationForm({
         if (filteredItems.length > 0) {
             formData.append('items', JSON.stringify(filteredItems));
         }
-        if (values.attachments && values.attachments.fileList) {
-            values.attachments.fileList.forEach(file => {
+        if (values.attachments && Array.isArray(values.attachments) && values.attachments.length > 0) {
+            values.attachments.forEach(file => {
                 if (file.originFileObj) {
                     formData.append('attachments', file.originFileObj);
                 }
             });
+        }
+        if (values?.sales_person_id) {
+            const parts = values.sales_person_id.split("_");
+            const id = parts.pop();
+            const type = parts.join("_");
+
+            formData.append("sales_person_type", type);
+            formData.append("sales_person_id", id);
         }
         if (privateNotes) {
             formData.append('private_notes', privateNotes);
@@ -571,6 +590,7 @@ function QuotationForm({
 
     useEffect(() => {
         GetClientList(accessToken);
+        GetAllEmpList(accessToken);
     }, [accessToken])
 
     useEffect(() => {
@@ -735,11 +755,14 @@ function QuotationForm({
                                 className="mx-1"
                                 label={"Sales Person"}
                                 placeholder="Select sales representative"
-                                name="sales_person"
-                                required={false}
+                                name="sales_person_id"
+                                required={true}
                                 showSearch={true}
                                 message={"Please select sales person"}
-                                options={[]}
+                                options={users?.map((item) => ({
+                                    value: `${item.user_type}_${item.id}`,
+                                    label: `${item.name || ''} - ${item.email || ''}`
+                                }))}
                             />
                             <SelectInput
                                 className="mx-1"
@@ -789,14 +812,16 @@ function QuotationForm({
                                     { value: "Converted", label: "Converted" },
                                 ]}
                             />
-                            <UploadFile
-                                name={'attachments'}
-                                className="inputFlexBox"
+                            
+                            <MultipleUploads
+                                className="mx-1 inputFlexBox"
                                 label={"Attachments"}
+                                name="attachments"
+                                title={"Upload Files"}
                                 required={false}
                                 multiple={true}
-                                accept="image/jpeg,image/png"
-                                message={"Attachments"}
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                message={"Upload contracts, forms, correspondence"}
                             />
                         </div>
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Products | Services</h5>
@@ -847,12 +872,13 @@ function mapStateToProps(state) {
     return {
         Red_Clients: state.Red_Clients,
         Red_Quote: state.Red_Quote,
-        Red_Emp: state.Red_Emp
+        Red_Emp: state.Red_Emp,
+        Red_Assets: state.Red_Assets,
     };
 }
 const AllActions = {
     ...CLIENTS_ACTIONS,
     ...QUOTE_ACTIONS,
-    // ...COMPANY_ACTIONS
+    ...ASSETS_ACTIONS
 };
 export default connect(mapStateToProps, AllActions)(QuotationForm);

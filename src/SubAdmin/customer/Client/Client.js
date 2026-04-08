@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { message, Modal, Space, Table } from 'antd';
+import { message, Modal, Popconfirm, Space, Table } from 'antd';
 import style from './Client.module.css'
 import Heading from '../../../Components/Heading/Heading';
 import { SearchBar } from '../../../Components/SearchBar/SearchBar';
@@ -10,11 +10,13 @@ import { connect, useSelector } from 'react-redux';
 import { BiEditAlt } from "react-icons/bi";
 import Loader from '../../../Components/Loader/Loader';
 import FileView from './Forms/FileView';
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 function Client({
     Red_Clients,
     GetAllClientithPage,
-    getClientById
+    getClientById,
+    deleteClients
 }) {
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const [ClientModalForm, setClientForm] = useState(false)
@@ -30,7 +32,7 @@ function Client({
         code: null
     })
 
-    
+
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10,
@@ -96,7 +98,7 @@ function Client({
             key: 'Docs',
             render: (data) => (
                 <Space size="middle">
-                    <button className={`${style.hardware_editBtn}`}
+                    <button className="editTableButton"
                         onClick={() => fileActions(data?.id, data)}><BiEditAlt /></button>
                 </Space>
             ),
@@ -106,19 +108,19 @@ function Client({
             key: 'action',
             render: (data) => (
                 <Space size="middle">
-                    <button className={`${style.hardware_editBtn}`}
+                    <button className="editTableButton"
                         onClick={() => UserAction(data?.id)}><BiEditAlt /></button>
-                    {/* <Popconfirm
-                        title="Delete the Hardware"
-                        description="Are you sure to delete the Hardware?"
+                    <Popconfirm
+                        title="Delete the Client"
+                        description="Are you sure to delete the Client?"
                         okText="Yes"
                         cancelText="No"
                         onConfirm={() => {
                             handleConfirmDelete(data?.id)
                         }}
                     >
-                        <button className={`${style.hardware_deleteBtn}`}><MdDeleteOutline /></button>
-                    </Popconfirm> */}
+                        <RiDeleteBin6Line className='deleteTableButton' style={{ color: "red" }} />
+                    </Popconfirm>
                 </Space>
             ),
         },
@@ -184,15 +186,29 @@ function Client({
     };
 
     const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            // console.log("selectedRowKeys:", selectedRowKeys, "selectedRows:", selectedRows);
-        },
-        getCheckboxProps: (record) => ({
-            disabled: record.name === "Disabled User",
-            name: record.name,
-        }),
+        selectedRowKeys,
+        onChange: (keys) => setSelectedRowKeys(keys),
     };
 
+    const handleConfirmDelete = async (id) => {
+        messageApi.loading({
+            type: 'loading',
+            content: "Please wait a moment",
+        });
+        const isCheck = await deleteClients(id, accessToken);
+        if (isCheck?.success) {
+            messageApi.success({
+                type: 'success',
+                content: isCheck?.message,
+            });
+            GetAllClientithPage(pageBody, accessToken);
+        } else {
+            messageApi.error({
+                type: 'error',
+                content: isCheck?.message,
+            });
+        }
+    };
     const handle = () => {
         setLoading(true);
         setClientForm(!ClientModalForm)
@@ -211,7 +227,19 @@ function Client({
             {contextHolder}
             <div className={`${style.PurchaseOrder_TabTableBox}`}>
                 <div className={`${style.PurchaseOrder_tableHeader}`}>
-                    <Heading title={"Client"} />
+                    <div className={`${style.headFlex}`}>
+                        <Heading title={"Client"} />
+                        {selectedRowKeys.length > 0 && (
+                            <Popconfirm
+                                title={`Delete ${selectedRowKeys.length} selected Client(s)?`}
+                                onConfirm={() => handleConfirmDelete(selectedRowKeys)}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <RiDeleteBin6Line className='deleteTableButton' style={{ color: "red" }} />
+                            </Popconfirm>
+                        )}
+                    </div>
                     <div className={`${style.PurchaseOrder_tableHeaderFlex}`}>
                         <SearchBar
                             className={"mx-2"}
@@ -249,9 +277,9 @@ function Client({
                 <ClientForm {...{ ClientModalForm, setClientForm, code, setCode, pageBody, editData }} />
             )}
             {fileModal && (
-                <FileView {...{ fileModal, setFileModal,code,pageBody }} />
+                <FileView {...{ fileModal, setFileModal, code, pageBody }} />
             )}
-            
+
         </>
     )
 }

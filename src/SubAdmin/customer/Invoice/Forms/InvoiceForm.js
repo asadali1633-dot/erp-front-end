@@ -3,23 +3,48 @@ import style from './form.module.css'
 import { Form, Modal, Table } from 'antd';
 import { FormInput, FormInputTextArea } from '../../../../Components/Inputs/Inputs';
 import { SelectInput } from '../../../../Components/Select/Select';
-import { Button } from '../../../../Components/Button/Button';
-import { Tabs } from "antd";
+import { Button,ActionButton } from '../../../../Components/Button/Button';
+import { Tabs,message } from "antd";
+import { connect, useSelector } from 'react-redux';
 import CustomDate from '../../../../Components/Date/CustomDate';
+import * as CLIENTS_ACTIONS from "../../../../store/action/clients/index";
+import * as QUOTE_ACTIONS from "../../../../store/action/quote/index";
+import * as INVOICE_ACTIONS from "../../../../store/action/invoice/index";
+
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'
+import baseUrl from '../../../../config.json'
+import MultipleDates from '../../../../Components/Date/MultipleDates';
 
 
 
 
 function InvoiceForm({
     InvoiceModal,
-    setInvoiceModal
+    setInvoiceModal,
+    Red_Clients,
+    GetClientList,
+    Red_Quote,
+    getAllQuoteBySimpleList,
+    Red_Invoice,
+    CreateInvoiceFun,
+    code, setCode,
+    pageBody,editData,
+    GetAllInVoiceWithPage,
+    Red_Emp
 }) {
     const [form] = Form.useForm();
-    const [value, setValue] = useState('');
-    const lastAddedRef = useRef(false);
+    const formValues = Form.useWatch([], form);
     const itemsValue = Form.useWatch('items', form);
+    const [value, setValue] = useState('');
+    const clientList = Red_Clients?.ClientList?.[0]?.data
+    const QuoteList = Red_Quote?.QuoteSimpleList?.[0]?.data
+    const lastAddedRef = useRef(false);
+    const [loading, setloading] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
+    const accessToken = useSelector((state) => state.Red_Auth.accessToken);
+    const [privateNotes, setPrivateNotes] = useState('');
+    const [termsConditions, setTermsConditions] = useState('');
 
     const modules = {
         toolbar: [
@@ -33,27 +58,6 @@ function InvoiceForm({
             ['clean'],
         ],
     };
-    const handleOk = () => {
-        setInvoiceModal(false);
-    };
-    const handleCancel = () => {
-        setInvoiceModal(false);
-    };
-    const addRow = () => {
-        if (!itemsValue || itemsValue.length === 0) return;
-        const lastItem = itemsValue[itemsValue.length - 1];
-        const hasAnyValue = lastItem && Object.values(lastItem).some(
-            val => val && String(val).trim() !== ''
-        );
-        if (hasAnyValue && !lastAddedRef.current) {
-            form.setFieldsValue({
-                items: [...itemsValue, {}]
-            });
-            lastAddedRef.current = true;
-        } else if (!hasAnyValue) {
-            lastAddedRef.current = false;
-        }
-    }
 
     const items = [
         {
@@ -63,9 +67,13 @@ function InvoiceForm({
                 <div>
                     <ReactQuill
                         theme="snow"
-                        value={value}
+                        name="private_notes"
                         className='textEiditor'
-                        onChange={setValue}
+                        value={privateNotes}
+                        onChange={(value) => {
+                            setPrivateNotes(value);
+                            form.setFieldsValue({ private_notes: value });
+                        }}
                         modules={modules}
                         placeholder="Write Here..."
                     />
@@ -79,9 +87,13 @@ function InvoiceForm({
                 <div>
                     <ReactQuill
                         theme="snow"
-                        value={value}
+                        name="terms_conditions"
                         className='textEiditor'
-                        onChange={setValue}
+                        value={termsConditions}
+                        onChange={(value) => {
+                            setTermsConditions(value);
+                            form.setFieldsValue({ terms_conditions: value });
+                        }}
                         modules={modules}
                         placeholder="Write Here..."
                     />
@@ -90,25 +102,7 @@ function InvoiceForm({
         },
     ]
 
-    useEffect(() => {
-        addRow()
-    }, [itemsValue, form]);
-
     const columns = [
-        {
-            title: "Product ID",
-            width: 300,
-            render: (_, record) => (
-                <SelectInput
-                    placeholder="Select product"
-                    name={[record.field.name, 'product_id']}
-                    required={false}
-                    showSearch={true}
-                    message={"Select product if ordering from catalog"}
-                    options={[]}
-                />
-            ),
-        },
         {
             title: "Description",
             width: 300,
@@ -116,7 +110,7 @@ function InvoiceForm({
                 <FormInput
                     name={[record.field.name, 'description']}
                     placeholder="Item description"
-                    required={true}
+                    required={false}
                     message={"Description is required"}
                 />
             ),
@@ -129,7 +123,7 @@ function InvoiceForm({
                     name={[record.field.name, 'quantity']}
                     type="number"
                     placeholder="quantity"
-                    required={true}
+                    required={false}
                     message={"Quantity is required"}
                 />
             ),
@@ -141,7 +135,7 @@ function InvoiceForm({
                 <SelectInput
                     placeholder="Select unit"
                     name={[record.field.name, 'uom']}
-                    required={true}
+                    required={false}
                     message={"Please select unit of measure"}
                     options={[
                         { value: "Each", label: "Each" },
@@ -167,7 +161,7 @@ function InvoiceForm({
                     name={[record.field.name, 'Unit_Price']}
                     type="number"
                     placeholder="Unit Price"
-                    required={true}
+                    required={false}
                     message={"Unit Price is required"}
                 />
             ),
@@ -234,9 +228,319 @@ function InvoiceForm({
         }
     ];
 
+    const formatNumber = (value) => {
+        if (value === undefined || value === null || value === '') return '-';
+        const num = parseFloat(value);
+        if (isNaN(num)) return '-';
+        if (Number.isInteger(num)) {
+            return num.toLocaleString('en-PK');
+        }
+        return num.toLocaleString('en-PK', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
+    };
+
+    const editFuntionData = () => {
+        if (editData && code?.mode === "Edit") {
+            const data = editData;
+            if (!data) return;
+
+            let transformedItems = [];
+            if (data.items && Array.isArray(data.items)) {
+                transformedItems = data.items.map(item => ({
+                    description: item?.description,
+                    quantity: item?.quantity,
+                    Unit_Price: item?.unit_price,
+                    discount_percent: item?.discount_percent,
+                    tax_rate: item?.tax_rate,
+                    tax_amount: item?.tax_amount,
+                    total: item?.line_total,
+                    uom: item?.uom
+                }));
+            }
+
+            if (transformedItems.length === 0) {
+                transformedItems = [{}];
+            }
+
+
+            const formValues = {
+                client_id: data.client_id,
+                invoice_number: data.invoice_number,
+                invoice_date: data.invoice_date?.slice(0, 10),
+                due_date: data.due_date?.slice(0, 10),
+                customer_name: data.customer_name,
+                customer_contact: data.customer_contact,
+                billing_address: data.billing_address,
+                shipping_address: data.shipping_address,
+                project_id: data.project_id,
+                contact_person: data?.contact_person,
+                contact_email: data?.contact_email,
+                customer_po_reference: data?.customer_po_reference,
+                sales_order_id: data?.sales_order_id,
+                project_id: data?.project_id,
+                currency: data.currency,
+                exchange_rate: data?.exchange_rate,
+                acc_holder_name: data?.acc_holder_name,
+                bank_account_details: data?.bank_account_details,
+                status: data?.status,
+                payment_references: data?.payment_references,
+                payment_dates: data?.payment_dates,
+                payment_method: data?.payment_method,
+                payment_status: data?.payment_status,
+                dunning_level: data?.dunning_level,
+                last_reminder_date: data?.last_reminder_date?.slice(0,10),
+                write_off_date: data?.write_off_date?.slice(0,10),
+                private_notes: setPrivateNotes(data.private_notes),
+                terms_conditions: setTermsConditions(data.terms_conditions),
+                items: transformedItems
+            };
+
+            form.setFieldsValue(formValues);
+        }
+    };
+
+     const getPreviewData = () => {
+        if (!formValues) return { items: [] };
+        let items = formValues.items || [];
+        items = items.filter(item => item?.description || item?.quantity || item?.Unit_Price || item?.discount_percent || item?.tax_rate || item?.tax_amount || item?.total);
+        const company = Red_Emp?.GetUserLoginTime?.[0]?.data || {};
+
+        const quoteDate = formValues.quote_date
+            ? dayjs(formValues.quote_date).format('YYYY-MM-DD')
+            : '';
+        const validUntil = formValues.valid_until
+            ? dayjs(formValues.valid_until).format('YYYY-MM-DD')
+            : '';
+        return {
+            quotation_number: formValues.quotation_number,
+            quote_date: quoteDate,
+            valid_until: validUntil,
+            customer_name: formValues.customer_name,
+            customer_contact: formValues.customer_contact,
+            customer_email: formValues.customer_email,
+            customer_phone: formValues.customer_phone,
+            billing_address: formValues.billing_address,
+            items: items,
+            currency: formValues.currency,
+            terms_conditions: termsConditions,
+            // Company details
+            company_name: company.company_name,
+            company_logo: company.company_logo,
+            company_address: company.company_address,
+            company_phone: company.company_phone,
+            company_whatsapp: company.company_whatsapp_no,
+            company_email: company.email,
+            company_website: company.company_website_url,
+            ntn_vat: company.ntn_vat,
+            business_id: company.business_id,
+            ntn: ntn || editData?.[0]?.data?.ntn,
+            strn: strn || editData?.[0]?.data?.registration_number
+            
+        };
+    };
+    //    const renderPDFPreview = () => {
+    //     const items = formValues?.items || [];
+    //     const hasValidItems = items.some(item =>
+    //         item?.description && item?.quantity && item?.Unit_Price
+    //     );
+    //     if (!hasValidItems) return null;
+    //         const buttons = (
+    //             <div className={style.printBtn}>
+    //                 <ActionButton
+    //                     className={"mt-2 mx-1 w-auto"}
+    //                     title={"Alternate Quote"}
+    //                     onClick={() => setformatDoc("alternateQuote")}
+    //                 />
+    //                 <ActionButton
+    //                     className={"mt-2 mx-1 mr-4 w-auto"}
+    //                     title={"Letter Head"}
+    //                     onClick={() => setformatDoc("letter_head")}
+    //                 />
+    //                 <ActionButton
+    //                     className={"mt-2 w-auto"}
+    //                     title={"PDF"}
+    //                     onClick={() => setformatDoc("PDF")}
+    //                 />
+    //             </div>
+    //         );
+    //     if (pdfLoading) {
+    //         return (
+    //             <>
+    //                 {buttons}
+    //                 <div class="load-bar">
+    //                     <div class="bar"></div>
+    //                     <div class="bar"></div>
+    //                     <div class="bar"></div>
+    //                 </div>
+    //             </>
+    //         );
+    //     }
+    //     const viewer = formatDoc === "PDF" ? (
+    //         <PDFViewer width="100%" height="1000px">
+    //             <QuotationLivePreview data={getPreviewData()} />
+    //         </PDFViewer>
+    //     ) : formatDoc == "letter_head"? (
+    //         <PDFViewer width="100%" height="1000px">
+    //             <LetterHead data={getPreviewData()} />
+    //         </PDFViewer>
+    //     ): formatDoc == "alternateQuote"? (
+    //         <PDFViewer width="100%" height="1000px">
+    //             <AlternateQuote data={getPreviewData()} />
+    //         </PDFViewer>
+    //     ): null  
+
+    //     return (
+    //         <>
+    //             {buttons}
+    //             {viewer}
+    //         </>
+    //     );
+    // };
+
+    const handleOk = () => {
+        setInvoiceModal(false);
+    };
+
+    const handleCancel = () => {
+        setInvoiceModal(false);
+    };
+
+    const addRow = () => {
+        if (!itemsValue || itemsValue.length === 0) return;
+        const lastItem = itemsValue[itemsValue.length - 1];
+        const hasAnyValue = lastItem && Object.values(lastItem).some(
+            val => val && String(val).trim() !== ''
+        );
+        if (hasAnyValue && !lastAddedRef.current) {
+            form.setFieldsValue({
+                items: [...itemsValue, {}]
+            });
+            lastAddedRef.current = true;
+        } else if (!hasAnyValue) {
+            lastAddedRef.current = false;
+        }
+    }
+    const lineTotal = () => {
+        if (itemsValue && itemsValue.length > 0) {
+            itemsValue.forEach((item, index) => {
+                const qty = parseFloat(item?.quantity) || 0;
+                const price = parseFloat(item?.Unit_Price) || 0;
+                const discountPercent = parseFloat(item?.discount_percent) || 0;
+                const taxRate = parseFloat(item?.tax_rate) || 0;
+
+                const subtotal = qty * price;
+                const discountAmount = subtotal * (discountPercent / 100);
+                const taxAmount = subtotal * (taxRate / 100);
+                const lineTotal = subtotal - discountAmount + taxAmount;
+
+
+                const currentTotal = parseFloat(item?.total) || 0;
+                if (Math.abs(currentTotal - lineTotal) > 0.01) {
+                    form.setFieldValue(['items', index, 'total'], formatNumber(lineTotal));
+                }
+
+                const currentTax = parseFloat(item?.tax_amount) || 0;
+                if (Math.abs(currentTax - taxAmount) > 0.01) {
+                    form.setFieldValue(['items', index, 'tax_amount'], taxAmount);
+                }
+            });
+        }
+    };
+
+    const handleClientSelect = async (clientId) => {
+        const response = await fetch(`${baseUrl.baseUrl}/api/invoice/generate-number`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({ client_id: clientId })
+        });
+        const res = await response.json();
+        if (res.success) {
+            form.setFieldsValue({
+                invoice_number: res?.data?.invoice_number,
+                customer_name: res?.data?.customer_details?.company_name,
+                billing_address: res?.data?.customer_details?.billing_address,
+                shipping_address: res?.data?.customer_details?.shipping_address,
+                contact_person: res?.data?.customer_details?.contact_name,
+                contact_email: res?.data?.customer_details?.contact_email,
+                currency: res?.data?.customer_details?.currency,
+                // customer_phone: res?.data?.customer_phone,
+                // billing_address: res?.data?.billing_address,
+                // currency: res?.data?.currency,
+            });
+        }
+    };
+
+    const handleForm = async (values) => {
+        setloading(true);
+        let filteredItems = [];
+        if (values.items && Array.isArray(values.items)) {
+            filteredItems = values.items.filter(item => {
+                const hasDescription = item.description && String(item.description).trim() !== '';
+                const hasQuantity = item.quantity !== undefined && item.quantity !== null && item.quantity !== '';
+                const hasPrice = item.Unit_Price !== undefined && item.Unit_Price !== null && item.Unit_Price !== '';
+                return hasDescription || hasQuantity || hasPrice;
+            });
+        }
+        const data = {
+            ...values,
+            items: filteredItems,
+            private_notes: privateNotes,
+            terms_conditions: termsConditions
+        }
+        if (code?.mode !== "Edit") {
+            const isCheck = await CreateInvoiceFun(data, accessToken);
+            if (isCheck?.success) {
+                messageApi.success({
+                    type: "success",
+                    content: isCheck?.message,
+                });
+                setInvoiceModal(false);
+                form.resetFields();
+                setloading(false);
+                GetAllInVoiceWithPage(pageBody, accessToken);
+            } else {
+                setloading(false);
+                messageApi.error({
+                    type: "error",
+                    content: isCheck?.message,
+                });
+            }
+        } else {
+            // const isCheck = await UpdateQuote(code?.code, formData, accessToken);
+        }
+    };
+
+
+
+    useEffect(() => {
+        GetClientList(accessToken);
+        getAllQuoteBySimpleList(accessToken)
+    }, [accessToken])
+
+    useEffect(() => {
+        addRow()
+    }, [itemsValue, form]);
+
+    useEffect(() => {
+        lineTotal()
+    }, [itemsValue, form]);
+
+    useEffect(() => {
+        editFuntionData()
+    }, [editData, code, form]);
+
+
+
 
     return (
         <>
+
+            {contextHolder}
             <Modal
                 title=""
                 closable={{ 'aria-label': 'Custom Close Button' }}
@@ -251,8 +555,13 @@ function InvoiceForm({
                     form={form}
                     className={`${style.form_modalMainBox} mt-3`}
                     layout="vertical"
+                    onFinish={handleForm}
                     initialValues={{ items: [{}] }}
-                // onFinish={handleForm}
+                    onValuesChange={async (changedValues, allValues) => {
+                        if (changedValues.client_id) {
+                            handleClientSelect(changedValues.client_id)
+                        }
+                    }}
                 >
                     <div className={style.modalHardwareScroll}>
                         <div className={style.QR_box}>
@@ -261,6 +570,19 @@ function InvoiceForm({
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Header Information</h5>
                         <div className={style.form_inputBox}>
+                            <SelectInput
+                                className="mx-1"
+                                label={"Customer ID"}
+                                placeholder="Select customer"
+                                name="client_id"
+                                required={true}
+                                showSearch={true}
+                                message={"Please select a customer"}
+                                options={clientList?.map((item) => ({
+                                    value: item.id,
+                                    label: `${item.company_name} (${item.client_code})`
+                                }))}
+                            />
                             <FormInput
                                 className="mx-1"
                                 label={"Invoice Number"}
@@ -280,7 +602,8 @@ function InvoiceForm({
                                 message={"Invoice date is required"}
                                 allowToday={true}
                             />
-
+                        </div>
+                        <div className={style.form_inputBox}>
                             <CustomDate
                                 className="mx-1"
                                 label={"Due Date"}
@@ -289,18 +612,6 @@ function InvoiceForm({
                                 required={true}
                                 message={"Due date is required"}
                                 allowToday={true}
-                            />
-                        </div>
-                        <div className={style.form_inputBox}>
-                            <SelectInput
-                                className="mx-1"
-                                label={"Customer ID"}
-                                placeholder="Select customer"
-                                name="customer_id"
-                                required={true}
-                                showSearch={true}
-                                message={"Please select a customer"}
-                                options={[]}
                             />
 
                             <FormInput
@@ -373,7 +684,10 @@ function InvoiceForm({
                                 required={false}
                                 showSearch={true}
                                 message={"Select sales order if invoice is based on it"}
-                                options={[]}
+                                options={QuoteList?.map((item) => ({
+                                    value: item.id,
+                                    label: item.quotation_number
+                                }))}
                             />
 
                             <SelectInput
@@ -432,23 +746,15 @@ function InvoiceForm({
                             />
                         </div>
                         <div className={`${style.form_inputBox} ${style.border_bottom}`}>
-                            <SelectInput
+                            <FormInput
                                 className="mx-1"
-                                label={"Payment Terms"}
-                                placeholder="Select payment terms"
-                                name="payment_terms"
-                                required={true}
-                                message={"Please select payment terms"}
-                                options={[
-                                    { value: "Net 30", label: "Net 30" },
-                                    { value: "Net 60", label: "Net 60" },
-                                    { value: "50% Advance", label: "50% Advance" },
-                                    { value: "100% Advance", label: "100% Advance" },
-                                    { value: "Due on Receipt", label: "Due on Receipt" },
-                                    { value: "2/10 Net 30", label: "2/10 Net 30" },
-                                    { value: "COD", label: "Cash on Delivery" },
-                                    { value: "Other", label: "Other" },
-                                ]}
+                                label={"ACC Holder Name"}
+                                name="acc_holder_name"
+                                placeholder="Enter bank account title"
+                                multiline={true}
+                                rows={3}
+                                required={false}
+                                message={"Enter bank account title for payment"}
                             />
 
                             <FormInput
@@ -479,20 +785,6 @@ function InvoiceForm({
                                     { value: "Written Off", label: "Written Off" },
                                 ]}
                             />
-
-                            <SelectInput
-                                className="mx-1"
-                                label={"Payment Status"}
-                                placeholder="Select payment status"
-                                name="payment_status"
-                                required={true}
-                                message={"Please select payment status"}
-                                options={[
-                                    { value: "Unpaid", label: "Unpaid" },
-                                    { value: "Partial", label: "Partial" },
-                                    { value: "Paid", label: "Paid" },
-                                ]}
-                            />
                         </div>
 
                         <h5 className={`${style.form_checkBoxHeading} mx-1`}>Payment Tracking</h5>
@@ -506,7 +798,7 @@ function InvoiceForm({
                                 message={"Enter payment references if applicable"}
                             />
 
-                            <CustomDate
+                            <MultipleDates
                                 className="mx-1"
                                 label={"Payment Date(s)"}
                                 name="payment_dates"
@@ -608,8 +900,8 @@ function InvoiceForm({
                     </div>
                     <div className={style.vendor_modalBtns}>
                         <Button
-                            title={"Submit"}
                             className={"mx-1 mt-2 w-auto"}
+                            title={loading ? "Loading" : code?.mode == "Edit" ? "Update Invoice" : "Create"} loading={loading}
                         />
                     </div>
                 </Form>
@@ -618,4 +910,18 @@ function InvoiceForm({
     )
 }
 
-export default InvoiceForm
+
+function mapStateToProps(state) {
+    return {
+        Red_Clients: state.Red_Clients,
+        Red_Quote: state.Red_Quote,
+        Red_Invoice: state.Red_Invoice,
+        Red_Emp: state.Red_Emp,
+    };
+}
+const AllActions = {
+    ...CLIENTS_ACTIONS,
+    ...QUOTE_ACTIONS,
+    ...INVOICE_ACTIONS,
+};
+export default connect(mapStateToProps, AllActions)(InvoiceForm);

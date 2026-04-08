@@ -156,7 +156,7 @@ section {
 
 /* ANTD SETTING BAR CSS ============================ */
 .settingBar .ant-menu {
-    background: #171717 !important;
+    background: #454544 !important;
 }
 
 .settingBar .ant-menu-submenu-title {
@@ -330,4 +330,15 @@ h6 {
         left: 0;
         width: 100%;
     }
+}
+
+
+/* EDIT VIEW DELETE TABLE GLOBAL BUTTON CSS ========================== */
+.editTableButton{
+    border: none;
+    background: none;
+    font-size: 25px;
+}
+.deleteTableButton{
+    font-size: 25px; 
 }

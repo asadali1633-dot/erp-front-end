@@ -61,6 +61,11 @@
 }
 
 
+.headFlex {
+    display: flex;
+    align-items: center;
+}
+
 /* PDF STYLING ================================= */
 .headerPdf{
     display: flex;

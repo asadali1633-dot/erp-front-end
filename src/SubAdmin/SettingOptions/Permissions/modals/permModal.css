@@ -7,11 +7,13 @@
 .perm_modal_header_box h6 {
     font-size: 20px;
     border-bottom: 1px solid gray;
+    color: black !important;
 }
 
 .perm_modal_header_box h6 p {
     font-size: 15px;
     margin-top: 6px;
+    color: black !important;
 }
 
 .perm_modal_view .ant-menu-root {
@@ -43,7 +45,7 @@
 }
 
 .perm_modal_view .ant-menu-title-content span {
-    color: white !important;
+    color: black !important;
 }
 
 .perm_modal_footer {

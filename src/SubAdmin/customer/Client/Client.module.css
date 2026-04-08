@@ -61,3 +61,7 @@
     border-radius: 20px;
 }
 
+.headFlex {
+    display: flex;
+    align-items: baseline;
+}

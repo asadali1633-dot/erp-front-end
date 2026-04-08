@@ -233,3 +233,20 @@ export const deleteClientFile =  (clientId, field, index,accessToken ) => async 
         return res;
     }
 }
+
+export const deleteClients = (id,accessToken) => async (dispatch) => {
+    const response = await fetch(`${baseUrl.baseUrl}/api/client/delete`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + accessToken,
+        },
+        body: JSON.stringify({ids:id}),
+    });
+    const res = await response.json();
+    if (res) {
+        return res;
+    } else {
+        return res;
+    }
+}

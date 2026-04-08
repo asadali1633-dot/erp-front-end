@@ -100,7 +100,6 @@ function ClientForm({
     const editFuntionData = () => {
         if (editData && code?.mode === "Edit") {
             const data = editData?.[0]?.data;
-            console.log("data",data)
             if (!data) return;
             let contactsToSet = [];
             if (data.contacts && Array.isArray(data.contacts) && data.contacts.length > 0) {

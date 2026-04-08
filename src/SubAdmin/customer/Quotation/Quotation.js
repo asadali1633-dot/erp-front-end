@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Space, Table } from 'antd';
+import { message, Popconfirm, Space, Table } from 'antd';
 import style from './Quotation.module.css'
 import Heading from '../../../Components/Heading/Heading';
 import { SearchBar } from '../../../Components/SearchBar/SearchBar';
@@ -9,17 +9,23 @@ import { connect, useSelector } from 'react-redux';
 import * as QUOTE_ACTIONS from "../../../store/action/quote/index";
 import { BiEditAlt } from "react-icons/bi";
 import Loader from '../../../Components/Loader/Loader';
+import { RiDeleteBin6Line } from "react-icons/ri";
+import FileViewer from './Forms/FileViewer';
 
 function Quotation({
     Red_Quote,
     GetAllQuotewithPage,
-    getQuoteById
+    getQuoteById,
+    deleteQuotations
 }) {
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const tableData = Red_Quote?.getAllDataWithPage?.[0]
+    const [messageApi, contextHolder] = message.useMessage();
     const editData = Red_Quote?.GetByIdData
     const [QuotationModal, setQuotationModal] = useState(false)
+    const [fileModal, setFileModal] = useState(null);
     const [search, setSearch] = useState("");
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [code, setCode] = useState({
         mode: "",
@@ -36,10 +42,10 @@ function Quotation({
     };
 
     const columns = [
-         {
+        {
             title: "SN",
             key: "SN",
-            render: (_, __, index) => (  
+            render: (_, __, index) => (
                 <span>{index + 1}</span>
             )
         },
@@ -83,13 +89,13 @@ function Quotation({
             title: "Quote Date",
             dataIndex: "quote_date",
             render: (data) =>
-                data ? <span>{data?.slice(0,10)}</span> : <span>-</span>
+                data ? <span>{data?.slice(0, 10)}</span> : <span>-</span>
         },
         {
             title: "Valid Until",
             dataIndex: "valid_until",
             render: (data) =>
-                data ? <span>{data?.slice(0,10)}</span> : <span>-</span>
+                data ? <span>{data?.slice(0, 10)}</span> : <span>-</span>
         },
         {
             title: "Total Amount",
@@ -98,28 +104,74 @@ function Quotation({
                 data ? <span>{data}</span> : <span>-</span>
         },
         {
+            title: 'Docs',
+            key: 'Docs',
+            render: (data) => (
+                <Space size="middle">
+                    <button className="editTableButton"
+                        onClick={() => fileActions(data?.id, data)}><BiEditAlt /></button>
+                </Space>
+            ),
+        },
+        {
             title: 'Action',
             key: 'action',
             render: (data) => (
                 <Space size="middle">
-                    <button className={`${style.hardware_editBtn}`}
+                    <button className="editTableButton"
                         onClick={() => UserAction(data?.id)}><BiEditAlt /></button>
-                    {/* <Popconfirm
-                        title="Delete the Hardware"
-                        description="Are you sure to delete the Hardware?"
-                        okText="Yes"
-                        cancelText="No"
+                    <Popconfirm
+                        title="Delete the Quotation"
+                        description="Are you sure to delete the Quotation?"
                         onConfirm={() => {
                             handleConfirmDelete(data?.id)
                         }}
+                        okText="Yes"
+                        cancelText="No"
                     >
-                        <button className={`${style.hardware_deleteBtn}`}><MdDeleteOutline /></button>
-                    </Popconfirm> */}
+                        <RiDeleteBin6Line className='deleteTableButton' style={{ color: "red" }} />
+                    </Popconfirm>
                 </Space>
             ),
         },
-        
+
     ];
+
+
+    const fileActions = async (id, data) => {
+        console.log("data", data)
+        setLoading(true);
+        try {
+            await getQuoteById(id, accessToken);
+            setCode({
+                mode: "Edit",
+                code: id
+            });
+            let attachmentsArray = [];
+            if (data.attachments) {
+                try {
+                    let parsed = typeof data.attachments === 'string'
+                        ? JSON.parse(data.attachments)
+                        : data.attachments;
+                    if (Array.isArray(parsed)) {
+                        attachmentsArray = parsed;
+                    } else if (typeof parsed === 'string' && parsed.trim()) {
+                        attachmentsArray = [parsed];
+                    }
+                } catch (e) {
+                    if (data.attachments.trim()) attachmentsArray = [data.attachments];
+                }
+            }
+            setFileModal({
+                attachments: attachmentsArray,
+            });
+
+        } catch (error) {
+            console.error("Error fetching client:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const UserAction = async (id) => {
         setLoading(true);
@@ -137,14 +189,29 @@ function Quotation({
         }
     };
 
+    const handleConfirmDelete = async (id) => {
+        messageApi.loading({
+            type: 'loading',
+            content: "Please wait a moment",
+        });
+        const isCheck = await deleteQuotations(id, accessToken);
+        if (isCheck?.success) {
+            messageApi.success({
+                type: 'success',
+                content: isCheck?.message,
+            });
+            GetAllQuotewithPage(pageBody, accessToken);
+        } else {
+            messageApi.error({
+                type: 'error',
+                content: isCheck?.message,
+            });
+        }
+    };
+
     const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            console.log("selectedRowKeys:", selectedRowKeys, "selectedRows:", selectedRows);
-        },
-        getCheckboxProps: (record) => ({
-            disabled: record.name === "Disabled User",
-            name: record.name,
-        }),
+        selectedRowKeys,
+        onChange: (keys) => setSelectedRowKeys(keys),
     };
     const handle = () => {
         setQuotationModal(!QuotationModal)
@@ -157,9 +224,22 @@ function Quotation({
 
     return (
         <>
+        {contextHolder}
             <div className={`${style.PurchaseOrder_TabTableBox}`}>
                 <div className={`${style.PurchaseOrder_tableHeader}`}>
-                    <Heading title={"Quotation"} />
+                    <div className={`${style.headFlex}`}>
+                        <Heading title={"Quotation"} />
+                        {selectedRowKeys.length > 0 && (
+                            <Popconfirm
+                                title={`Delete ${selectedRowKeys.length} selected Quotations(s)?`}
+                                onConfirm={() => handleConfirmDelete(selectedRowKeys)}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <RiDeleteBin6Line className='deleteTableButton' style={{ color: "red" }} />
+                            </Popconfirm>
+                        )}
+                    </div>
                     <div className={`${style.PurchaseOrder_tableHeaderFlex}`}>
                         <SearchBar
                             className={"mx-2"}
@@ -168,13 +248,6 @@ function Quotation({
                         <OutLineButton title={"Create Quotation"} onClick={handle} />
                     </div>
                 </div>
-                {/* <Table
-                    className='antdCustomeTable'
-                    rowSelection={rowSelection}
-                    columns={columns}
-                    dataSource={data}
-                    pagination={false}
-                /> */}
 
                 <Table
                     className='antdCustomeTable'
@@ -209,6 +282,10 @@ function Quotation({
                     pageBody,
                     editData
                 }} />
+            )}
+
+            {fileModal && (
+                <FileViewer {...{ fileModal, setFileModal, code, pageBody }} />
             )}
         </>
     )

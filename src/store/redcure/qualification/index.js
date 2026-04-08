@@ -18,7 +18,6 @@ const initState = {
     QuaMyData: [],
     QuaSingleData: [],
     QuaEmpData: [],
-
     loading: false,
 }
 

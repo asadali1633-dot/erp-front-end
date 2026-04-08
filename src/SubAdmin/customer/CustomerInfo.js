@@ -135,13 +135,13 @@ function CustomerInfo({
             key: "8",
             label: "Client",
             children: <Client />,
-            slug: "",
+            slug: "Client_create",
         },
         {
             key: "9",
             label: "Quotation",
             children: <Quotation />,
-            slug: "",
+            slug: "quotation_create",
         },
         {
             key: "10",

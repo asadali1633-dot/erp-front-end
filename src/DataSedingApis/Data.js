@@ -3,12 +3,15 @@ import React from 'react'
 function Data() {
 
     const syncModules = async () => {
-        const res = await fetch("http://localhost:5000/api/system/sync-modules", {
+        const res = await fetch("https://backend.itrackspace.com/api/system/sync-modules", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${localStorage.getItem("token")}`
-            }
+            },
+            body: JSON.stringify({
+                domain : "FinTech"
+            })
         });
 
         if (!res.ok) {
