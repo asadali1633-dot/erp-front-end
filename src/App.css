@@ -342,3 +342,12 @@ h6 {
 .deleteTableButton{
     font-size: 25px; 
 }
+
+
+/* DROPDOWN PDF ANTD ================================================ */
+/* .custom-invoice-dropdown{} */
+.custom-invoice-dropdown ul{
+    background-color: red !important;
+    border-radius: 8px;
+    padding: 4px 0;
+}

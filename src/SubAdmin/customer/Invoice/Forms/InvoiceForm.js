@@ -10,11 +10,33 @@ import CustomDate from '../../../../Components/Date/CustomDate';
 import * as CLIENTS_ACTIONS from "../../../../store/action/clients/index";
 import * as QUOTE_ACTIONS from "../../../../store/action/quote/index";
 import * as INVOICE_ACTIONS from "../../../../store/action/invoice/index";
-
+import dayjs from "dayjs";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'
-import baseUrl from '../../../../config.json'
+import InvoicePreview from '../InvoicePreview';
+import LetterHead from '../LetterHead'
+import TaxInvoice from '../TaxInvoice'
+import SSTInvoice from '../SSTInvoice'
+import DCInvoice from '../DCInvoice'
 import MultipleDates from '../../../../Components/Date/MultipleDates';
+import baseUrl from '../../../../config.json'
+import PdfDropdown from '../../../../Components/Menu_dropdown/PdfDropdown'
+import { PDFViewer } from '@react-pdf/renderer';
+import { FaRegFilePdf } from "react-icons/fa";
+import { SlEnvolopeLetter } from "react-icons/sl";
+import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
+import { FaClone } from "react-icons/fa";
+import { IoSend } from "react-icons/io5";
+import { CiDeliveryTruck } from "react-icons/ci";
+import { MdOutlineLocalPrintshop } from "react-icons/md";
+import { FaDownload } from "react-icons/fa6";
+import { FaCommentAlt } from "react-icons/fa";
+import { MdPayment } from "react-icons/md";
+import { FaMoneyBills } from "react-icons/fa6";
+import { IoMdCloudCircle } from "react-icons/io";
+import { CiCircleMinus } from "react-icons/ci";
+import { IoMdArchive } from "react-icons/io";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 
 
@@ -45,6 +67,11 @@ function InvoiceForm({
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const [privateNotes, setPrivateNotes] = useState('');
     const [termsConditions, setTermsConditions] = useState('');
+    const [formatDoc, setformatDoc] = useState("PDF")
+    const [pdfLoading, setPdfLoading] = useState(false);
+    const [strn, setstrn] = useState(null)
+    const [ntn, setntn] = useState(null)
+    const [mobile, setmobile] = useState(null)
 
     const modules = {
         toolbar: [
@@ -301,110 +328,20 @@ function InvoiceForm({
         }
     };
 
-     const getPreviewData = () => {
-        if (!formValues) return { items: [] };
-        let items = formValues.items || [];
-        items = items.filter(item => item?.description || item?.quantity || item?.Unit_Price || item?.discount_percent || item?.tax_rate || item?.tax_amount || item?.total);
-        const company = Red_Emp?.GetUserLoginTime?.[0]?.data || {};
-
-        const quoteDate = formValues.quote_date
-            ? dayjs(formValues.quote_date).format('YYYY-MM-DD')
-            : '';
-        const validUntil = formValues.valid_until
-            ? dayjs(formValues.valid_until).format('YYYY-MM-DD')
-            : '';
-        return {
-            quotation_number: formValues.quotation_number,
-            quote_date: quoteDate,
-            valid_until: validUntil,
-            customer_name: formValues.customer_name,
-            customer_contact: formValues.customer_contact,
-            customer_email: formValues.customer_email,
-            customer_phone: formValues.customer_phone,
-            billing_address: formValues.billing_address,
-            items: items,
-            currency: formValues.currency,
-            terms_conditions: termsConditions,
-            // Company details
-            company_name: company.company_name,
-            company_logo: company.company_logo,
-            company_address: company.company_address,
-            company_phone: company.company_phone,
-            company_whatsapp: company.company_whatsapp_no,
-            company_email: company.email,
-            company_website: company.company_website_url,
-            ntn_vat: company.ntn_vat,
-            business_id: company.business_id,
-            ntn: ntn || editData?.[0]?.data?.ntn,
-            strn: strn || editData?.[0]?.data?.registration_number
-            
-        };
-    };
-    //    const renderPDFPreview = () => {
-    //     const items = formValues?.items || [];
-    //     const hasValidItems = items.some(item =>
-    //         item?.description && item?.quantity && item?.Unit_Price
-    //     );
-    //     if (!hasValidItems) return null;
-    //         const buttons = (
-    //             <div className={style.printBtn}>
-    //                 <ActionButton
-    //                     className={"mt-2 mx-1 w-auto"}
-    //                     title={"Alternate Quote"}
-    //                     onClick={() => setformatDoc("alternateQuote")}
-    //                 />
-    //                 <ActionButton
-    //                     className={"mt-2 mx-1 mr-4 w-auto"}
-    //                     title={"Letter Head"}
-    //                     onClick={() => setformatDoc("letter_head")}
-    //                 />
-    //                 <ActionButton
-    //                     className={"mt-2 w-auto"}
-    //                     title={"PDF"}
-    //                     onClick={() => setformatDoc("PDF")}
-    //                 />
-    //             </div>
-    //         );
-    //     if (pdfLoading) {
-    //         return (
-    //             <>
-    //                 {buttons}
-    //                 <div class="load-bar">
-    //                     <div class="bar"></div>
-    //                     <div class="bar"></div>
-    //                     <div class="bar"></div>
-    //                 </div>
-    //             </>
-    //         );
-    //     }
-    //     const viewer = formatDoc === "PDF" ? (
-    //         <PDFViewer width="100%" height="1000px">
-    //             <QuotationLivePreview data={getPreviewData()} />
-    //         </PDFViewer>
-    //     ) : formatDoc == "letter_head"? (
-    //         <PDFViewer width="100%" height="1000px">
-    //             <LetterHead data={getPreviewData()} />
-    //         </PDFViewer>
-    //     ): formatDoc == "alternateQuote"? (
-    //         <PDFViewer width="100%" height="1000px">
-    //             <AlternateQuote data={getPreviewData()} />
-    //         </PDFViewer>
-    //     ): null  
-
-    //     return (
-    //         <>
-    //             {buttons}
-    //             {viewer}
-    //         </>
-    //     );
-    // };
-
     const handleOk = () => {
         setInvoiceModal(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
 
     const handleCancel = () => {
         setInvoiceModal(false);
+        setCode({
+            mode: null,
+            code: null
+        })
     };
 
     const addRow = () => {
@@ -460,6 +397,9 @@ function InvoiceForm({
         });
         const res = await response.json();
         if (res.success) {
+            setstrn(res?.data?.customer_details?.strn)
+            setntn(res?.data?.customer_details?.ntn)
+            setmobile(res?.data?.customer_details?.mobile)
             form.setFieldsValue({
                 invoice_number: res?.data?.invoice_number,
                 customer_name: res?.data?.customer_details?.company_name,
@@ -468,7 +408,6 @@ function InvoiceForm({
                 contact_person: res?.data?.customer_details?.contact_name,
                 contact_email: res?.data?.customer_details?.contact_email,
                 currency: res?.data?.customer_details?.currency,
-                // customer_phone: res?.data?.customer_phone,
                 // billing_address: res?.data?.billing_address,
                 // currency: res?.data?.currency,
             });
@@ -516,14 +455,164 @@ function InvoiceForm({
     };
 
 
+    const getPreviewData = () => {
+        if (!formValues) return { items: [] };
+        let items = formValues.items || [];
+        items = items.filter(item => item?.description || item?.quantity || item?.Unit_Price || item?.discount_percent || item?.tax_rate || item?.tax_amount || item?.total);
+        const company = Red_Emp?.GetUserLoginTime?.[0]?.data || {};
+
+        const invoice_date = formValues.invoice_date
+            ? dayjs(formValues.quote_date).format('YYYY-MM-DD')
+            : '';
+        const due_date = formValues.due_date
+            ? dayjs(formValues.valid_until).format('YYYY-MM-DD')
+            : '';
+        return {
+            invoice_number: formValues.quotation_number,
+            invoice_date: invoice_date,
+            due_date: due_date,
+            customer_name: formValues.customer_name,
+            customer_contact: formValues.customer_contact,
+            customer_email: formValues.contact_email,
+            customer_phone: mobile,
+            billing_address: formValues.billing_address,
+            items: items,
+            currency: formValues.currency,
+            terms_conditions: termsConditions,
+            // Company details
+            company_name: company.company_name,
+            company_logo: company.company_logo,
+            company_address: company.company_address,
+            company_phone: company.company_phone,
+            company_whatsapp: company.company_whatsapp_no,
+            company_email: company.email,
+            company_website: company.company_website_url,
+            ntn_vat: company.ntn_vat,
+            business_id: company.business_id,
+            ntn: ntn || editData?.ntn,
+            strn: strn || editData?.strn
+        };
+    };
+
+    const pdfLoader = () => {
+        const items = formValues?.items || [];
+        const hasValidItems = items.some(item =>
+            item?.description && item?.quantity && item?.Unit_Price
+        );
+        if (!hasValidItems) return;
+
+        setPdfLoading(true);
+        const timer = setTimeout(() => {
+            setPdfLoading(false);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }
+
+  
+
+
+
+
+    const pdfOptions = [
+        { key: 'pdf', label: 'PDF', type: 'format',icon: <FaRegFilePdf /> },
+        { key: 'letter_head', label: 'Letter Head', type: 'format',icon: <SlEnvolopeLetter/> },
+        { key: 'tax_invoice', label: 'Tax Invoice', type: 'format',icon: <LiaFileInvoiceDollarSolid/> },
+        { key: 'sst_invoice', label: 'SST Invoice', type: 'format',icon: <LiaFileInvoiceDollarSolid/> },
+        { key: 'clone_to_invoice', label: 'Clone to Invoice', type: 'action',icon: <FaClone/> },
+        { key: 'Clone to Others', label: 'Clone to Others', type: 'action',icon: <FaClone/> },
+        { key: 'dc', label: 'DC', type: 'format',icon: <CiDeliveryTruck/> },
+        { key: 'sent_to_email', label: 'Sent to Email', type: 'action',icon: <IoSend/> },
+        { key: 'print_to_pdf', label: 'Print PDF', type: 'action',icon: <MdOutlineLocalPrintshop/> },
+        { key: 'download', label: 'Download', type: 'action',icon: <FaDownload/> },
+        { key: 'Add_comment', label: 'Add Comment', type: 'action',icon: <FaCommentAlt/> },
+        { key: 'enter_payment', label: 'Enter Payment', type: 'action',icon: <MdPayment/> },
+        { key: 'mark_paid', label: 'Mark Paid', type: 'action',icon: <MdPayment/> },
+        { key: 'auto_bill', label: 'Auto Bill', type: 'action',icon: <FaMoneyBills/> },
+        { key: 'client_portal', label: 'Client Portal', type: 'action',icon: <IoMdCloudCircle/> },
+        { key: 'cancel_invoice', label: 'Cancel invoice', type: 'action',icon: <CiCircleMinus/> },
+        { key: 'archive', label: 'Archive', type: 'action',icon: <IoMdArchive/> },
+        { key: 'delete', label: 'Delete', type: 'action',icon: <RiDeleteBin6Line/> },
+    ];
+    
+    const renderPDFPreview = () => {
+        const items = formValues?.items || [];
+        const hasValidItems = items.some(item =>
+            item?.description && item?.quantity && item?.Unit_Price
+        );
+        if (!hasValidItems) return null;
+            const buttons = (
+                <div className={style.printBtn}>
+                    <PdfDropdown items={pdfOptions} onSelect={(label, type) => {
+                        if (type === 'action') {
+                            if (label === 'Sent to Email') {
+                                // sendInvoiceByEmail(); // your email sending function
+                            } else if (label === 'Clone to Invoice') {
+                                // cloneToInvoice();
+                            }
+                        } else {
+                            setformatDoc(label);
+                        }
+                    }} />
+                </div>
+            );
+        if (pdfLoading) {
+            return (
+                <>
+                    {buttons}
+                    <div class="load-bar">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </>
+        );
+    }
+    const getViewer = () => {
+        switch (formatDoc) {
+            case 'PDF':
+                return <InvoicePreview data={getPreviewData()} />;
+            case 'Letter Head':
+                return <LetterHead data={getPreviewData()} />;
+            case 'Tax Invoice':
+                return <TaxInvoice data={getPreviewData()} />;
+            case 'SST Invoice':
+                return <SSTInvoice data={getPreviewData()} />;
+            case 'DC':
+                return <DCInvoice data={getPreviewData()} />;
+            default:
+                return null;
+        }
+    };
+
+    const isValidFormat = ['PDF', 'Letter Head', 'Tax Invoice', 'SST Invoice', 'DC'].includes(formatDoc);
+    return (
+        <>
+            {buttons}
+            {isValidFormat && (
+                <PDFViewer key={formatDoc} width="100%" height="1000px">
+                    {getViewer()}
+                </PDFViewer>
+            )}
+        </>
+    );
+    };
+
+    useEffect(() => {
+        pdfLoader()
+    }, [formatDoc, formValues]);
+
+
 
     useEffect(() => {
         GetClientList(accessToken);
         getAllQuoteBySimpleList(accessToken)
+        getPreviewData()
     }, [accessToken])
 
     useEffect(() => {
         addRow()
+        
     }, [itemsValue, form]);
 
     useEffect(() => {
@@ -905,6 +994,10 @@ function InvoiceForm({
                         />
                     </div>
                 </Form>
+
+                <div style={{ marginTop: 20 }}>
+                    {renderPDFPreview()}
+                </div>
             </Modal>
         </>
     )
