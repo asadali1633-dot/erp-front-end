@@ -105,3 +105,37 @@ export const getInvoiceById = (id,accessToken) => async (dispatch, getState) => 
         });
     }
 };
+
+export const UpdateInvoice = (id,body,accessToken) => async (dispatch) => {
+    const response = await fetch(`${baseUrl.baseUrl}/api/invoice/update/${id}`, {
+        method: "PUT",
+        headers: {
+            "Authorization": "Bearer " + accessToken,
+            'Content-Type': 'application/json',
+        },
+         body: JSON.stringify(body)
+    });
+    const res = await response.json();
+    if (res) {
+        return res;
+    } else {
+        return res;
+    }
+}
+
+export const deleteInvoice = (id,accessToken) => async (dispatch) => {
+    const response = await fetch(`${baseUrl.baseUrl}/api/invoice/delete`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + accessToken,
+        },
+        body: JSON.stringify({ids:id}),
+    });
+    const res = await response.json();
+    if (res) {
+        return res;
+    } else {
+        return res;
+    }
+}

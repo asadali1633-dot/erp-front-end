@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Popconfirm, Space, Table } from 'antd';
+import { message, Popconfirm, Space, Table } from 'antd';
 import style from './Invoice.module.css'
 import Heading from '../../../Components/Heading/Heading';
 import { SearchBar } from '../../../Components/SearchBar/SearchBar';
@@ -14,13 +14,15 @@ import Loader from '../../../Components/Loader/Loader';
 function Invoice({
     Red_Invoice,
     GetAllInVoiceWithPage,
-    getInvoiceById
+    getInvoiceById,
+    deleteInvoice
 }) {
     const [InvoiceModal, setInvoiceModal] = useState(false)
     const accessToken = useSelector((state) => state.Red_Auth.accessToken);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const tableData = Red_Invoice?.getAllDataWithPage?.[0]
     const editData = Red_Invoice?.getSingleData?.[0]?.data
+    const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(false)
     const [search, setSearch] = useState("");
     const [code, setCode] = useState({
@@ -95,9 +97,9 @@ function Invoice({
                         description="Are you sure to delete the Invoice?"
                         okText="Yes"
                         cancelText="No"
-                        // onConfirm={() => {
-                        //     handleConfirmDelete(data?.id)
-                        // }}
+                        onConfirm={() => {
+                            handleConfirmDelete(data?.id)
+                        }}
                     >
                         <RiDeleteBin6Line className='deleteTableButton' style={{ color: "red" }} />
                     </Popconfirm>
@@ -137,6 +139,26 @@ function Invoice({
         }
     };
 
+    const handleConfirmDelete = async (id) => {
+        messageApi.loading({
+            type: 'loading',
+            content: "Please wait a moment",
+        });
+        const isCheck = await deleteInvoice(id, accessToken);
+        if (isCheck?.success) {
+            messageApi.success({
+                type: 'success',
+                content: isCheck?.message,
+            });
+            GetAllInVoiceWithPage(pageBody, accessToken);
+        } else {
+            messageApi.error({
+                type: 'error',
+                content: isCheck?.message,
+            });
+        }
+    };
+
     useEffect(() => {
         GetAllInVoiceWithPage(pageBody, accessToken);
     }, [pagination.current, pagination.pageSize, search]);
@@ -144,6 +166,7 @@ function Invoice({
 
     return (
         <>
+            {contextHolder}
             <div className={`${style.PurchaseOrder_TabTableBox}`}>
                 <div className={`${style.PurchaseOrder_tableHeader}`}>
                     <div className={`${style.headFlex}`}>
@@ -151,7 +174,7 @@ function Invoice({
                         {selectedRowKeys.length > 0 && (
                             <Popconfirm
                                 title={`Delete ${selectedRowKeys.length} selected Client(s)?`}
-                                // onConfirm={() => handleConfirmDelete(selectedRowKeys)}
+                                onConfirm={() => handleConfirmDelete(selectedRowKeys)}
                                 okText="Yes"
                                 cancelText="No"
                             >

@@ -50,6 +50,7 @@ function InvoiceForm({
     getAllQuoteBySimpleList,
     Red_Invoice,
     CreateInvoiceFun,
+    UpdateInvoice,
     code, setCode,
     pageBody,editData,
     GetAllInVoiceWithPage,
@@ -375,7 +376,7 @@ function InvoiceForm({
 
                 const currentTotal = parseFloat(item?.total) || 0;
                 if (Math.abs(currentTotal - lineTotal) > 0.01) {
-                    form.setFieldValue(['items', index, 'total'], formatNumber(lineTotal));
+                    form.setFieldValue(['items', index, 'total'], formatNumber(lineTotal.toFixed(2)));
                 }
 
                 const currentTax = parseFloat(item?.tax_amount) || 0;
@@ -450,10 +451,25 @@ function InvoiceForm({
                 });
             }
         } else {
-            // const isCheck = await UpdateQuote(code?.code, formData, accessToken);
+            const isCheck = await UpdateInvoice(code?.code, data, accessToken);
+             if (isCheck?.success) {
+                messageApi.success({
+                    type: "success",
+                    content: isCheck?.message,
+                });
+                setInvoiceModal(false);
+                form.resetFields();
+                setloading(false);
+                GetAllInVoiceWithPage(pageBody, accessToken);
+            } else {
+                setloading(false);
+                messageApi.error({
+                    type: "error",
+                    content: isCheck?.message,
+                });
+            }
         }
     };
-
 
     const getPreviewData = () => {
         if (!formValues) return { items: [] };
@@ -508,11 +524,6 @@ function InvoiceForm({
 
         return () => clearTimeout(timer);
     }
-
-  
-
-
-
 
     const pdfOptions = [
         { key: 'pdf', label: 'PDF', type: 'format',icon: <FaRegFilePdf /> },
@@ -980,13 +991,12 @@ function InvoiceForm({
                                 );
                             }}
                         </Form.List>
-
-                        <Tabs
-                            className={"customerinfo_tabsPanel mt-3 mx-2"}
-                            defaultActiveKey="1"
-                            items={items}
-                        />
                     </div>
+                    <Tabs
+                        className={"customerinfo_tabsPanel mt-3 mx-2"}
+                        defaultActiveKey="1"
+                        items={items}
+                    />
                     <div className={style.vendor_modalBtns}>
                         <Button
                             className={"mx-1 mt-2 w-auto"}
