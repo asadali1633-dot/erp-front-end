@@ -58,3 +58,8 @@
     background: #ff0004;
     border-radius: 20px;
 }
+
+.headFlex {
+    display: flex;
+    align-items: flex-end;
+}

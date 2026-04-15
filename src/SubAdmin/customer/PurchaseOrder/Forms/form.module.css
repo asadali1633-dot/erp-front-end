@@ -40,10 +40,12 @@
     border-radius: 10px;
 }
 
-.vendor_modalBtns{
-     display: flex;
-    justify-content: end;
+.vendor_modalBtns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
 .border_bottom{
     border-bottom: 1px solid black;
     padding-bottom: 10px;

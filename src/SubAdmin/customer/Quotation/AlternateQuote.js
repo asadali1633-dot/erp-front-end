@@ -307,6 +307,9 @@ const AlternateQuote = ({ data }) => {
                                             </View>
                                         </View>
                                     </View>
+                                    <View>
+                                        <Text style={[styles.textCenter]}>Quotation</Text>
+                                    </View>
                                     <View style={styles.headerRow2}>
                                         <View style={styles.col50}>
                                             {
@@ -396,8 +399,8 @@ const AlternateQuote = ({ data }) => {
                                 <>
                                 <View style={styles.headerRow3}>
                                         <View style={styles.col50}>
-                                            <Text style={styles.title}>Quote Terms:</Text>
-                                            <Text style={[styles.termText]}>Taxes: {"All taxes are included."}</Text>
+                                            {/* <Text style={styles.title}>Quote Terms:</Text> */}
+                                            {/* <Text style={[styles.termText]}>Taxes: {"All taxes are included."}</Text> */}
                                         </View>
                                     </View>
                                     {

@@ -40,7 +40,20 @@ function Quotation({
         pageSize: pagination.pageSize || 10,
         search: search || "",
     };
+    
 
+    const formatNumber = (value) => {
+        if (value === undefined || value === null || value === '') return '-';
+        const num = parseFloat(value);
+        if (isNaN(num)) return '-';
+        if (Number.isInteger(num)) {
+            return num.toLocaleString('en-PK');
+        }
+        return num.toLocaleString('en-PK', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
+    };
     const columns = [
         {
             title: "SN",
@@ -101,7 +114,7 @@ function Quotation({
             title: "Total Amount",
             dataIndex: "total_amount",
             render: (data) =>
-                data ? <span>{data}</span> : <span>-</span>
+                data ? <span>{formatNumber(data)}</span> : <span>-</span>
         },
         {
             title: 'Docs',

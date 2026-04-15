@@ -37,6 +37,7 @@ import { IoMdCloudCircle } from "react-icons/io";
 import { CiCircleMinus } from "react-icons/ci";
 import { IoMdArchive } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import SentEmailPdf from '../../SentEmailPdf/SentEmailPdf';
 
 
 
@@ -73,6 +74,7 @@ function InvoiceForm({
     const [strn, setstrn] = useState(null)
     const [ntn, setntn] = useState(null)
     const [mobile, setmobile] = useState(null)
+    const [sentToIEmailInvoice,setsentToEamilInvoice] = useState(false)
 
     const modules = {
         toolbar: [
@@ -360,6 +362,7 @@ function InvoiceForm({
             lastAddedRef.current = false;
         }
     }
+
     const lineTotal = () => {
         if (itemsValue && itemsValue.length > 0) {
             itemsValue.forEach((item, index) => {
@@ -557,6 +560,8 @@ function InvoiceForm({
                     <PdfDropdown items={pdfOptions} onSelect={(label, type) => {
                         if (type === 'action') {
                             if (label === 'Sent to Email') {
+                                console.log("setsentToEamilInvoice","hhhfhf")
+                                setsentToEamilInvoice(true)
                                 // sendInvoiceByEmail(); // your email sending function
                             } else if (label === 'Clone to Invoice') {
                                 // cloneToInvoice();
@@ -612,7 +617,6 @@ function InvoiceForm({
     useEffect(() => {
         pdfLoader()
     }, [formatDoc, formValues]);
-
 
 
     useEffect(() => {
@@ -1009,6 +1013,8 @@ function InvoiceForm({
                     {renderPDFPreview()}
                 </div>
             </Modal>
+            <SentEmailPdf {...{sentToIEmailInvoice,setsentToEamilInvoice}}/>
+            {/* sentToIEmailInvoice */}
         </>
     )
 }

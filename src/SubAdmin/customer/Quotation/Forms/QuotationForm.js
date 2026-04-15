@@ -15,7 +15,7 @@ import { connect, useSelector } from 'react-redux';
 import dayjs from "dayjs";
 import baseUrl from '../../../../config.json'
 import QuotationLivePreview from '../QuotationLivePreview';
-import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+import { PDFViewer, PDFDownloadLink, pdf } from '@react-pdf/renderer';
 import ReactQuill from 'react-quill'
 import LetterHead from '../LetterHead';
 import AlternateQuote from '../AlternateQuote';
@@ -213,26 +213,7 @@ function QuotationForm({
 
     const items = [
         {
-            label: 'Private Notes / Memo',
             key: '1',
-            children: <>
-                <div>
-                    <ReactQuill
-                        theme="snow"
-                        className='textEiditor'
-                        value={privateNotes}
-                        onChange={(value) => {
-                            setPrivateNotes(value);
-                            form.setFieldsValue({ private_notes: value });
-                        }}
-                        modules={modules}
-                        placeholder="Write Here..."
-                    />
-                </div>
-            </>,
-        },
-        {
-            key: '2',
             label: 'Terms & Conditions',
             children: <>
                 <div>
@@ -244,6 +225,25 @@ function QuotationForm({
                         onChange={(value) => {
                             setTermsConditions(value);
                             form.setFieldsValue({ terms_conditions: value });
+                        }}
+                        modules={modules}
+                        placeholder="Write Here..."
+                    />
+                </div>
+            </>,
+        },
+        {
+            label: 'Private Notes / Memo',
+            key: '2',
+            children: <>
+                <div>
+                    <ReactQuill
+                        theme="snow"
+                        className='textEiditor'
+                        value={privateNotes}
+                        onChange={(value) => {
+                            setPrivateNotes(value);
+                            form.setFieldsValue({ private_notes: value });
                         }}
                         modules={modules}
                         placeholder="Write Here..."
@@ -316,6 +316,7 @@ function QuotationForm({
             let transformedItems = [];
             if (data.items && Array.isArray(data.items)) {
                 transformedItems = data.items.map(item => ({
+                    itemId: item?.id,
                     description: item?.description,
                     quantity: item?.quantity,
                     Unit_Price: item?.unit_price,
@@ -418,6 +419,7 @@ function QuotationForm({
     const handleForm = async (values) => {
         setloading(true);
         let filteredItems = [];
+        console.log("values",values)
         if (values.items && Array.isArray(values.items)) {
             filteredItems = values.items.filter(item => {
                 const hasDescription = item.description && String(item.description).trim() !== '';
@@ -516,6 +518,25 @@ function QuotationForm({
         return () => clearTimeout(timer);
     }
 
+    const downloadCurrentPDF = async () => {
+        const data = getPreviewData();
+        let PdfComponent;
+        if (formatDoc === 'PDF') PdfComponent = QuotationLivePreview;
+        else if (formatDoc === 'letter_head') PdfComponent = LetterHead;
+        else if (formatDoc === 'alternateQuote') PdfComponent = AlternateQuote;
+        else PdfComponent = QuotationLivePreview;
+
+        const blob = await pdf(<PdfComponent data={data} />).toBlob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `quotation_${data.quotation_number || 'preview'}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     const renderPDFPreview = () => {
         const items = formValues?.items || [];
         const hasValidItems = items.some(item =>
@@ -524,6 +545,16 @@ function QuotationForm({
         if (!hasValidItems) return null;
             const buttons = (
                 <div className={style.printBtn}>
+                    <PDFDownloadLink
+                        document={formatDoc === "PDF" ? <QuotationLivePreview data={getPreviewData()} /> : formatDoc === "letter_head" ? <LetterHead data={getPreviewData()} /> : <AlternateQuote data={getPreviewData()} />}
+                        fileName={`quotation_${getPreviewData().quotation_number || 'preview'}.pdf`}
+                    >
+                    <ActionButton
+                        className={"mt-2 mx-1 mr-4 w-auto"}
+                        title={"Download"}
+                        onClick={() => downloadCurrentPDF}
+                    />
+                    </PDFDownloadLink>
                     <ActionButton
                         className={"mt-2 mx-1 w-auto"}
                         title={"Alternate Quote"}
@@ -574,6 +605,9 @@ function QuotationForm({
             </>
         );
     };
+
+    
+
 
 
     useEffect(() => {
@@ -666,9 +700,9 @@ function QuotationForm({
                                 label={"Valid Until"}
                                 name="valid_until"
                                 placeholder="Select expiry date"
-                                required={true}
+                                required={false}
                                 message={"Valid until date is required"}
-                                allowToday={true}
+                                allowToday={false}
                             />
                             <FormInput
                                 className="mx-1"
@@ -853,7 +887,7 @@ function QuotationForm({
                     <div className={style.vendor_modalBtns}>
                         <Button
                             className={"mx-1 mt-2 w-auto"}
-                            title={loading ? "Loading" : code?.mode == "Edit" ? "Update Client" : "Create"} loading={loading}
+                            title={loading ? "Loading" : code?.mode == "Edit" ? "Update Quote" : "Create"} loading={loading}
                         />
                     </div>
                 </Form>

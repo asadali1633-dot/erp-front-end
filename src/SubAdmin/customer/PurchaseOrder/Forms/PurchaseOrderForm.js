@@ -3,7 +3,7 @@ import style from './form.module.css'
 import { Form, Modal, Table } from 'antd';
 import { FormInput, FormInputTextArea } from '../../../../Components/Inputs/Inputs';
 import { SelectInput } from '../../../../Components/Select/Select';
-import { Button } from '../../../../Components/Button/Button';
+import { ActionButton, Button, ShowMore } from '../../../../Components/Button/Button';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import CustomDate from '../../../../Components/Date/CustomDate';
 import UploadFile from '../../../../Components/File/UploadFile';
@@ -17,7 +17,9 @@ function PurchaseOrderForm({
 }) {
     const [form] = Form.useForm();
     const lastAddedRef = useRef(false);
+    const [showMore, setShowMore] = useState(false);
     const itemsValue = Form.useWatch('items', form);
+
     const handleOk = () => {
         setPurchaseOrdersForm(false);
     };
@@ -41,26 +43,11 @@ function PurchaseOrderForm({
         }
     }
 
-    useEffect(() => {
-        addRow()
-    }, [itemsValue, form]);
-
+    const toggleShowMore = () => {
+        setShowMore(!showMore);
+    };
 
     const columns = [
-        {
-            title: "Product ID",
-            width: 300,
-            render: (_, record) => (
-                <SelectInput
-                    placeholder="Select product"
-                    name={[record.field.name, 'product_id']}
-                    required={false}
-                    showSearch={true}
-                    message={"Select product if ordering from catalog"}
-                    options={[]}
-                />
-            ),
-        },
         {
             title: "Description",
             width: 300,
@@ -70,18 +57,6 @@ function PurchaseOrderForm({
                     placeholder="Item description"
                     required={true}
                     message={"Description is required"}
-                />
-            ),
-        },
-        {
-            title: "Model",
-            width: 100,
-            render: (_, record) => (
-                <FormInput
-                    name={[record.field.name, 'model_part_number']}
-                    placeholder="Enter model or part number"
-                    required={false}
-                    message={"Enter model/part number if applicable"}
                 />
             ),
         },
@@ -174,7 +149,7 @@ function PurchaseOrderForm({
             ),
         },
         {
-            title: "LIne Total",
+            title: "Line Total",
             width: 150,
             render: (_, record) => (
                 <FormInput
@@ -186,6 +161,14 @@ function PurchaseOrderForm({
             ),
         }
     ];
+
+
+    useEffect(() => {
+        addRow()
+    }, [itemsValue, form]);
+
+
+    
     return (
         <>
             <Modal
@@ -239,7 +222,7 @@ function PurchaseOrderForm({
                                 placeholder="Select expected delivery date"
                                 required={true}
                                 message={"Expected delivery date is required"}
-                                allowToday={true}
+                                allowToday={false}
                             />
 
 
@@ -489,202 +472,212 @@ function PurchaseOrderForm({
                             />
                         </div>
 
-                        <h5 className={`${style.form_checkBoxHeading} mx-1`}>PO Details</h5>
-                        <Form.List name="items">
-                            {(fields) => {
-                                const dataSource = fields.map(field => ({
-                                    key: field.key,
-                                    field,
-                                }));
-                                return (
-                                    <Table
-                                        className='antdCustomeTable noneRowHover'
-                                        dataSource={dataSource}
-                                        scroll={{x:1500}}
-                                        columns={columns}
-                                        pagination={false}
-                                        rowKey="key"
-                                    />
-                                );
-                            }}
-                        </Form.List>
 
-                        <h5 className={`${style.form_checkBoxHeading} mx-1`}>Receiving Information</h5>
-                        <div className={`${style.form_inputBox} ${style.border_bottom}`}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Receipt Number"}
-                                name="receipt_number"
-                                placeholder="Auto-generated (e.g., RCPT-2025-0001)"
-                                required={false}
-                                readOnly={true}
-                                message={"Receipt number is auto-generated"}
-                            />
+                        <div style={{ display: showMore ? 'block' : 'none'}}>
+                            <h5 className={`${style.form_checkBoxHeading} mx-1`}>PO Details</h5>
+                            <Form.List name="items">
+                                {(fields) => {
+                                    const dataSource = fields.map(field => ({
+                                        key: field.key,
+                                        field,
+                                    }));
+                                    return (
+                                        <Table
+                                            className='antdCustomeTable noneRowHover'
+                                            dataSource={dataSource}
+                                            scroll={{x:1500}}
+                                            columns={columns}
+                                            pagination={false}
+                                            rowKey="key"
+                                        />
+                                    );
+                                }}
+                            </Form.List>
 
-                            <CustomDate
-                                className="mx-1"
-                                label={"Receipt Date"}
-                                name="receipt_date"
-                                placeholder="Select receipt date"
-                                required={true}
-                                message={"Receipt date is required"}
-                                allowToday={true}
-                            />
+                            <h5 className={`${style.form_checkBoxHeading} mx-1`}>Receiving Information</h5>
+                            <div className={`${style.form_inputBox} ${style.border_bottom}`}>
+                                <FormInput
+                                    className="mx-1"
+                                    label={"Receipt Number"}
+                                    name="receipt_number"
+                                    placeholder="Auto-generated (e.g., RCPT-2025-0001)"
+                                    required={false}
+                                    readOnly={true}
+                                    message={"Receipt number is auto-generated"}
+                                />
 
-                            <SelectInput
-                                className="mx-1"
-                                label={"Received By"}
-                                placeholder="Select receiver"
-                                name="received_by"
-                                required={true}
-                                showSearch={true}
-                                message={"Please select who received the goods"}
-                                options={[]}
-                            />
-                        </div>
+                                <CustomDate
+                                    className="mx-1"
+                                    label={"Receipt Date"}
+                                    name="receipt_date"
+                                    placeholder="Select receipt date"
+                                    required={true}
+                                    message={"Receipt date is required"}
+                                    allowToday={true}
+                                />
 
-                        <h5 className={`${style.form_checkBoxHeading} mx-1`}>Financial & Invoicing (Accounts Payable)</h5>
-                        <div className={style.form_inputBox}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Vendor Invoice Number"}
-                                name="vendor_invoice_number"
-                                placeholder="Enter vendor invoice reference number"
-                                required={true}
-                                message={"Vendor invoice number is required"}
-                            />
+                                <SelectInput
+                                    className="mx-1"
+                                    label={"Received By"}
+                                    placeholder="Select receiver"
+                                    name="received_by"
+                                    required={true}
+                                    showSearch={true}
+                                    message={"Please select who received the goods"}
+                                    options={[]}
+                                />
+                            </div>
 
-                            <CustomDate
-                                className="mx-1"
-                                label={"Vendor Invoice Date"}
-                                name="vendor_invoice_date"
-                                placeholder="Select invoice date"
-                                required={true}
-                                message={"Vendor invoice date is required"}
-                                allowToday={true}
-                            />
+                            <h5 className={`${style.form_checkBoxHeading} mx-1`}>Financial & Invoicing (Accounts Payable)</h5>
+                            <div className={style.form_inputBox}>
+                                <FormInput
+                                    className="mx-1"
+                                    label={"Vendor Invoice Number"}
+                                    name="vendor_invoice_number"
+                                    placeholder="Enter vendor invoice reference number"
+                                    required={true}
+                                    message={"Vendor invoice number is required"}
+                                />
 
-                            <FormInput
-                                className="mx-1"
-                                label={"Vendor Invoice Amount"}
-                                name="vendor_invoice_amount"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Enter invoice amount"
-                                required={true}
-                                message={"Vendor invoice amount is required"}
-                            />
-                        </div>
-                        <div className={style.form_inputBox}>
-                            <SelectInput
-                                className="mx-1"
-                                label={"Matching Status"}
-                                placeholder="Select matching status"
-                                name="matching_status"
-                                required={true}
-                                message={"Please select matching status"}
-                                options={[
-                                    { value: "Not Matched", label: "Not Matched" },
-                                    { value: "Matched", label: "Matched" },
-                                    { value: "Discrepancy", label: "Discrepancy" },
-                                ]}
-                            />
+                                <CustomDate
+                                    className="mx-1"
+                                    label={"Vendor Invoice Date"}
+                                    name="vendor_invoice_date"
+                                    placeholder="Select invoice date"
+                                    required={true}
+                                    message={"Vendor invoice date is required"}
+                                    allowToday={true}
+                                />
 
-                            <CustomDate
-                                className="mx-1"
-                                label={"Payment Due Date"}
-                                name="payment_due_date"
-                                placeholder="Select payment due date"
-                                required={true}
-                                message={"Payment due date is required"}
-                                allowToday={true}
-                            />
+                                <FormInput
+                                    className="mx-1"
+                                    label={"Vendor Invoice Amount"}
+                                    name="vendor_invoice_amount"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="Enter invoice amount"
+                                    required={true}
+                                    message={"Vendor invoice amount is required"}
+                                />
+                            </div>
+                            <div className={style.form_inputBox}>
+                                <SelectInput
+                                    className="mx-1"
+                                    label={"Matching Status"}
+                                    placeholder="Select matching status"
+                                    name="matching_status"
+                                    required={true}
+                                    message={"Please select matching status"}
+                                    options={[
+                                        { value: "Not Matched", label: "Not Matched" },
+                                        { value: "Matched", label: "Matched" },
+                                        { value: "Discrepancy", label: "Discrepancy" },
+                                    ]}
+                                />
 
-                            <SelectInput
-                                className="mx-1"
-                                label={"Payment Status"}
-                                placeholder="Select payment status"
-                                name="payment_status"
-                                required={true}
-                                message={"Please select payment status"}
-                                options={[
-                                    { value: "Unpaid", label: "Unpaid" },
-                                    { value: "Paid", label: "Paid" },
-                                    { value: "Partial", label: "Partial" },
-                                ]}
-                            />
-                        </div>
-                        <div className={`${style.form_inputBox} ${style.border_bottom}`}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Payment Reference"}
-                                name="payment_reference"
-                                placeholder="Enter payment reference"
-                                required={false}
-                                message={"Enter payment reference if applicable"}
-                            />
+                                <CustomDate
+                                    className="mx-1"
+                                    label={"Payment Due Date"}
+                                    name="payment_due_date"
+                                    placeholder="Select payment due date"
+                                    required={true}
+                                    message={"Payment due date is required"}
+                                    allowToday={true}
+                                />
 
-                            <FormInput
-                                className="mx-1"
-                                label={"Prepayment Amount"}
-                                name="prepayment_amount"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Enter advance payment"
-                                required={false}
-                                message={"Enter prepayment amount if applicable"}
-                            />
-                        </div>
+                                <SelectInput
+                                    className="mx-1"
+                                    label={"Payment Status"}
+                                    placeholder="Select payment status"
+                                    name="payment_status"
+                                    required={true}
+                                    message={"Please select payment status"}
+                                    options={[
+                                        { value: "Unpaid", label: "Unpaid" },
+                                        { value: "Paid", label: "Paid" },
+                                        { value: "Partial", label: "Partial" },
+                                    ]}
+                                />
+                            </div>
+                            <div className={`${style.form_inputBox} ${style.border_bottom}`}>
+                                <FormInput
+                                    className="mx-1"
+                                    label={"Payment Reference"}
+                                    name="payment_reference"
+                                    placeholder="Enter payment reference"
+                                    required={false}
+                                    message={"Enter payment reference if applicable"}
+                                />
 
-                        <h5 className={`${style.form_checkBoxHeading} mx-1`}>Financial & Invoicing (Accounts Payable)</h5>
-                        <div className={`${style.form_inputBox} ${style.border_bottom}`}>
-                            <FormInput
-                                className="mx-1"
-                                label={"Request for Quotation (RFQ) Reference"}
-                                name="rfq_reference"
-                                placeholder="Enter RFQ reference number"
-                                required={false}
-                                message={"Enter RFQ reference if applicable"}
-                            />
+                                <FormInput
+                                    className="mx-1"
+                                    label={"Prepayment Amount"}
+                                    name="prepayment_amount"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="Enter advance payment"
+                                    required={false}
+                                    message={"Enter prepayment amount if applicable"}
+                                />
+                            </div>
 
-                            <UploadFile
-                                className="mx-1 inputFlexBox"
-                                label={"Quotation from Vendor"}
-                                name="vendor_quotation"
-                                title={"Upload Quotation"}
-                                required={false}
-                                multiple={false}
-                                accept=".pdf,.doc,.docx,.xls,.xlsx"
-                                message={"Upload vendor quotation document"}
-                            />
+                            <h5 className={`${style.form_checkBoxHeading} mx-1`}>Financial & Invoicing (Accounts Payable)</h5>
+                            <div className={`${style.form_inputBox} ${style.border_bottom}`}>
+                                <FormInput
+                                    className="mx-1"
+                                    label={"Request for Quotation (RFQ) Reference"}
+                                    name="rfq_reference"
+                                    placeholder="Enter RFQ reference number"
+                                    required={false}
+                                    message={"Enter RFQ reference if applicable"}
+                                />
 
-                            <FormInput
-                                className="mx-1"
-                                label={"Contract Reference"}
-                                name="contract_reference"
-                                placeholder="Enter contract reference (if part of master agreement)"
-                                required={false}
-                                message={"Enter contract reference if applicable"}
-                            />
+                                <UploadFile
+                                    className="mx-1 inputFlexBox"
+                                    label={"Quotation from Vendor"}
+                                    name="vendor_quotation"
+                                    title={"Upload Quotation"}
+                                    required={false}
+                                    multiple={false}
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx"
+                                    message={"Upload vendor quotation document"}
+                                />
 
-                            <UploadFile
-                                className="mx-1 inputFlexBox"
-                                label={"Attachments"}
-                                name="attachments"
-                                title={"Upload Files"}
-                                required={false}
-                                multiple={true}
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx"
-                                message={"Upload scanned PO, specifications, etc."}
-                            />
+                                <FormInput
+                                    className="mx-1"
+                                    label={"Contract Reference"}
+                                    name="contract_reference"
+                                    placeholder="Enter contract reference (if part of master agreement)"
+                                    required={false}
+                                    message={"Enter contract reference if applicable"}
+                                />
+
+                                <UploadFile
+                                    className="mx-1 inputFlexBox"
+                                    label={"Attachments"}
+                                    name="attachments"
+                                    title={"Upload Files"}
+                                    required={false}
+                                    multiple={true}
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx"
+                                    message={"Upload scanned PO, specifications, etc."}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className={style.vendor_modalBtns}>
-                        <Button
-                            title={"Submit"}
+                        <ShowMore
+                            type="link"
+                            onClick={toggleShowMore}
+                            className={"mx-1 mt-5"}
+                            title={showMore ? 'Show Less' : 'Show More'}
+                        />
+                        <ActionButton
                             className={"mx-1 mt-2 w-auto"}
+                            title={"Create"}
+                            // title={loading ? "Loading" : code?.mode == "Edit" ? "Update Client" : "Create"} loading={loading}
                         />
                     </div>
                 </Form>

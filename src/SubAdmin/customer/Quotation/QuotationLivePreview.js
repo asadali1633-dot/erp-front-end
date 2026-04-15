@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 15,
+        marginTop:50,
         paddingBottom: 5,
     },
     headerRow3: {
@@ -307,6 +308,9 @@ const QuotationLivePreview = ({ data }) => {
                                             </View>
                                         </View>
                                     </View>
+                                    <View>
+                                        <Text style={[styles.textCenter]}>Quotation</Text>
+                                    </View>
                                     <View style={styles.headerRow2}>
                                         <View style={styles.col50}>
                                             {
@@ -396,8 +400,15 @@ const QuotationLivePreview = ({ data }) => {
                                 <>
                                     <View style={styles.headerRow3}>
                                         <View style={styles.col50}>
-                                            <Text style={styles.title}>Quote Terms:</Text>
-                                            <Text style={[styles.termText]}>Taxes: {"All taxes are included."}</Text>
+                                            {/* {
+                                                terms_conditions && (
+                                                    <>
+                                                        <Text style={styles.title}>Quote Terms:</Text>
+                                                        <Text style={[styles.termText]}>Taxes: {"All taxes are included."}</Text>
+                                                    </>
+                                                )
+                                            } */}
+                                                    
                                         </View>
                                         <View style={styles.col50Right}>
                                             <View style={styles.grandTotalBox}>
@@ -405,14 +416,25 @@ const QuotationLivePreview = ({ data }) => {
                                                     <Text style={[styles.termText]}>Subtotal:</Text>
                                                     <Text style={[styles.termText]}>Rs {formatNumber(subtotal)}</Text>
                                                 </View>
-                                                <View style={styles.rowBetween}>
-                                                    <Text style={[styles.termText]}>Discount:{formatNumber(discountPercentOverall.toFixed(2))}%</Text>
-                                                    <Text style={[styles.termText]}>Rs {formatNumber(totalDiscount)}</Text>
-                                                </View>
-                                                <View style={styles.rowBetween}>
-                                                    <Text style={[styles.termText]}>Tax:{formatNumber(taxPercentOverall.toFixed(2))}%</Text>
-                                                    <Text style={[styles.termText]}>Rs {formatNumber(totalTax)}</Text>
-                                                </View>
+                                                {
+                                                    hasDiscount && (
+                                                        <View style={styles.rowBetween}>
+                                                            <Text style={[styles.termText]}>Discount: {formatNumber(discountPercentOverall.toFixed(2))}%</Text>
+                                                            <Text style={[styles.termText]}>Rs {formatNumber(totalDiscount)}</Text>
+                                                        </View>
+                                                    )
+                                                    
+                                                }
+                                               
+                                               {
+                                                    hasTaxRate && (
+                                                        <View style={styles.rowBetween}>
+                                                            <Text style={[styles.termText]}>Tax: {formatNumber(taxPercentOverall.toFixed(2))}%</Text>
+                                                            <Text style={[styles.termText]}>Rs {formatNumber(totalTax)}</Text>
+                                                        </View>
+                                                    )
+                                               }
+                                                
                                                 <View style={styles.rowBetween}>
                                                     <Text style={[styles.termText]}>Total:</Text>
                                                     <Text style={[styles.termText]}>Rs {formatNumber(grandTotal)}</Text>

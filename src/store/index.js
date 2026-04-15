@@ -21,6 +21,7 @@ import Red_Experiance from './redcure/experiance/index'
 import Red_Clients from './redcure/clients/index'
 import Red_Quote from './redcure/quote/index'
 import Red_Invoice from './redcure/invoice/index'
+import Red_Vendors from './redcure/Vendors/index'
 
 
 
@@ -51,7 +52,8 @@ const reducers = combineReducers({
   Red_Experiance,
   Red_Clients,
   Red_Quote,
-  Red_Invoice
+  Red_Invoice,
+  Red_Vendors
 });
 
 const composeEnhancers = window.REDUX_DEVTOOLS_EXTENSION_COMPOSE || compose;

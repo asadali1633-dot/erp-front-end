@@ -37,7 +37,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 15,
         paddingBottom: 5,
-        marginTop: 70
+        marginTop: 40
+    },
+    marginTop: {
+        marginTop:70
     },
     headerRow3: {
         flexDirection: 'row',
@@ -287,6 +290,9 @@ const LetterHead = ({ data }) => {
                         <View style={{ flex: 1 }}>
                             {pageIndex === 0 && (
                                 <>
+                                <View>
+                                    <Text style={[styles.textCenter,styles.marginTop]}>Quotation</Text>
+                                </View>
                                     <View style={styles.headerRow2}>
                                         <View style={styles.col50}>
                                             {
@@ -373,8 +379,8 @@ const LetterHead = ({ data }) => {
                                 <>
                                     <View style={styles.headerRow3}>
                                         <View style={styles.col50}>
-                                            <Text style={styles.title}>Quote Terms:</Text>
-                                            <Text style={[styles.termText]}>Taxes: {"All taxes are included."}</Text>
+                                            {/* <Text style={styles.title}>Quote Terms:</Text>
+                                            <Text style={[styles.termText]}>Taxes: {"All taxes are included."}</Text> */}
                                         </View>
                                         <View style={styles.col50Right}>
                                             <View style={styles.grandTotalBox}>
@@ -382,14 +388,24 @@ const LetterHead = ({ data }) => {
                                                     <Text style={[styles.termText]}>Subtotal:</Text>
                                                     <Text style={[styles.termText]}>Rs {formatNumber(subtotal)}</Text>
                                                 </View>
-                                                <View style={styles.rowBetween}>
-                                                    <Text style={[styles.termText]}>Discount:{formatNumber(discountPercentOverall.toFixed(2))}%</Text>
-                                                    <Text style={[styles.termText]}>Rs {formatNumber(totalDiscount)}</Text>
-                                                </View>
-                                                <View style={styles.rowBetween}>
-                                                    <Text style={[styles.termText]}>Tax:{formatNumber(taxPercentOverall.toFixed(2))}%</Text>
-                                                    <Text style={[styles.termText]}>Rs {formatNumber(totalTax)}</Text>
-                                                </View>
+                                                {
+                                                    hasDiscount && (
+                                                        <View style={styles.rowBetween}>
+                                                            <Text style={[styles.termText]}>Discount: {formatNumber(discountPercentOverall.toFixed(2))}%</Text>
+                                                            <Text style={[styles.termText]}>Rs {formatNumber(totalDiscount)}</Text>
+                                                        </View>
+                                                    )
+
+                                                }
+
+                                                {
+                                                    hasTaxRate && (
+                                                        <View style={styles.rowBetween}>
+                                                            <Text style={[styles.termText]}>Tax: {formatNumber(taxPercentOverall.toFixed(2))}%</Text>
+                                                            <Text style={[styles.termText]}>Rs {formatNumber(totalTax)}</Text>
+                                                        </View>
+                                                    )
+                                                }
                                                 <View style={styles.rowBetween}>
                                                     <Text style={[styles.termText]}>Total:</Text>
                                                     <Text style={[styles.termText]}>Rs {formatNumber(grandTotal)}</Text>

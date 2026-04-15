@@ -1,5 +1,5 @@
 import React from 'react'
-import style from '../Button/button.module.css'
+import CSS from '../Button/button.module.css'
 import { RiDeleteBin6Line as DeleteIcon } from "react-icons/ri";
 import { Link } from 'react-router-dom';
 
@@ -18,11 +18,11 @@ const Button = ({
     return (
         <>
         {
-            add ? <Link onClick={onClick} className={`${style.button} ${className}`}>{title}</Link> 
+            add ? <Link onClick={onClick} className={`${CSS.button} ${className}`}>{title}</Link> 
             : 
             <>
                 <button disabled={loading || disabled}
-                className={`${style.button} ${className}`}
+                className={`${CSS.button} ${className}`}
                 type={type}>{loading ? "loading..." : title}</button>
                 <p className='text-center m-0 p-0' style={{fontSize: "12px"}}>{actionInfo}</p>
             </>
@@ -42,7 +42,7 @@ const ActionButton = ({
     return (
         <>
             <button disabled={loading} onClick={onClick}
-             className={`${style.button} ${className}`}
+             className={`${CSS.button} ${className}`}
             type={type}>{loading ? "loading..." : title}</button>
         </>
     )
@@ -55,16 +55,17 @@ const OutLineButton = ({
     loading,
     onClick,
     form,
-    add
+    add,
+    style
 }) => {
     return (
         <>
         {
             form ? 
-            <Link onClick={onClick} className={`${style.OutLineButton} ${className} OutLineButton`}>{title}</Link>
+            <Link onClick={onClick} className={`${CSS.OutLineButton} ${className} OutLineButton`}>{title}</Link>
             : 
-             <button disabled={loading} onClick={onClick}
-             className={`${style.OutLineButton} ${className} OutLineButton`}
+             <button disabled={loading} style={style} onClick={onClick}
+             className={`${CSS.OutLineButton} ${className} OutLineButton`}
             type={type}>{loading ? "loading..." : title}</button>
         }
             
@@ -82,7 +83,7 @@ const DeleteButton = ({
     return (
         <>
             <button disabled={loading} onClick={onClick}
-             className={`${style.DeleteButton} ${className}`}
+             className={`${CSS.DeleteButton} ${className}`}
             type={type}><DeleteIcon />{title}</button>
         </>
     )

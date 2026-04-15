@@ -60,3 +60,9 @@
     padding: 9px 20px;
     margin: 0;
 }
+
+.vendor_modalBtns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
